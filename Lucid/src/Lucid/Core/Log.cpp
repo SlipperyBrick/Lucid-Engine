@@ -6,6 +6,7 @@
 
 std::shared_ptr<spdlog::logger> Log::s_CoreLogger;
 
+// Sets the print format of messages, creates a new console logger and sets verbosity of messages
 void Log::Init()
 {
 	// Set the format for how messages will be logged (uses spdlog pattern flags)

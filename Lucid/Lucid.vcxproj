@@ -60,8 +60,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ldpch.h" />
+    <ClInclude Include="src\Lucid.h" />
+    <ClInclude Include="src\Lucid\Core\Base.h" />
+    <ClInclude Include="src\Lucid\Core\Events\ApplicationEvent.h" />
+    <ClInclude Include="src\Lucid\Core\Events\Event.h" />
+    <ClInclude Include="src\Lucid\Core\Events\KeyEvent.h" />
+    <ClInclude Include="src\Lucid\Core\Events\MouseEvent.h" />
+    <ClInclude Include="src\Lucid\Core\KeyCodes.h" />
     <ClInclude Include="src\Lucid\Core\Log.h" />
-    <ClInclude Include="src\Lucid\Lucid.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

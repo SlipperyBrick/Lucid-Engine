@@ -1,6 +1,7 @@
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/ostr.h"
 
+// Handles logging of core messages to the console
 class Log
 {
 
