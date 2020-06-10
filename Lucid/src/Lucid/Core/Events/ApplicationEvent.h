@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Event.h"
+#include "ldpch.h"
 
-#include <sstream>
+#include "Event.h"
 
 // Window resize event that stores the new width and height of the resized window
 class WindowResizeEvent : public Event

@@ -1,9 +1,9 @@
 #pragma once
 
+#include "ldpch.h"
+
 #include "Event.h"
 #include "Lucid/Core/KeyCodes.h"
-
-#include <sstream>
 
 // Base class for a key event that contains the keycode
 class KeyEvent : public Event

@@ -1,7 +1,6 @@
 #pragma once
 
-#include <string>
-#include <functional>
+#include "ldpch.h"
 
 #include "Lucid/Core/Base.h"
 

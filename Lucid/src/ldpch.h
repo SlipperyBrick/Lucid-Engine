@@ -9,5 +9,6 @@
 #include <algorithm>
 
 #include <fstream>
+#include <sstream>
 
 // Lucid includes here
