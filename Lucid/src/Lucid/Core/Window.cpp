@@ -27,6 +27,7 @@ Window::Window(const WindowProps& props)
 
 Window::~Window()
 {
+	Shutdown();
 }
 
 void Window::Init(const WindowProps& props)
@@ -39,7 +40,6 @@ void Window::Init(const WindowProps& props)
 
 	if (!s_GLFWInitialized)
 	{
-		// TODO: glfwTerminate on system shutdown
 		int success = glfwInit();
 
 		LD_CORE_ASSERT(success, "Could not intialize GLFW!");
@@ -56,7 +56,7 @@ void Window::Init(const WindowProps& props)
 
 	int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
-	LD_CORE_ASSERT(status, "Failed to initialize Glad!");
+	LD_CORE_ASSERT(status, "Failed to initialize GLAD!");
 
 	glfwSetWindowUserPointer(m_Window, &m_Data);
 
@@ -174,7 +174,8 @@ void Window::Init(const WindowProps& props)
 
 void Window::Shutdown()
 {
-
+	glfwDestroyWindow(m_Window);
+	glfwTerminate();
 }
 
 inline std::pair<float, float> Window::GetWindowPos() const

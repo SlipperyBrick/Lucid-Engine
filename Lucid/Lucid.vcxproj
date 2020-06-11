@@ -44,7 +44,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>ldpch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(ProjectDir)vendor\imgui\includes;$(SolutionDir)Dependencies\spdlog\includes;$(SolutionDir)Dependencies\stb_image\includes;$(SolutionDir)Dependencies\glm\includes;$(SolutionDir)Dependencies\glfw\includes;$(SolutionDir)Dependencies\glad\includes;$(SolutionDir)Dependencies\assimp\includes;$(ProjectDir)src;$(ProjectDir)vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4244;4996;26812;28182;26444;26495;26498;6255;6385;6011;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>26450;4244;4996;26812;28182;26444;26495;26498;6255;6385;6011;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
