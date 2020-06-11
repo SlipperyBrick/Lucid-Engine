@@ -43,8 +43,8 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>ldpch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\stb_image\includes;$(SolutionDir)Dependencies\glm\includes;$(SolutionDir)Dependencies\glfw\includes;$(SolutionDir)Dependencies\glad\includes;$(SolutionDir)Dependencies\assimp\includes;$(ProjectDir)src;$(ProjectDir)vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4996;26812;26444;26495;26498;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(ProjectDir)vendor\imgui\includes;$(SolutionDir)Dependencies\spdlog\includes;$(SolutionDir)Dependencies\stb_image\includes;$(SolutionDir)Dependencies\glm\includes;$(SolutionDir)Dependencies\glfw\includes;$(SolutionDir)Dependencies\glad\includes;$(SolutionDir)Dependencies\assimp\includes;$(ProjectDir)src;$(ProjectDir)vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4244;4996;26812;28182;26444;26495;26498;6255;6385;6011;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -55,15 +55,32 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Lucid\Core\Log.cpp" />
+    <ClCompile Include="src\Lucid\Core\Window.cpp" />
     <ClCompile Include="src\Lucid\EntryPoint.cpp" />
     <ClCompile Include="src\ldpch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ldpch.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="vendor\glad\glad.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\imgui\includes\imgui\imgui.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\imgui\includes\imgui\imgui_demo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\imgui\includes\imgui\imgui_draw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\imgui\includes\imgui\imgui_widgets.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ldpch.h" />
     <ClInclude Include="src\Lucid.h" />
+    <ClInclude Include="src\Lucid\Core\Assert.h" />
     <ClInclude Include="src\Lucid\Core\Base.h" />
     <ClInclude Include="src\Lucid\Core\Events\ApplicationEvent.h" />
     <ClInclude Include="src\Lucid\Core\Events\Event.h" />
@@ -71,6 +88,13 @@
     <ClInclude Include="src\Lucid\Core\Events\MouseEvent.h" />
     <ClInclude Include="src\Lucid\Core\KeyCodes.h" />
     <ClInclude Include="src\Lucid\Core\Log.h" />
+    <ClInclude Include="src\Lucid\Core\Window.h" />
+    <ClInclude Include="vendor\imgui\includes\imgui\imconfig.h" />
+    <ClInclude Include="vendor\imgui\includes\imgui\imgui.h" />
+    <ClInclude Include="vendor\imgui\includes\imgui\imgui_internal.h" />
+    <ClInclude Include="vendor\imgui\includes\imgui\imstb_rectpack.h" />
+    <ClInclude Include="vendor\imgui\includes\imgui\imstb_textedit.h" />
+    <ClInclude Include="vendor\imgui\includes\imgui\imstb_truetype.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
