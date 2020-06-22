@@ -17,6 +17,7 @@ private:
 };
 
 // Core logging macros
+#define LD_CORE_DEBUG(...)  Log::GetCoreLogger()->debug(__VA_ARGS__)
 #define LD_CORE_TRACE(...)	Log::GetCoreLogger()->trace(__VA_ARGS__)
 #define LD_CORE_INFO(...)	Log::GetCoreLogger()->info(__VA_ARGS__)
 #define LD_CORE_WARN(...)	Log::GetCoreLogger()->warn(__VA_ARGS__)

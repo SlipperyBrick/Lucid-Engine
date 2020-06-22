@@ -5,8 +5,9 @@
 
 #include <glfw/glfw3.h>
 
-#include "Events/Event.h"
+#include "Lucid/Core/Events/Event.h"
 
+// Struct for defining the properties of a window such as, width, height and window title
 struct WindowProps
 {
 	std::string Title;
@@ -27,6 +28,8 @@ public:
 	Window(const WindowProps& props);
 	~Window();
 
+	static Window* Create(const WindowProps& props);
+
 	void OnUpdate();
 
 	inline unsigned int GetWidth() const { return m_Data.Width; }
@@ -39,7 +42,15 @@ public:
 	void SetVSync(bool enabled);
 	bool IsVSync() const;
 
-	inline void* GetWindow() const { return m_Window; }
+	inline void* GetWindowPointer() const { return m_Window; }
+
+	bool IsKeyPressed(int keycode);
+	bool IsMouseButtonPressed(int button);
+
+	float GetMouseX();
+	float GetMouseY();
+
+	std::pair<float, float> GetMousePosition();
 
 private:
 

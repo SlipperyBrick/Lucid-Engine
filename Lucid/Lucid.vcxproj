@@ -43,8 +43,8 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>ldpch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)vendor\imgui\includes;$(SolutionDir)Dependencies\spdlog\includes;$(SolutionDir)Dependencies\stb_image\includes;$(SolutionDir)Dependencies\glm\includes;$(SolutionDir)Dependencies\glfw\includes;$(SolutionDir)Dependencies\glad\includes;$(SolutionDir)Dependencies\assimp\includes;$(ProjectDir)src;$(ProjectDir)vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>26450;4244;4996;26812;28182;26444;26495;26498;6255;6385;6011;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(ProjectDir)vendor\imgui;$(SolutionDir)Dependencies\spdlog\includes;$(SolutionDir)Dependencies\stb_image\includes;$(SolutionDir)Dependencies\glm\includes;$(SolutionDir)Dependencies\glfw\includes;$(SolutionDir)Dependencies\glad\includes;$(SolutionDir)Dependencies\assimp\includes;$(ProjectDir)src;$(ProjectDir)vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>6386;6001;26451;26450;4244;4996;26812;28182;26444;26495;26498;6255;6385;6011;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -54,32 +54,52 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Lucid\Core\Log.cpp" />
+    <ClCompile Include="src\Lucid\Core\Application.cpp" />
+    <ClCompile Include="src\Lucid\Core\Base.cpp" />
+    <ClCompile Include="src\Lucid\Core\Layer.cpp" />
+    <ClCompile Include="src\Lucid\Core\LayerStack.cpp" />
+    <ClCompile Include="src\Lucid\Core\Log.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Lucid\Core\Memory.h" />
+    <ClCompile Include="src\Lucid\Core\Timestep.cpp" />
     <ClCompile Include="src\Lucid\Core\Window.cpp" />
-    <ClCompile Include="src\Lucid\EntryPoint.cpp" />
+    <ClCompile Include="src\EntryPoint.cpp" />
     <ClCompile Include="src\ldpch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ldpch.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="src\Lucid\ImGui\EditorLayer.cpp" />
+    <ClCompile Include="src\Lucid\ImGui\ImGuiGizmo.cpp" />
+    <ClCompile Include="src\Lucid\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\Camera.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\RenderCommandQueue.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\Renderer.cpp" />
     <ClCompile Include="vendor\glad\glad.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="vendor\imgui\includes\imgui\imgui.cpp">
+    <ClCompile Include="vendor\imgui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="vendor\imgui\includes\imgui\imgui_demo.cpp">
+    <ClCompile Include="vendor\imgui\imgui_demo.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="vendor\imgui\includes\imgui\imgui_draw.cpp">
+    <ClCompile Include="vendor\imgui\imgui_draw.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="vendor\imgui\includes\imgui\imgui_widgets.cpp">
+    <ClCompile Include="vendor\imgui\imgui_impl_glfw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\imgui\imgui_impl_opengl3.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\imgui\imgui_widgets.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ldpch.h" />
-    <ClInclude Include="src\Lucid.h" />
+    <ClInclude Include="src\Lucid\Core\Application.h" />
     <ClInclude Include="src\Lucid\Core\Assert.h" />
     <ClInclude Include="src\Lucid\Core\Base.h" />
     <ClInclude Include="src\Lucid\Core\Events\ApplicationEvent.h" />
@@ -87,14 +107,25 @@
     <ClInclude Include="src\Lucid\Core\Events\KeyEvent.h" />
     <ClInclude Include="src\Lucid\Core\Events\MouseEvent.h" />
     <ClInclude Include="src\Lucid\Core\KeyCodes.h" />
+    <ClInclude Include="src\Lucid\Core\Layer.h" />
+    <ClInclude Include="src\Lucid\Core\LayerStack.h" />
     <ClInclude Include="src\Lucid\Core\Log.h" />
+    <ClInclude Include="src\Lucid\Core\Timestep.h" />
     <ClInclude Include="src\Lucid\Core\Window.h" />
-    <ClInclude Include="vendor\imgui\includes\imgui\imconfig.h" />
-    <ClInclude Include="vendor\imgui\includes\imgui\imgui.h" />
-    <ClInclude Include="vendor\imgui\includes\imgui\imgui_internal.h" />
-    <ClInclude Include="vendor\imgui\includes\imgui\imstb_rectpack.h" />
-    <ClInclude Include="vendor\imgui\includes\imgui\imstb_textedit.h" />
-    <ClInclude Include="vendor\imgui\includes\imgui\imstb_truetype.h" />
+    <ClInclude Include="src\Lucid\ImGui\EditorLayer.h" />
+    <ClInclude Include="src\Lucid\ImGui\ImGuiGizmo.h" />
+    <ClInclude Include="src\Lucid\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="src\Lucid\Renderer\Camera.h" />
+    <ClInclude Include="src\Lucid\Renderer\RenderCommandQueue.h" />
+    <ClInclude Include="src\Lucid\Renderer\Renderer.h" />
+    <ClInclude Include="vendor\imgui\imconfig.h" />
+    <ClInclude Include="vendor\imgui\imgui.h" />
+    <ClInclude Include="vendor\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="vendor\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="vendor\imgui\imgui_internal.h" />
+    <ClInclude Include="vendor\imgui\imstb_rectpack.h" />
+    <ClInclude Include="vendor\imgui\imstb_textedit.h" />
+    <ClInclude Include="vendor\imgui\imstb_truetype.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

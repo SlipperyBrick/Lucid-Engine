@@ -2,8 +2,6 @@
 
 #include "ldpch.h"
 
-#include "Lucid/Core/Base.h"
-
 // Enumerators for various event types
 enum class EventType
 {

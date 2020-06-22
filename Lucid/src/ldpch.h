@@ -11,4 +11,5 @@
 #include <fstream>
 #include <sstream>
 
-// Lucid includes here
+// Lucid includes
+#include "Lucid/Core/Base.h"

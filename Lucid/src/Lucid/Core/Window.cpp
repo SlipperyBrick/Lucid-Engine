@@ -4,63 +4,80 @@
 
 #include "Window.h"
 
-#include "Lucid/Core/Log.h"
-#include "Lucid/Core/Base.h"
-
 #include "Lucid/Core/Events/ApplicationEvent.h"
 #include "Lucid/Core/Events/KeyEvent.h"
 #include "Lucid/Core/Events/MouseEvent.h"
 
 #include <imgui/imgui.h>
 
+// Logs GLFW errors by printing the error code and a short description
 static void GLFWErrorCallback(int error, const char* description)
 {
 	LD_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
 }
 
+// Static member for setting GLFW initalization
 static bool s_GLFWInitialized = false;
 
+// Constructor that sets the windows properties and calls Init() for initalizing GLFW and GLAD
 Window::Window(const WindowProps& props)
 {
 	Init(props);
 }
 
+// Calls Shutdown() when window is deconstructed
 Window::~Window()
 {
 	Shutdown();
 }
 
+// Returns a pointer of a Window instance
+Window* Window::Create(const WindowProps& props)
+{
+	return new Window(props);
+}
+
+// Initalizes the window by setting the windows properties and initalizing GLFW and GLAD a long with setting up GLFW window callbacks
 void Window::Init(const WindowProps& props)
 {
 	m_Data.Title = props.Title;
 	m_Data.Width = props.Width;
 	m_Data.Height = props.Height;
 
+	// Log window creation details
 	LD_CORE_INFO("Creating window {0} ({1}, {2})", props.Title, props.Width, props.Height);
 
+	// Check if GLFW initialized correctly
 	if (!s_GLFWInitialized)
 	{
 		int success = glfwInit();
 
-		LD_CORE_ASSERT(success, "Could not intialize GLFW!");
-
+		// Sets function pointer for retrieving GLFW error information
 		glfwSetErrorCallback(GLFWErrorCallback);
+
+		// Log and assert if GLFW didn't initalize
+		LD_CORE_ASSERT(success, "Could not intialize GLFW!");
 
 		s_GLFWInitialized = true;
 	}
 
+	// Create the window
 	m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 
+	// Make the window the current rendering context
 	glfwMakeContextCurrent(m_Window);
 	glfwMaximizeWindow(m_Window);
 
+	// Initalize GLAD
 	int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
+	// Log and assert if GLAD didn't initialize
 	LD_CORE_ASSERT(status, "Failed to initialize GLAD!");
 
+	// Set the window pointer to the newly created window
 	glfwSetWindowUserPointer(m_Window, &m_Data);
 
-	// Set GLFW callbacks
+	// Set window resize GLFW callback
 	glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
 		{
 			auto& data = *((WindowData*)glfwGetWindowUserPointer(window));
@@ -71,6 +88,7 @@ void Window::Init(const WindowProps& props)
 			data.Height = height;
 		});
 
+	// Set window close GLFW callback
 	glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
 		{
 			auto& data = *((WindowData*)glfwGetWindowUserPointer(window));
@@ -79,6 +97,7 @@ void Window::Init(const WindowProps& props)
 			data.EventCallback(event);
 		});
 
+	// Set window key input GLFW callback
 	glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
 			auto& data = *((WindowData*)glfwGetWindowUserPointer(window));
@@ -106,6 +125,7 @@ void Window::Init(const WindowProps& props)
 			}
 		});
 
+	// Set window character input GLFW callback
 	glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int codepoint)
 		{
 			auto& data = *((WindowData*)glfwGetWindowUserPointer(window));
@@ -114,6 +134,7 @@ void Window::Init(const WindowProps& props)
 			data.EventCallback(event);
 		});
 
+	// Set window mouse input GLFW callback
 	glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
 		{
 			auto& data = *((WindowData*)glfwGetWindowUserPointer(window));
@@ -135,6 +156,7 @@ void Window::Init(const WindowProps& props)
 			}
 		});
 
+	// Set window mouse scroll GLFW callback
 	glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset)
 		{
 			auto& data = *((WindowData*)glfwGetWindowUserPointer(window));
@@ -143,6 +165,7 @@ void Window::Init(const WindowProps& props)
 			data.EventCallback(event);
 		});
 
+	// Set window mouse position GLFW callback
 	glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double x, double y)
 		{
 			auto& data = *((WindowData*)glfwGetWindowUserPointer(window));
@@ -151,13 +174,14 @@ void Window::Init(const WindowProps& props)
 			data.EventCallback(event);
 		});
 
+	// Set ImGui mouse cursors using GLFW cursor functions
 	m_ImGuiMouseCursors[ImGuiMouseCursor_Arrow] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
 	m_ImGuiMouseCursors[ImGuiMouseCursor_TextInput] = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
-	m_ImGuiMouseCursors[ImGuiMouseCursor_ResizeAll] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);   // FIXME: GLFW doesn't have this.
+	m_ImGuiMouseCursors[ImGuiMouseCursor_ResizeAll] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
 	m_ImGuiMouseCursors[ImGuiMouseCursor_ResizeNS] = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
 	m_ImGuiMouseCursors[ImGuiMouseCursor_ResizeEW] = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
-	m_ImGuiMouseCursors[ImGuiMouseCursor_ResizeNESW] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);  // FIXME: GLFW doesn't have this.
-	m_ImGuiMouseCursors[ImGuiMouseCursor_ResizeNWSE] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);  // FIXME: GLFW doesn't have this.
+	m_ImGuiMouseCursors[ImGuiMouseCursor_ResizeNESW] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+	m_ImGuiMouseCursors[ImGuiMouseCursor_ResizeNWSE] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
 	m_ImGuiMouseCursors[ImGuiMouseCursor_Hand] = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
 
 	// Update window size to actual size
@@ -172,20 +196,25 @@ void Window::Init(const WindowProps& props)
 	}
 }
 
+// On window shutdown destroy the current window and terminate GLFW
 void Window::Shutdown()
 {
 	glfwDestroyWindow(m_Window);
 	glfwTerminate();
 }
 
+// Getter to retrieve position of the window
 inline std::pair<float, float> Window::GetWindowPos() const
 {
-	int x, y;
+	int x;
+	int y;
+
 	glfwGetWindowPos(m_Window, &x, &y);
 
 	return { x, y };
 }
 
+// Windows OnUpdate function, processes events and swaps render buffers, also gets the mouse position and processes the engines timestep
 void Window::OnUpdate()
 {
 	glfwPollEvents();
@@ -201,9 +230,10 @@ void Window::OnUpdate()
 	m_LastFrameTime = time;
 }
 
-void Window::SetVSync(bool enabled)
+// Sets if the window uses vertical-sync
+void Window::SetVSync(bool isEnabled)
 {
-	if (enabled)
+	if (isEnabled)
 	{
 		glfwSwapInterval(1);
 	}
@@ -212,10 +242,49 @@ void Window::SetVSync(bool enabled)
 		glfwSwapInterval(0);
 	}
 
-	m_Data.VSync = enabled;
+	m_Data.VSync = isEnabled;
 }
 
+// Returns true if the window has vertical-sync enabled
 bool Window::IsVSync() const
 {
 	return m_Data.VSync;
+}
+
+bool Window::IsKeyPressed(int keycode)
+{
+	auto state = glfwGetKey(m_Window, keycode);
+
+	return state == GLFW_PRESS || state == GLFW_REPEAT;
+}
+
+bool Window::IsMouseButtonPressed(int button)
+{
+	auto state = glfwGetMouseButton(m_Window, button);
+
+	return state == GLFW_PRESS;
+}
+
+float Window::GetMouseX()
+{
+	auto [x, y] = GetMousePosition();
+
+	return (float)x;
+}
+
+float Window::GetMouseY()
+{
+	auto [x, y] = GetMousePosition();
+
+	return (float)y;
+}
+
+std::pair<float, float> Window::GetMousePosition()
+{
+	double x;
+	double y;
+
+	glfwGetCursorPos(m_Window, &x, &y);
+
+	return { (float)x, (float)y };
 }
