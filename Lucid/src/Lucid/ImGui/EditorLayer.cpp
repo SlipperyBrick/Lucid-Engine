@@ -10,6 +10,10 @@ EditorLayer::EditorLayer()
 {
 }
 
+EditorLayer::EditorLayer(const std::string& name)
+{
+}
+
 EditorLayer::~EditorLayer()
 {
 }
@@ -69,6 +73,11 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate(Timestep ts)
 {
+	
+}
+
+void EditorLayer::OnImGuiRender()
+{
 	static bool p_open = true;
 
 	static ImGuiDockNodeFlags opt_flags = ImGuiDockNodeFlags_None;
@@ -81,11 +90,14 @@ void EditorLayer::OnUpdate(Timestep ts)
 	if (opt_fullscreen)
 	{
 		ImGuiViewport* viewport = ImGui::GetMainViewport();
+
 		ImGui::SetNextWindowPos(viewport->Pos);
 		ImGui::SetNextWindowSize(viewport->Size);
 		ImGui::SetNextWindowViewport(viewport->ID);
+
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+
 		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 	}
@@ -202,10 +214,6 @@ void EditorLayer::OnUpdate(Timestep ts)
 	#pragma endregion
 
 	ImGui::End();
-}
-
-void EditorLayer::OnImGuiRender()
-{
 }
 
 void EditorLayer::OnEvent(Event& e)

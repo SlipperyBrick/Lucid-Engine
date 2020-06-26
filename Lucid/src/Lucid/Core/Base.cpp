@@ -1,6 +1,6 @@
 #include "ldpch.h"
 
-#define LUCID_BUILD_ID "v0.1a"
+#define LUCID_BUILD_ID "v0.1"
 
 void InitializeCore()
 {

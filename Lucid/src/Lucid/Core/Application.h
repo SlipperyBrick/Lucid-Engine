@@ -27,6 +27,7 @@ public:
 	Application(const ApplicationProps& props = { "Lucid Engine", 1280, 720 });
 	~Application();
 
+	void OnInit();
 	void Run();
 
 	void OnUpdate(Timestep ts) {}

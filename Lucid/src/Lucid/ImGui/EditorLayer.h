@@ -28,6 +28,7 @@ public:
 public:
 
 	EditorLayer();
+	EditorLayer(const std::string& name);
 	virtual ~EditorLayer();
 
 	virtual void OnAttach() override;

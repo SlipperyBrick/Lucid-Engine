@@ -2,14 +2,18 @@
 
 #include "Lucid/Renderer/RenderCommandQueue.h"
 
+using RendererID = uint32_t;
+
 class Renderer
 {
 
 public:
 
+	typedef void(*RenderCommandFn)(void*);
+
 	static void Init();
 
-	// Allocates memory in the render command queue for each command submission to the renderer
+	// Allocates memory in the render command queue for each submitted command to the renderer
 	template<typename FuncT>
 	static void Submit(FuncT&& func)
 	{

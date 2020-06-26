@@ -8,6 +8,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
+// Definition of Pi used for calculating camera angles
 #define M_PI 3.14159f
 
 Camera::Camera(const glm::mat4& projectionMatrix)

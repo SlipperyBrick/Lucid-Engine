@@ -3,13 +3,14 @@
 #include "Application.h"
 
 #include "Lucid/Renderer/Renderer.h"
-//#include "Lucid/Renderer/Framebuffer.h"
+#include "Lucid/Renderer/Framebuffer.h"
 
 #include <imgui/imgui.h>
 
 // Application instance
 Application* Application::s_Instance = nullptr;
 
+// Creates an application with desired application properties, initalizes core engine components and sets up window, event callbacks and renderer
 Application::Application(const ApplicationProps& props)
 {
 	// Set application instance to newly created application
@@ -24,14 +25,15 @@ Application::Application(const ApplicationProps& props)
 	m_Window->SetVSync(true);
 
 	// Push a new ImGui layer to applications layer stack, needed for inital ImGui setup (which is done when ImGuiLayers OnAttach() method is called) 
-	m_ImGuiLayer = new ImGuiLayer();
+	m_ImGuiLayer = new ImGuiLayer("Application Layer");
 	PushOverlay(m_ImGuiLayer);
 
 	// Initalize renderer and traverse render command queue for processing any renderer commands
-	//Renderer::Init();
-	//Renderer::WaitAndRender();
+	Renderer::Init();
+	Renderer::ExecuteRenderCommands();
 }
 
+// Destroys applications window, shuts down core engine components and releases all memory pertaining to the application
 Application::~Application()
 {
 	// Destroy window/GLFW and release from memory
@@ -68,9 +70,17 @@ void Application::RenderImGui()
 	m_ImGuiLayer->End();
 }
 
+// Initalizes applications specific components such as user-interface
+void Application::OnInit()
+{
+	PushLayer(new EditorLayer("Editor Layer"));
+}
+
 // Applications run loop that processes all application logic
 void Application::Run()
 {
+	OnInit();
+
 	while (m_Running)
 	{
 		if (!m_Minimized)
@@ -84,11 +94,11 @@ void Application::Run()
 			// Instance of application for lambda capture list
 			Application* app = this;
 
-			// Render the applications ImGui user-interface on render thread
-			//Renderer::Submit([app]() { app->RenderImGui(); });
+			// Render the applications user-interface on render thread
+			Renderer::Submit([app]() { app->RenderImGui(); });
 
 			// Traverse the render command queue to process any render commands
-			//Renderer::WaitAndRender();
+			Renderer::ExecuteRenderCommands();
 		}
 
 		m_Window->OnUpdate();
@@ -98,6 +108,8 @@ void Application::Run()
 		m_TimeStep = time - m_LastFrameTime;
 		m_LastFrameTime = time;
 	}
+
+	// Handle shutdown here
 }
 
 // Dispatch and process applications window events
@@ -142,16 +154,17 @@ bool Application::OnWindowResize(WindowResizeEvent& e)
 
 	Renderer::Submit([=]() { glViewport(0, 0, width, height); });
 
-	//auto& fbs = FramebufferPool::GetGlobal()->GetAll();
+	// Retrieve all framebuffer objects
+	auto& fbs = FramebufferPool::GetGlobal()->GetAll();
 
 	// Resize all framebuffers
-	/*for (auto& fb : fbs)
+	for (auto& fb : fbs)
 	{
 		if (auto fbp = fb.lock())
 		{
 			fbp->Resize(width, height);
 		}
-	}*/
+	}
 
 	return false;
 }

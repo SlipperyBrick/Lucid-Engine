@@ -44,7 +44,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>ldpch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(ProjectDir)vendor\imgui;$(SolutionDir)Dependencies\spdlog\includes;$(SolutionDir)Dependencies\stb_image\includes;$(SolutionDir)Dependencies\glm\includes;$(SolutionDir)Dependencies\glfw\includes;$(SolutionDir)Dependencies\glad\includes;$(SolutionDir)Dependencies\assimp\includes;$(ProjectDir)src;$(ProjectDir)vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>6386;6001;26451;26450;4244;4996;26812;28182;26444;26495;26498;6255;6385;6011;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>6308;6262;6386;6001;26451;26450;4244;4996;26812;28182;26444;26495;26498;6255;6385;6011;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -73,8 +73,11 @@
     <ClCompile Include="src\Lucid\ImGui\ImGuiGizmo.cpp" />
     <ClCompile Include="src\Lucid\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Lucid\Renderer\Camera.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\Framebuffer.cpp" />
     <ClCompile Include="src\Lucid\Renderer\RenderCommandQueue.cpp" />
     <ClCompile Include="src\Lucid\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\VertexBuffer.cpp" />
     <ClCompile Include="vendor\glad\glad.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -94,6 +97,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="vendor\imgui\imgui_widgets.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\stbimage\stb_image.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
@@ -116,8 +122,11 @@
     <ClInclude Include="src\Lucid\ImGui\ImGuiGizmo.h" />
     <ClInclude Include="src\Lucid\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Lucid\Renderer\Camera.h" />
+    <ClInclude Include="src\Lucid\Renderer\Framebuffer.h" />
     <ClInclude Include="src\Lucid\Renderer\RenderCommandQueue.h" />
     <ClInclude Include="src\Lucid\Renderer\Renderer.h" />
+    <ClInclude Include="src\Lucid\Renderer\VertexArray.h" />
+    <ClInclude Include="src\Lucid\Renderer\VertexBuffer.h" />
     <ClInclude Include="vendor\imgui\imconfig.h" />
     <ClInclude Include="vendor\imgui\imgui.h" />
     <ClInclude Include="vendor\imgui\imgui_impl_glfw.h" />
