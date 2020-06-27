@@ -214,7 +214,7 @@ inline std::pair<float, float> Window::GetWindowPos() const
 	return { x, y };
 }
 
-// Windows OnUpdate function, processes events and swaps render buffers, also gets the mouse position and processes the engines timestep
+// Processes events and swaps render buffers, also gets the mouse position and processes the windows timestep
 void Window::OnUpdate()
 {
 	glfwPollEvents();
@@ -251,6 +251,7 @@ bool Window::IsVSync() const
 	return m_Data.VSync;
 }
 
+// Handles if a key is pressed
 bool Window::IsKeyPressed(int keycode)
 {
 	auto state = glfwGetKey(m_Window, keycode);
@@ -258,6 +259,7 @@ bool Window::IsKeyPressed(int keycode)
 	return state == GLFW_PRESS || state == GLFW_REPEAT;
 }
 
+// Handles if a mouse button is pressed
 bool Window::IsMouseButtonPressed(int button)
 {
 	auto state = glfwGetMouseButton(m_Window, button);
@@ -265,6 +267,7 @@ bool Window::IsMouseButtonPressed(int button)
 	return state == GLFW_PRESS;
 }
 
+// Retrieves the mouse x position
 float Window::GetMouseX()
 {
 	auto [x, y] = GetMousePosition();
@@ -272,6 +275,7 @@ float Window::GetMouseX()
 	return (float)x;
 }
 
+// Retrieves the mouse y position
 float Window::GetMouseY()
 {
 	auto [x, y] = GetMousePosition();
@@ -279,6 +283,7 @@ float Window::GetMouseY()
 	return (float)y;
 }
 
+// Retrieves the mouse x and y coordinates
 std::pair<float, float> Window::GetMousePosition()
 {
 	double x;

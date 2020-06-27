@@ -4,6 +4,31 @@
 
 using RendererID = uint32_t;
 
+enum class PrimitiveType
+{
+	None = 0,
+	Triangles,
+	Lines
+};
+
+struct RenderCapabilities
+{
+	std::string Vendor;
+	std::string Renderer;
+	std::string Version;
+
+	int MaxSamples = 0;
+	float MaxAnisotropy = 0.0f;
+	int MaxTextureUnits = 0;
+
+	static RenderCapabilities& GetCapabilities()
+	{
+		static RenderCapabilities capabilities;
+
+		return capabilities;
+	}
+};
+
 class Renderer
 {
 

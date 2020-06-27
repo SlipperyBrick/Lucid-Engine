@@ -76,6 +76,7 @@
     <ClCompile Include="src\Lucid\Renderer\Framebuffer.cpp" />
     <ClCompile Include="src\Lucid\Renderer\RenderCommandQueue.cpp" />
     <ClCompile Include="src\Lucid\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\Texture.cpp" />
     <ClCompile Include="src\Lucid\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Lucid\Renderer\VertexBuffer.cpp" />
     <ClCompile Include="vendor\glad\glad.c">
@@ -125,6 +126,7 @@
     <ClInclude Include="src\Lucid\Renderer\Framebuffer.h" />
     <ClInclude Include="src\Lucid\Renderer\RenderCommandQueue.h" />
     <ClInclude Include="src\Lucid\Renderer\Renderer.h" />
+    <ClInclude Include="src\Lucid\Renderer\Texture.h" />
     <ClInclude Include="src\Lucid\Renderer\VertexArray.h" />
     <ClInclude Include="src\Lucid\Renderer\VertexBuffer.h" />
     <ClInclude Include="vendor\imgui\imconfig.h" />
