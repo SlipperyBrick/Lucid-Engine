@@ -3,6 +3,7 @@
 #include "ldpch.h"
 
 #include "Event.h"
+
 #include "Lucid/Core/KeyCodes.h"
 
 // Base class for a key event that contains the keycode

@@ -1,7 +1,7 @@
+#pragma once
+
 #include "Lucid/Core/Base.h"
 #include "Lucid/Core/Memory.h"
-
-#include "Lucid/Renderer/Renderer.h"
 
 enum class TextureFormat
 {
@@ -51,6 +51,11 @@ public:
 	bool Loaded() const { return m_Loaded; }
 
 	RendererID GetRendererID() const { return m_RendererID; }
+
+	bool operator==(const Texture2D& other) const
+	{
+		return m_RendererID == ((Texture2D&)other).m_RendererID;
+	}
 
 	static uint32_t GetBPP(TextureFormat format);
 	static uint32_t CalculateMipMapCount(uint32_t width, uint32_t height);

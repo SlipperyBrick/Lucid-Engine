@@ -1,3 +1,5 @@
+#pragma once
+
 #include "ldpch.h"
 
 #include "Camera.h"
@@ -8,7 +10,9 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
-// Definition of Pi used for calculating camera angles
+#include "Lucid/Core/Application.h"
+
+// Definition of PI used for calculating camera angles
 #define M_PI 3.14159f
 
 Camera::Camera(const glm::mat4& projectionMatrix)

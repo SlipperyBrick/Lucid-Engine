@@ -1,9 +1,9 @@
 #pragma once
 
+#include <glfw/glfw3.h>
+
 #include <string>
 #include <functional>
-
-#include <glfw/glfw3.h>
 
 #include "Lucid/Core/Events/Event.h"
 

@@ -2,13 +2,13 @@
 
 #include <glad/glad.h>
 
+#include <imgui/imgui.h>
+
 #include "Window.h"
 
 #include "Lucid/Core/Events/ApplicationEvent.h"
 #include "Lucid/Core/Events/KeyEvent.h"
 #include "Lucid/Core/Events/MouseEvent.h"
-
-#include <imgui/imgui.h>
 
 // Logs GLFW errors by printing the error code and a short description
 static void GLFWErrorCallback(int error, const char* description)

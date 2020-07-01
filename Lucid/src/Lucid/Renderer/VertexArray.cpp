@@ -1,8 +1,12 @@
+#pragma once
+
 #include "ldpch.h"
 
 #include <glad/glad.h>
 
 #include "VertexArray.h"
+
+#include "Lucid/Renderer/Renderer.h"
 
 static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
 {
@@ -57,6 +61,11 @@ static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
 	LD_CORE_ASSERT(false, "Unknown ShaderDataType!");
 
 	return 0;
+}
+
+Ref<VertexArray> VertexArray::Create()
+{
+	return std::make_shared<VertexArray>();
 }
 
 VertexArray::VertexArray()

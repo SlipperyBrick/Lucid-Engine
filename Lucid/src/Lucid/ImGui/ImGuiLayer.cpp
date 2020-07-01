@@ -1,18 +1,16 @@
 #include "ldpch.h"
 
-#include "ImGuiLayer.h"
-
 #include <glfw/glfw3.h>
 
-#include "imgui.h"
+#include <imgui.h>
+#include <imgui/imgui_impl_glfw.h>
+#include <imgui/imgui_impl_opengl3.h>
+
+#include "ImGuiLayer.h"
 
 #include "Lucid/ImGui/ImGuiGizmo.h"
 
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
-
 #include "Lucid/Core/Application.h"
-//#include "Lucid/Renderer/Renderer.h"
 
 ImGuiLayer::ImGuiLayer()
 {

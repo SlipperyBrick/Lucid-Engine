@@ -1,4 +1,4 @@
-#include "Lucid/Renderer/Renderer.h"
+#pragma once
 
 #include "Lucid/Renderer/VertexBuffer.h"
 
@@ -20,6 +20,8 @@ public:
 	const std::shared_ptr<IndexBuffer>& GetIndexBuffer() { return m_IndexBuffer; }
 
 	RendererID GetRendererID() { return m_RendererID; };
+
+	static Ref<VertexArray> Create();
 
 private:
 

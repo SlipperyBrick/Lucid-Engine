@@ -1,8 +1,12 @@
+#pragma once
+
 #include "ldpch.h"
+
+#include <glad/glad.h>
 
 #include "Framebuffer.h"
 
-#include <glad/glad.h>
+#include "Lucid/Renderer/Renderer.h"
 
 Ref<Framebuffer> Framebuffer::Create(const FramebufferSpecification& spec)
 {

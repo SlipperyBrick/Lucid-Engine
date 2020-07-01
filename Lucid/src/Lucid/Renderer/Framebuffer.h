@@ -2,8 +2,6 @@
 
 #include <glm/glm.hpp>
 
-#include "Lucid/Renderer/Renderer.h"
-
 enum class FramebufferFormat
 {
 	None = 0,
@@ -41,11 +39,11 @@ public:
 
 	void BindTexture(uint32_t slot = 0) const;
 
-	virtual RendererID GetRendererID() const { return m_RendererID; }
-	virtual RendererID GetColorAttachmentRendererID() const { return m_ColorAttachment; }
-	virtual RendererID GetDepthAttachmentRendererID() const { return m_DepthAttachment; }
+	RendererID GetRendererID() const { return m_RendererID; }
+	RendererID GetColorAttachmentRendererID() const { return m_ColorAttachment; }
+	RendererID GetDepthAttachmentRendererID() const { return m_DepthAttachment; }
 
-	virtual const FramebufferSpecification& GetSpecification() const { return m_Specification; }
+	const FramebufferSpecification& GetSpecification() const { return m_Specification; }
 
 	static Ref<Framebuffer> Create(const FramebufferSpecification& spec);
 

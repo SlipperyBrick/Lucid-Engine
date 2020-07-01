@@ -37,7 +37,7 @@ void* RenderCommandQueue::Allocate(RenderCommandFn fn, uint32_t size)
 
 void RenderCommandQueue::Execute()
 {
-	LD_RENDER_TRACE("RenderCommandQueue::Execute -- {0} commands, {1} bytes", m_CommandCount, (m_CommandBufferPtr - m_CommandBuffer));
+	//LD_RENDER_TRACE("RenderCommandQueue::Execute -- {0} commands, {1} bytes", m_CommandCount, (m_CommandBufferPtr - m_CommandBuffer));
 
 	// Starting memory location for command buffer
 	byte* buffer = m_CommandBuffer;

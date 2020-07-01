@@ -1,11 +1,13 @@
 #include "ldpch.h"
 
+#include <glad/glad.h>
+
+#include <imgui/imgui.h>
+
 #include "Application.h"
 
 #include "Lucid/Renderer/Renderer.h"
 #include "Lucid/Renderer/Framebuffer.h"
-
-#include <imgui/imgui.h>
 
 // Application instance
 Application* Application::s_Instance = nullptr;
@@ -70,7 +72,7 @@ void Application::RenderImGui()
 	m_ImGuiLayer->End();
 }
 
-// Initalizes applications specific components such as user-interface
+// Initalizes application specific components such as user-interface
 void Application::OnInit()
 {
 	PushLayer(new EditorLayer("Editor Layer"));

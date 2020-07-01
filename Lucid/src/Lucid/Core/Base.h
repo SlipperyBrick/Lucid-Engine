@@ -6,6 +6,7 @@ void InitializeCore();
 void ShutdownCore();
 
 using byte = uint8_t;
+using RendererID = uint32_t;
 
 // Expansion of __VA_ARGS__ to get past MSVC "bug"
 #define LD_EXPAND_VARGS(x) x

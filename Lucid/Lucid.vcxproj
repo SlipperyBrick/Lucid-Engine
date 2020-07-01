@@ -38,13 +38,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ENFORCE_MATCHING_ALLOCATORS=0;GLFW_INCLUDE_NONE;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>ldpch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(ProjectDir)vendor\imgui;$(SolutionDir)Dependencies\spdlog\includes;$(SolutionDir)Dependencies\stb_image\includes;$(SolutionDir)Dependencies\glm\includes;$(SolutionDir)Dependencies\glfw\includes;$(SolutionDir)Dependencies\glad\includes;$(SolutionDir)Dependencies\assimp\includes;$(ProjectDir)src;$(ProjectDir)vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>6308;6262;6386;6001;26451;26450;4244;4996;26812;28182;26444;26495;26498;6255;6385;6011;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -74,11 +75,21 @@
     <ClCompile Include="src\Lucid\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Lucid\Renderer\Camera.cpp" />
     <ClCompile Include="src\Lucid\Renderer\Framebuffer.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\Material.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\Mesh.cpp" />
     <ClCompile Include="src\Lucid\Renderer\RenderCommandQueue.cpp" />
     <ClCompile Include="src\Lucid\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\Renderer2D.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\RenderPass.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\SceneRenderer.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\Shader.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\ShaderLibrary.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\ShaderUniform.cpp" />
     <ClCompile Include="src\Lucid\Renderer\Texture.cpp" />
     <ClCompile Include="src\Lucid\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Lucid\Renderer\VertexBuffer.cpp" />
+    <ClCompile Include="src\Lucid\Scene\Entity.cpp" />
+    <ClCompile Include="src\Lucid\Scene\Scene.cpp" />
     <ClCompile Include="vendor\glad\glad.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -117,6 +128,8 @@
     <ClInclude Include="src\Lucid\Core\Layer.h" />
     <ClInclude Include="src\Lucid\Core\LayerStack.h" />
     <ClInclude Include="src\Lucid\Core\Log.h" />
+    <ClInclude Include="src\Lucid\Core\Math\AABB.h" />
+    <ClInclude Include="src\Lucid\Core\Math\Ray.h" />
     <ClInclude Include="src\Lucid\Core\Timestep.h" />
     <ClInclude Include="src\Lucid\Core\Window.h" />
     <ClInclude Include="src\Lucid\ImGui\EditorLayer.h" />
@@ -124,11 +137,21 @@
     <ClInclude Include="src\Lucid\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Lucid\Renderer\Camera.h" />
     <ClInclude Include="src\Lucid\Renderer\Framebuffer.h" />
+    <ClInclude Include="src\Lucid\Renderer\Material.h" />
+    <ClInclude Include="src\Lucid\Renderer\Mesh.h" />
     <ClInclude Include="src\Lucid\Renderer\RenderCommandQueue.h" />
     <ClInclude Include="src\Lucid\Renderer\Renderer.h" />
+    <ClInclude Include="src\Lucid\Renderer\Renderer2D.h" />
+    <ClInclude Include="src\Lucid\Renderer\RenderPass.h" />
+    <ClInclude Include="src\Lucid\Renderer\SceneRenderer.h" />
+    <ClInclude Include="src\Lucid\Renderer\Shader.h" />
+    <ClInclude Include="src\Lucid\Renderer\ShaderLibrary.h" />
+    <ClInclude Include="src\Lucid\Renderer\ShaderUniform.h" />
     <ClInclude Include="src\Lucid\Renderer\Texture.h" />
     <ClInclude Include="src\Lucid\Renderer\VertexArray.h" />
     <ClInclude Include="src\Lucid\Renderer\VertexBuffer.h" />
+    <ClInclude Include="src\Lucid\Scene\Entity.h" />
+    <ClInclude Include="src\Lucid\Scene\Scene.h" />
     <ClInclude Include="vendor\imgui\imconfig.h" />
     <ClInclude Include="vendor\imgui\imgui.h" />
     <ClInclude Include="vendor\imgui\imgui_impl_glfw.h" />
@@ -137,6 +160,13 @@
     <ClInclude Include="vendor\imgui\imstb_rectpack.h" />
     <ClInclude Include="vendor\imgui\imstb_textedit.h" />
     <ClInclude Include="vendor\imgui\imstb_truetype.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\shaders\Flat.glsl" />
+    <None Include="assets\shaders\Grid.glsl" />
+    <None Include="assets\shaders\Line.glsl" />
+    <None Include="assets\shaders\Quad.glsl" />
+    <None Include="assets\shaders\Skybox.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

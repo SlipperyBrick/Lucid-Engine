@@ -3,8 +3,6 @@
 #include "Lucid/Core/Base.h"
 #include "Lucid/Core/Memory.h"
 
-#include "Lucid/Renderer/Renderer.h"
-
 enum class ShaderDataType
 {
 	None = 0,

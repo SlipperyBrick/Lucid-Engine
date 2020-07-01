@@ -1,12 +1,16 @@
+#pragma once
+
 #include "ldpch.h"
 
 #include "Texture.h"
 
-#include "glad/glad.h"
+#include <glad/glad.h>
 
-#include "stb_image/stb_image.h"
+#include <stb_image/stb_image.h>
 
-static GLenum LucidToOpenGLTextureFormat(TextureFormat format)
+#include "Lucid/Renderer/Renderer.h"
+
+static GLenum SetTextureFormat(TextureFormat format)
 {
 	switch (format)
 	{
@@ -68,7 +72,7 @@ Texture2D::Texture2D(TextureFormat format, uint32_t width, uint32_t height, Text
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
 		glTextureParameterf(m_RendererID, GL_TEXTURE_MAX_ANISOTROPY, RenderCapabilities::GetCapabilities().MaxAnisotropy);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, LucidToOpenGLTextureFormat(m_Format), m_Width, m_Height, 0, LucidToOpenGLTextureFormat(m_Format), GL_UNSIGNED_BYTE, nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 0, SetTextureFormat(m_Format), m_Width, m_Height, 0, SetTextureFormat(m_Format), GL_UNSIGNED_BYTE, nullptr);
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 	});
@@ -115,45 +119,45 @@ Texture2D::Texture2D(const std::string& path, bool srgb)
 	m_Height = height;
 
 	Renderer::Submit([=]()
+	{
+		if (srgb)
 		{
-			if (srgb)
-			{
-				glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
+			glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
 
-				int levels = Texture2D::CalculateMipMapCount(m_Width, m_Height);
+			int levels = Texture2D::CalculateMipMapCount(m_Width, m_Height);
 
-				glTextureStorage2D(m_RendererID, levels, GL_SRGB8, m_Width, m_Height);
-				glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, levels > 1 ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
-				glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTextureStorage2D(m_RendererID, levels, GL_SRGB8, m_Width, m_Height);
+			glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, levels > 1 ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+			glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-				glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, GL_RGB, GL_UNSIGNED_BYTE, m_ImageData.Data);
-				glGenerateTextureMipmap(m_RendererID);
-			}
-			else
-			{
-				glGenTextures(1, &m_RendererID);
-				glBindTexture(GL_TEXTURE_2D, m_RendererID);
+			glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, GL_RGB, GL_UNSIGNED_BYTE, m_ImageData.Data);
+			glGenerateTextureMipmap(m_RendererID);
+		}
+		else
+		{
+			glGenTextures(1, &m_RendererID);
+			glBindTexture(GL_TEXTURE_2D, m_RendererID);
 
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-				GLenum internalFormat = LucidToOpenGLTextureFormat(m_Format);
+			GLenum internalFormat = SetTextureFormat(m_Format);
 
-				// HDR equates to GL_RGB for now
-				GLenum format = srgb ? GL_SRGB8 : (m_IsHDR ? GL_RGB : LucidToOpenGLTextureFormat(m_Format));
-				GLenum type = internalFormat == GL_RGBA16F ? GL_FLOAT : GL_UNSIGNED_BYTE;
+			// HDR equates to GL_RGB for now
+			GLenum format = srgb ? GL_SRGB8 : (m_IsHDR ? GL_RGB : SetTextureFormat(m_Format));
+			GLenum type = internalFormat == GL_RGBA16F ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
-				glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_Width, m_Height, 0, format, type, m_ImageData.Data);
-				glGenerateMipmap(GL_TEXTURE_2D);
+			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_Width, m_Height, 0, format, type, m_ImageData.Data);
+			glGenerateMipmap(GL_TEXTURE_2D);
 
-				glBindTexture(GL_TEXTURE_2D, 0);
-			}
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
 
-			stbi_image_free(m_ImageData.Data);
-		});
+		stbi_image_free(m_ImageData.Data);
+	});
 }
 
 Texture2D::~Texture2D()
@@ -183,7 +187,7 @@ void Texture2D::Unlock()
 
 	Renderer::Submit([this]()
 	{
-		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, LucidToOpenGLTextureFormat(m_Format), GL_UNSIGNED_BYTE, m_ImageData.Data);
+		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, SetTextureFormat(m_Format), GL_UNSIGNED_BYTE, m_ImageData.Data);
 	});
 }
 
@@ -249,7 +253,7 @@ TextureCube::TextureCube(TextureFormat format, uint32_t width, uint32_t height)
 	{
 		glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_RendererID);
 
-		glTextureStorage2D(m_RendererID, levels, LucidToOpenGLTextureFormat(m_Format), width, height);
+		glTextureStorage2D(m_RendererID, levels, SetTextureFormat(m_Format), width, height);
 
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, levels > 1 ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -348,7 +352,7 @@ TextureCube::TextureCube(const std::string& path)
 
 		glTextureParameterf(m_RendererID, GL_TEXTURE_MAX_ANISOTROPY, RenderCapabilities::GetCapabilities().MaxAnisotropy);
 
-		auto format = LucidToOpenGLTextureFormat(m_Format);
+		auto format = SetTextureFormat(m_Format);
 
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, format, faceWidth, faceHeight, 0, format, GL_UNSIGNED_BYTE, faces[2]);
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, format, faceWidth, faceHeight, 0, format, GL_UNSIGNED_BYTE, faces[0]);

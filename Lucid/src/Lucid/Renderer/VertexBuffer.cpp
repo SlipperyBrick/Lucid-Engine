@@ -1,8 +1,12 @@
+#pragma once
+
 #include "ldpch.h"
+
+#include <glad/glad.h>
 
 #include "VertexBuffer.h"
 
-#include "glad/glad.h"
+#include "Lucid/Renderer/Renderer.h"
 
 Ref<VertexBuffer> VertexBuffer::Create(void* data, uint32_t size, VertexBufferUsage usage)
 {

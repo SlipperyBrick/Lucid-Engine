@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_internal.h"
+#include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>

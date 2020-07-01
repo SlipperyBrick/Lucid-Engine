@@ -4,8 +4,8 @@
 
 #include "Lucid/Core/Timestep.h"
 #include "Lucid/Core/Events/MouseEvent.h"
-#include "Lucid/Core/Window.h"
-#include "Lucid/Core/Application.h"
+
+class Window;
 
 class Camera
 {

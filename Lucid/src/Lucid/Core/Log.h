@@ -1,3 +1,5 @@
+#pragma once
+
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/ostr.h"
 
@@ -23,3 +25,7 @@ private:
 #define LD_CORE_WARN(...)	Log::GetCoreLogger()->warn(__VA_ARGS__)
 #define LD_CORE_ERROR(...)	Log::GetCoreLogger()->error(__VA_ARGS__)
 #define LD_CORE_FATAL(...)	Log::GetCoreLogger()->critical(__VA_ARGS__)
+
+// Utility logging macros
+#define LD_LOG_UNIFORM(...) LD_CORE_WARN(__VA_ARGS__)
+#define LD_MESH_LOG(...) LD_CORE_TRACE(__VA_ARGS__)
