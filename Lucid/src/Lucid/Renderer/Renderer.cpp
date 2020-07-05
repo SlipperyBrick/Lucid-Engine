@@ -51,10 +51,8 @@ static void GLAPIENTRY OpenGLErrorLog(GLenum source, GLenum type, GLuint id, GLe
 	}
 }
 
-void Renderer::Init()
+static void InitOpenGL()
 {
-	s_Data.m_ShaderLibrary = std::make_unique<ShaderLibrary>();
-
 	#pragma region Initalize OpenGL Renderer
 
 	glDebugMessageCallback(OpenGLErrorLog, nullptr);
@@ -99,6 +97,13 @@ void Renderer::Init()
 	}
 
 	#pragma endregion
+}
+
+void Renderer::Init()
+{
+	s_Data.m_ShaderLibrary = std::make_unique<ShaderLibrary>();
+
+	Renderer::Submit([](){ InitOpenGL(); });
 
 	Renderer::GetShaderLibrary()->Load("assets/shaders/Scene.glsl");
 

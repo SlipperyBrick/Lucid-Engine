@@ -155,6 +155,7 @@ MaterialInstance::MaterialInstance(const Ref<Material>& material)
 	: m_Material(material)
 {
 	m_Material->m_MaterialInstances.insert(this);
+
 	AllocateStorage();
 }
 
@@ -166,6 +167,7 @@ MaterialInstance::~MaterialInstance()
 void MaterialInstance::OnShaderReloaded()
 {
 	AllocateStorage();
+
 	m_OverriddenValues.clear();
 }
 

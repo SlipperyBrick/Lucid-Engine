@@ -7,6 +7,8 @@
 #include "Lucid/Renderer/Shader.h"
 #include "Lucid/Renderer/Texture.h"
 
+class MaterialInstance;
+
 enum class MaterialFlag
 {
 	None = BIT(0),

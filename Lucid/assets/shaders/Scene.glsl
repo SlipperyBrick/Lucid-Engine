@@ -94,15 +94,15 @@ vec4 Lighting()
 	m_Params.Diffuse = u_DiffuseTexToggle > 0.5 ? texture(u_DiffuseTexture, vs_Input.TexCoord).rgb : u_DiffuseColour; 
 	m_Params.Specular = u_SpecularTexToggle > 0.5 ?  texture(u_SpecularTexture, vs_Input.TexCoord).r : u_Specular;
 
-	// Normals
-	m_Params.Normal = normalize(vs_Input.Normal);
-
 	if (u_NormalTexToggle > 0.5)
 	{
 		m_Params.Normal = normalize(2.0 * texture(u_NormalTexture, vs_Input.TexCoord).rgb - 1.0);
 	}
-
-	m_Params.Normal = normalize(m_Params.Normal * 2.0 - 1.0);
+	else
+	{
+		// Normals
+		m_Params.Normal = normalize(vs_Input.Normal);
+	}
 
 	vec3 ambient = 0.1 * m_Params.Diffuse;
 
@@ -125,5 +125,5 @@ vec4 Lighting()
 
 void main()
 {
-	colour = Lighting();
+	colour = vec4(Lighting());
 }
