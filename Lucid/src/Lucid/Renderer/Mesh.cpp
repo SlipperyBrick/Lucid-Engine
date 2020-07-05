@@ -83,7 +83,7 @@ Mesh::Mesh(const std::string& filename)
 	m_Scene = scene;
 
 	// REMEMBER TO CHANGE THE SHADER NAME WHEN A STATIC SHADER HAS BEEN MADE
-	m_MeshShader = Renderer::GetShaderLibrary()->Get("Flat");
+	m_MeshShader = Renderer::GetShaderLibrary()->Get("Scene");
 	m_BaseMaterial = CreateRef<Material>(m_MeshShader);
 
 	m_InverseTransform = glm::inverse(Mat4FromAssimpMat4(scene->mRootNode->mTransformation));
@@ -141,181 +141,181 @@ Mesh::Mesh(const std::string& filename)
 				vertex.Texcoord = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
 			}
 
-			m_StaticVertices.push_back(vertex);
-
-			// Indices
-			for (size_t i = 0; i < mesh->mNumFaces; i++)
-			{
-				LD_CORE_ASSERT(mesh->mFaces[i].mNumIndices == 3, "Must have 3 indices.");
-
-				Index index = { mesh->mFaces[i].mIndices[0], mesh->mFaces[i].mIndices[1], mesh->mFaces[i].mIndices[2] };
-
-				m_Indices.push_back(index);
-
-				m_TriangleCache[m].emplace_back(m_StaticVertices[index.V1 + submesh.BaseVertex], m_StaticVertices[index.V2 + submesh.BaseVertex], m_StaticVertices[index.V3 + submesh.BaseVertex]);
-			}
+			m_Vertices.push_back(vertex);
 		}
 
-		// Materials
-		if (scene->HasMaterials())
+		// Indices
+		for (size_t i = 0; i < mesh->mNumFaces; i++)
 		{
-			LD_MESH_LOG("---- Materials - {0} ----", filename);
+			LD_CORE_ASSERT(mesh->mFaces[i].mNumIndices == 3, "Must have 3 indices.");
 
-			m_Textures.resize(scene->mNumMaterials);
-			m_Materials.resize(scene->mNumMaterials);
+			Index index = { mesh->mFaces[i].mIndices[0], mesh->mFaces[i].mIndices[1], mesh->mFaces[i].mIndices[2] };
 
-			for (uint32_t i = 0; i < scene->mNumMaterials; i++)
+			m_Indices.push_back(index);
+
+			m_TriangleCache[m].emplace_back(m_Vertices[index.V1 + submesh.BaseVertex], m_Vertices[index.V2 + submesh.BaseVertex], m_Vertices[index.V3 + submesh.BaseVertex]);
+		}
+	}
+
+	TraverseNodes(scene->mRootNode);
+
+	// Materials
+	if (scene->HasMaterials())
+	{
+		LD_MESH_LOG("---- Materials - {0} ----", filename);
+
+		m_Textures.resize(scene->mNumMaterials);
+		m_Materials.resize(scene->mNumMaterials);
+
+		for (uint32_t i = 0; i < scene->mNumMaterials; i++)
+		{
+			auto aiMaterial = scene->mMaterials[i];
+			auto aiMaterialName = aiMaterial->GetName();
+
+			auto mi = CreateRef<MaterialInstance>(m_BaseMaterial);
+
+			m_Materials[i] = mi;
+
+			LD_MESH_LOG("  {0} (Index = {1})", aiMaterialName.data, i);
+
+			aiString aiTexPath;
+
+			uint32_t textureCount = aiMaterial->GetTextureCount(aiTextureType_DIFFUSE);
+
+			LD_MESH_LOG("    TextureCount = {0}", textureCount);
+
+			aiColor3D aiColor;
+			aiMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, aiColor);
+
+			float shininess;
+
+			aiMaterial->Get(AI_MATKEY_SHININESS, shininess);
+
+			float specular = 1.0f - glm::sqrt(shininess / 100.0f);
+
+			LD_MESH_LOG("    COLOR = {0}, {1}, {2}", aiColor.r, aiColor.g, aiColor.b);
+			LD_MESH_LOG("    SPECULARITY = {0}", specular);
+
+			bool hasDiffuseMap = aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexPath) == AI_SUCCESS;
+
+			if (hasDiffuseMap)
 			{
-				auto aiMaterial = scene->mMaterials[i];
-				auto aiMaterialName = aiMaterial->GetName();
+				std::filesystem::path path = filename;
 
-				auto mi = CreateRef<MaterialInstance>(m_BaseMaterial);
+				auto parentPath = path.parent_path();
+				parentPath /= std::string(aiTexPath.data);
 
-				m_Materials[i] = mi;
+				std::string texturePath = parentPath.string();
 
-				LD_MESH_LOG("  {0} (Index = {1})", aiMaterialName.data, i);
+				LD_MESH_LOG("    Diffuse map path = {0}", texturePath);
 
-				aiString aiTexPath;
+				auto texture = Texture2D::Create(texturePath, true);
 
-				uint32_t textureCount = aiMaterial->GetTextureCount(aiTextureType_DIFFUSE);
-
-				LD_MESH_LOG("    TextureCount = {0}", textureCount);
-
-				aiColor3D aiColor;
-				aiMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, aiColor);
-
-				float shininess, metalness;
-				aiMaterial->Get(AI_MATKEY_SHININESS, shininess);
-				aiMaterial->Get(AI_MATKEY_REFLECTIVITY, metalness);
-
-				// float roughness = 1.0f - shininess * 0.01f;
-				// roughness *= roughness;
-				float roughness = 1.0f - glm::sqrt(shininess / 100.0f);
-
-				LD_MESH_LOG("    COLOR = {0}, {1}, {2}", aiColor.r, aiColor.g, aiColor.b);
-				LD_MESH_LOG("    ROUGHNESS = {0}", roughness);
-
-				bool hasAlbedoMap = aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexPath) == AI_SUCCESS;
-
-				if (hasAlbedoMap)
+				if (texture->Loaded())
 				{
-					std::filesystem::path path = filename;
+					m_Textures[i] = texture;
 
-					auto parentPath = path.parent_path();
-					parentPath /= std::string(aiTexPath.data);
-					std::string texturePath = parentPath.string();
-
-					LD_MESH_LOG("    Albedo map path = {0}", texturePath);
-
-					auto texture = Texture2D::Create(texturePath, true);
-
-					if (texture->Loaded())
-					{
-						m_Textures[i] = texture;
-						mi->Set("u_AlbedoTexture", m_Textures[i]);
-						mi->Set("u_AlbedoTexToggle", 1.0f);
-					}
-					else
-					{
-						LD_CORE_ERROR("Could not load texture: {0}", texturePath);
-
-						// Fallback to albedo colour
-						mi->Set("u_AlbedoColor", glm::vec3{ aiColor.r, aiColor.g, aiColor.b });
-					}
+					mi->Set("u_DiffuseTexture", m_Textures[i]);
+					mi->Set("u_DiffuseTexToggle", 1.0f);
 				}
 				else
 				{
-					mi->Set("u_AlbedoColor", glm::vec3{ aiColor.r, aiColor.g, aiColor.b });
+					LD_CORE_ERROR("Could not load texture: {0}", texturePath);
 
-					LD_MESH_LOG("    No albedo map");
-				}
-
-				// Normal maps
-				mi->Set("u_NormalTexToggle", 0.0f);
-
-				if (aiMaterial->GetTexture(aiTextureType_NORMALS, 0, &aiTexPath) == AI_SUCCESS)
-				{
-					std::filesystem::path path = filename;
-
-					auto parentPath = path.parent_path();
-
-					parentPath /= std::string(aiTexPath.data);
-					std::string texturePath = parentPath.string();
-
-					LD_MESH_LOG("    Normal map path = {0}", texturePath);
-
-					auto texture = Texture2D::Create(texturePath);
-
-					if (texture->Loaded())
-					{
-						mi->Set("u_NormalTexture", texture);
-						mi->Set("u_NormalTexToggle", 1.0f);
-					}
-					else
-					{
-						LD_CORE_ERROR("    Could not load texture: {0}", texturePath);
-					}
-				}
-				else
-				{
-					LD_MESH_LOG("    No normal map");
-				}
-
-				// Roughness map
-				// mi->Set("u_Roughness", 1.0f);
-				// mi->Set("u_RoughnessTexToggle", 0.0f);
-				if (aiMaterial->GetTexture(aiTextureType_SHININESS, 0, &aiTexPath) == AI_SUCCESS)
-				{
-					std::filesystem::path path = filename;
-
-					auto parentPath = path.parent_path();
-
-					parentPath /= std::string(aiTexPath.data);
-					std::string texturePath = parentPath.string();
-
-					LD_MESH_LOG("    Roughness map path = {0}", texturePath);
-
-					auto texture = Texture2D::Create(texturePath);
-
-					if (texture->Loaded())
-					{
-						mi->Set("u_RoughnessTexture", texture);
-						mi->Set("u_RoughnessTexToggle", 1.0f);
-					}
-					else
-					{
-						LD_CORE_ERROR("    Could not load texture: {0}", texturePath);
-					}
-				}
-				else
-				{
-					LD_MESH_LOG("    No roughness map");
-
-					mi->Set("u_Roughness", roughness);
+					// Fallback to diffuse colour
+					mi->Set("u_DiffuseColour", glm::vec3{ aiColor.r, aiColor.g, aiColor.b });
 				}
 			}
+			else
+			{
+				mi->Set("u_DiffuseColour", glm::vec3{ aiColor.r, aiColor.g, aiColor.b });
 
-			LD_MESH_LOG("------------------------");
+				LD_MESH_LOG("    No diffuse map");
+			}
+
+			// Normal maps
+			mi->Set("u_NormalTexToggle", 0.0f);
+
+			if (aiMaterial->GetTexture(aiTextureType_HEIGHT, 0, &aiTexPath) == AI_SUCCESS)
+			{
+				std::filesystem::path path = filename;
+
+				auto parentPath = path.parent_path();
+				parentPath /= std::string(aiTexPath.data);
+
+				std::string texturePath = parentPath.string();
+
+				LD_MESH_LOG("    Normal map path = {0}", texturePath);
+
+				auto texture = Texture2D::Create(texturePath);
+
+				if (texture->Loaded())
+				{
+					mi->Set("u_NormalTexture", texture);
+					mi->Set("u_NormalTexToggle", 1.0f);
+				}
+				else
+				{
+					LD_CORE_ERROR("    Could not load texture: {0}", texturePath);
+				}
+			}
+			else
+			{
+				LD_MESH_LOG("    No normal map");
+			}
+
+			// Specular map
+			if (aiMaterial->GetTexture(aiTextureType_SPECULAR, 0, &aiTexPath) == AI_SUCCESS)
+			{
+				std::filesystem::path path = filename;
+
+				auto parentPath = path.parent_path();
+				parentPath /= std::string(aiTexPath.data);
+
+				std::string texturePath = parentPath.string();
+
+				LD_MESH_LOG("    Specular map path = {0}", texturePath);
+
+				auto texture = Texture2D::Create(texturePath);
+
+				if (texture->Loaded())
+				{
+					mi->Set("u_SpecularTexture", texture);
+					mi->Set("u_SpecularTexToggle", 1.0f);
+				}
+				else
+				{
+					LD_CORE_ERROR("    Could not load texture: {0}", texturePath);
+				}
+			}
+			else
+			{
+				LD_MESH_LOG("    No specular map");
+
+				mi->Set("u_Specular", specular);
+			}
 		}
 
-		m_VertexArray = VertexArray::Create();
+		LD_MESH_LOG("------------------------");
+	}
 
-		auto vb = VertexBuffer::Create(m_StaticVertices.data(), m_StaticVertices.size() * sizeof(Vertex));
+	m_VertexArray = VertexArray::Create();
 
-		vb->SetLayout
-		({
-			{ ShaderDataType::Float3, "a_Position" },
-			{ ShaderDataType::Float3, "a_Normal" },
-			{ ShaderDataType::Float3, "a_Tangent" },
-			{ ShaderDataType::Float3, "a_Binormal" },
-			{ ShaderDataType::Float2, "a_TexCoord" },
+	auto vb = VertexBuffer::Create(m_Vertices.data(), m_Vertices.size() * sizeof(Vertex));
+
+	vb->SetLayout
+	({
+		{ ShaderDataType::Float3, "a_Position" },
+		{ ShaderDataType::Float3, "a_Normal" },
+		{ ShaderDataType::Float3, "a_Tangent" },
+		{ ShaderDataType::Float3, "a_Binormal" },
+		{ ShaderDataType::Float2, "a_TexCoord" },
 		});
 
-		m_VertexArray->AddVertexBuffer(vb);
+	m_VertexArray->AddVertexBuffer(vb);
 
-		auto ib = IndexBuffer::Create(m_Indices.data(), m_Indices.size() * sizeof(Index));
-		m_VertexArray->SetIndexBuffer(ib);
-	}
+	auto ib = IndexBuffer::Create(m_Indices.data(), m_Indices.size() * sizeof(Index));
+	m_VertexArray->SetIndexBuffer(ib);
 }
 
 Mesh::~Mesh()
@@ -334,15 +334,35 @@ static std::string LevelToSpaces(uint32_t level)
 	return result;
 }
 
+void Mesh::TraverseNodes(aiNode* node, const glm::mat4& parentTransform, uint32_t level)
+{
+	glm::mat4 transform = parentTransform * Mat4FromAssimpMat4(node->mTransformation);
+
+	for (uint32_t i = 0; i < node->mNumMeshes; i++)
+	{
+		uint32_t mesh = node->mMeshes[i];
+		auto& submesh = m_Submeshes[mesh];
+		submesh.NodeName = node->mName.C_Str();
+		submesh.Transform = transform;
+	}
+
+	LD_MESH_LOG("{0} {1}", LevelToSpaces(level), node->mName.C_Str());
+
+	for (uint32_t i = 0; i < node->mNumChildren; i++)
+	{
+		TraverseNodes(node->mChildren[i], transform, level + 1);
+	}
+}
+
 void Mesh::DumpVertexBuffer()
 {
 	LD_MESH_LOG("------------------------------------------------------");
 	LD_MESH_LOG("Vertex Buffer Dump");
 	LD_MESH_LOG("Mesh: {0}", m_FilePath);
 
-	for (size_t i = 0; i < m_StaticVertices.size(); i++)
+	for (size_t i = 0; i < m_Vertices.size(); i++)
 	{
-		auto& vertex = m_StaticVertices[i];
+		auto& vertex = m_Vertices[i];
 
 		LD_MESH_LOG("Vertex: {0}", i);
 		LD_MESH_LOG("Position: {0}, {1}, {2}", vertex.Position.x, vertex.Position.y, vertex.Position.z);

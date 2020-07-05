@@ -4,13 +4,9 @@
 
 #include <glad/glad.h>
 
-#include <glm/glm.hpp>
-
 #include "Renderer.h"
 
-#include "Lucid/Renderer/VertexArray.h"
 #include "Lucid/Renderer/SceneRenderer.h"
-#include "Lucid/Renderer/Framebuffer.h"
 #include "Lucid/Renderer/Renderer2D.h"
 
 struct RendererData
@@ -79,7 +75,7 @@ void Renderer::Init()
 
 	glEnable(GL_MULTISAMPLE);
 
-	auto& caps = RenderCapabilities::GetCapabilities();
+	auto& caps = RendererCapabilities::GetCapabilities();
 
 	caps.Vendor = (const char*)glGetString(GL_VENDOR);
 	caps.Renderer = (const char*)glGetString(GL_RENDERER);
@@ -105,9 +101,9 @@ void Renderer::Init()
 
 	#pragma endregion
 
-	Renderer::GetShaderLibrary()->Load("assets/shaders/Flat.glsl");
+	Renderer::GetShaderLibrary()->Load("assets/shaders/Scene.glsl");
 
-	//SceneRenderer::Init();
+	SceneRenderer::Init();
 
 	#pragma region Create Fullscreen Quad
 
@@ -255,11 +251,11 @@ void Renderer::BeginRenderPass(const Ref<RenderPass>& renderPass, bool clear)
 
 	if (clear)
 	{
-		const glm::vec4& clearColor = renderPass->GetSpecification().TargetFramebuffer->GetSpecification().ClearColor;
+		const glm::vec4& clearColour = renderPass->GetSpecification().TargetFramebuffer->GetSpecification().ClearColour;
 
 		Renderer::Submit([=]()
 		{
-			Renderer::Clear(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+			Renderer::Clear(clearColour.r, clearColour.g, clearColour.b, clearColour.a);
 		});
 	}
 }
@@ -270,4 +266,112 @@ void Renderer::EndRenderPass()
 
 	s_Data.m_ActiveRenderPass->GetSpecification().TargetFramebuffer->Unbind();
 	s_Data.m_ActiveRenderPass = nullptr;
+}
+
+void Renderer::SubmitQuad(const Ref<MaterialInstance>& material, const glm::mat4& transform)
+{
+	bool depthTest = true;
+
+	if (material)
+	{
+		material->Bind();
+		depthTest = material->GetFlag(MaterialFlag::DepthTest);
+
+		auto shader = material->GetShader();
+		shader->SetMat4("u_Transform", transform);
+	}
+
+	s_Data.m_FullscreenQuadVertexArray->Bind();
+	Renderer::DrawIndexed(6, PrimitiveType::Triangles, depthTest);
+}
+
+void Renderer::SubmitFullscreenQuad(const Ref<MaterialInstance>& material)
+{
+	bool depthTest = true;
+
+	if (material)
+	{
+		material->Bind();
+		depthTest = material->GetFlag(MaterialFlag::DepthTest);
+	}
+
+	s_Data.m_FullscreenQuadVertexArray->Bind();
+	Renderer::DrawIndexed(6, PrimitiveType::Triangles, depthTest);
+}
+
+void Renderer::SubmitMesh(const Ref<Mesh>& mesh, const glm::mat4& transform, const Ref<MaterialInstance>& overrideMaterial)
+{
+	mesh->m_VertexArray->Bind();
+
+	// COME BACK TO THIS (https://www.youtube.com/watch?v=fbYknr-HPYE)
+	const auto& materials = mesh->GetMaterials();
+
+	for (Submesh& submesh : mesh->m_Submeshes)
+	{
+		// Material
+		auto material = materials[submesh.MaterialIndex];
+		auto shader = material->GetShader();
+		material->Bind();
+
+		shader->SetMat4("u_Transform", transform * submesh.Transform);
+
+		Renderer::Submit([submesh, material]()
+		{
+			if (material->GetFlag(MaterialFlag::DepthTest))
+			{
+				glEnable(GL_DEPTH_TEST);
+			}
+			else
+			{
+				glDisable(GL_DEPTH_TEST);
+			}
+
+			glDrawElementsBaseVertex(GL_TRIANGLES, submesh.IndexCount, GL_UNSIGNED_INT, (void*)(sizeof(uint32_t) * submesh.BaseIndex), submesh.BaseVertex);
+		});
+	}
+}
+
+void Renderer::DrawAABB(const AABB& aabb, const glm::mat4& transform, const glm::vec4& colour)
+{
+	glm::vec4 min = { aabb.Min.x, aabb.Min.y, aabb.Min.z, 1.0f };
+	glm::vec4 max = { aabb.Max.x, aabb.Max.y, aabb.Max.z, 1.0f };
+
+	glm::vec4 corners[8] =
+	{
+		transform * glm::vec4 { aabb.Min.x, aabb.Min.y, aabb.Max.z, 1.0f },
+		transform * glm::vec4 { aabb.Min.x, aabb.Max.y, aabb.Max.z, 1.0f },
+		transform * glm::vec4 { aabb.Max.x, aabb.Max.y, aabb.Max.z, 1.0f },
+		transform * glm::vec4 { aabb.Max.x, aabb.Min.y, aabb.Max.z, 1.0f },
+
+		transform * glm::vec4 { aabb.Min.x, aabb.Min.y, aabb.Min.z, 1.0f },
+		transform * glm::vec4 { aabb.Min.x, aabb.Max.y, aabb.Min.z, 1.0f },
+		transform * glm::vec4 { aabb.Max.x, aabb.Max.y, aabb.Min.z, 1.0f },
+		transform * glm::vec4 { aabb.Max.x, aabb.Min.y, aabb.Min.z, 1.0f }
+	};
+
+	for (uint32_t i = 0; i < 4; i++)
+	{
+		Renderer2D::DrawLine(corners[i], corners[(i + 1) % 4], colour);
+	}
+
+	for (uint32_t i = 0; i < 4; i++)
+	{
+		Renderer2D::DrawLine(corners[i + 4], corners[((i + 1) % 4) + 4], colour);
+	}
+
+	for (uint32_t i = 0; i < 4; i++)
+	{
+		Renderer2D::DrawLine(corners[i], corners[i + 4], colour);
+	}
+}
+
+void Renderer::DrawAABB(const Ref<Mesh>& mesh, const glm::mat4& transform, const glm::vec4& colour)
+{
+	for (Submesh& submesh : mesh->m_Submeshes)
+	{
+		auto& aabb = submesh.BoundingBox;
+		auto aabbTransform = transform * submesh.Transform;
+
+		DrawAABB(aabb, aabbTransform);
+	}
 }

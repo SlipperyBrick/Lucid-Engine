@@ -1,10 +1,8 @@
 #pragma once
 
 #include "Lucid/Renderer/RenderPass.h"
-#include "Lucid/Renderer/Texture.h"
 
 #include "Lucid/Scene/Scene.h"
-#include "Lucid/Scene/Entity.h"
 
 struct SceneRendererOptions
 {
@@ -26,12 +24,10 @@ public:
 
 	static void SubmitEntity(Entity* entity);
 
-	static std::pair<Ref<TextureCube>, Ref<TextureCube>> CreateEnvironmentMap(const std::string& filepath);
-
 	static Ref<RenderPass> GetFinalRenderPass();
-	static Ref<Texture2D> GetFinalColorBuffer();
+	static Ref<Texture2D> GetFinalColourBuffer();
 
-	static uint32_t GetFinalColorBufferRendererID();
+	static uint32_t GetFinalColourBufferRendererID();
 
 	static SceneRendererOptions& GetOptions();
 

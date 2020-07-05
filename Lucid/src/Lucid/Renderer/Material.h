@@ -34,7 +34,7 @@ public:
 	{
 		auto decl = FindUniformDeclaration(name);
 
-		LD_CORE_ASSERT(decl, "Could not find uniform with name 'x'");
+		LD_CORE_ASSERT("Could not find uniform with name '{0}'", name);
 
 		auto& buffer = GetUniformBufferTarget(decl);
 		buffer.Write((byte*)&value, decl->GetSize(), decl->GetOffset());
@@ -82,6 +82,7 @@ private:
 
 	Ref<Shader> m_Shader;
 
+	// We get an "identifier 'MaterialInstance' is undefined" error here, find out why!!!!
 	std::unordered_set<MaterialInstance*> m_MaterialInstances;
 
 	Memory m_VSUniformStorageBuffer;

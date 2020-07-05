@@ -4,6 +4,11 @@
 
 #include <imgui/imgui.h>
 
+#include <glfw/glfw3.h>
+
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <glfw/glfw3native.h>
+
 #include "Application.h"
 
 #include "Lucid/Renderer/Renderer.h"
@@ -64,12 +69,50 @@ void Application::RenderImGui()
 {
 	m_ImGuiLayer->Begin();
 
+	ImGui::Begin("Renderer");
+
+	auto& caps = RendererCapabilities::GetCapabilities();
+
+	ImGui::Text("Vendor: %s", caps.Vendor.c_str());
+	ImGui::Text("Renderer: %s", caps.Renderer.c_str());
+	ImGui::Text("Version: %s", caps.Version.c_str());
+	ImGui::Text("Frame Time: %.2fms\n", m_TimeStep.GetMilliseconds());
+
+	ImGui::End();
+
 	for (Layer* layer : m_LayerStack)
 	{
 		layer->OnImGuiRender();
 	}
 
 	m_ImGuiLayer->End();
+}
+
+std::string Application::OpenFile(const std::string& filter) const
+{
+	// Common dialog box structure
+	OPENFILENAMEA ofn;
+	CHAR szFile[260] = { 0 };
+
+	// Initialize OPENFILENAME
+	ZeroMemory(&ofn, sizeof(OPENFILENAME));
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)m_Window.get()->GetWindowPointer());
+	ofn.lpstrFile = szFile;
+	ofn.nMaxFile = sizeof(szFile);
+	ofn.lpstrFilter = "All\0*.*\0";
+	ofn.nFilterIndex = 1;
+	ofn.lpstrFileTitle = NULL;
+	ofn.nMaxFileTitle = 0;
+	ofn.lpstrInitialDir = NULL;
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+	if (GetOpenFileNameA(&ofn) == TRUE)
+	{
+		return ofn.lpstrFile;
+	}
+
+	return std::string();
 }
 
 // Initalizes application specific components such as user-interface

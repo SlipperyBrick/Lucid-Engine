@@ -2,8 +2,7 @@
 
 #include "Lucid/Core/Base.h"
 
-// Forward declaration for Framebuffer
-class Framebuffer;
+#include "Lucid/Renderer/Framebuffer.h"
 
 struct RenderPassSpecification
 {

@@ -44,7 +44,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>ldpch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(ProjectDir)vendor\imgui;$(SolutionDir)Dependencies\spdlog\includes;$(SolutionDir)Dependencies\stb_image\includes;$(SolutionDir)Dependencies\glm\includes;$(SolutionDir)Dependencies\glfw\includes;$(SolutionDir)Dependencies\glad\includes;$(SolutionDir)Dependencies\assimp\includes;$(ProjectDir)src;$(ProjectDir)vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>6308;6262;6386;6001;26451;26450;4244;4996;26812;28182;26444;26495;26498;6255;6385;6011;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4018;6308;6262;6386;6001;26451;26450;4244;4996;26812;28182;26444;26495;26498;6255;6385;6011;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -90,6 +90,7 @@
     <ClCompile Include="src\Lucid\Renderer\VertexBuffer.cpp" />
     <ClCompile Include="src\Lucid\Scene\Entity.cpp" />
     <ClCompile Include="src\Lucid\Scene\Scene.cpp" />
+    <ClCompile Include="src\Lucid\Scene\SceneHierarchy.cpp" />
     <ClCompile Include="vendor\glad\glad.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -152,6 +153,7 @@
     <ClInclude Include="src\Lucid\Renderer\VertexBuffer.h" />
     <ClInclude Include="src\Lucid\Scene\Entity.h" />
     <ClInclude Include="src\Lucid\Scene\Scene.h" />
+    <ClInclude Include="src\Lucid\Scene\SceneHierarchy.h" />
     <ClInclude Include="vendor\imgui\imconfig.h" />
     <ClInclude Include="vendor\imgui\imgui.h" />
     <ClInclude Include="vendor\imgui\imgui_impl_glfw.h" />
@@ -162,11 +164,11 @@
     <ClInclude Include="vendor\imgui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shaders\Flat.glsl" />
+    <None Include="assets\shaders\Composite.glsl" />
+    <None Include="assets\shaders\Scene.glsl" />
     <None Include="assets\shaders\Grid.glsl" />
     <None Include="assets\shaders\Line.glsl" />
     <None Include="assets\shaders\Quad.glsl" />
-    <None Include="assets\shaders\Skybox.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

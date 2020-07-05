@@ -70,6 +70,7 @@ class Mesh
 {
 
 public:
+
 	Mesh(const std::string& filename);
 	~Mesh();
 
@@ -89,6 +90,9 @@ public:
 
 	const std::vector<Triangle> GetTriangleCache(uint32_t index) const { return m_TriangleCache.at(index); }
 
+private:
+
+	void TraverseNodes(aiNode* node, const glm::mat4& parentTransform = glm::mat4(1.0f), uint32_t level = 0);
 
 private:
 
@@ -100,7 +104,7 @@ private:
 
 	Ref<VertexArray> m_VertexArray;
 
-	std::vector<Vertex> m_StaticVertices;
+	std::vector<Vertex> m_Vertices;
 	std::vector<Index> m_Indices;
 
 	const aiScene* m_Scene;
@@ -117,5 +121,5 @@ private:
 	std::string m_FilePath;
 
 	friend class Renderer;
-	friend class SceneHierarchyPanel;
+	friend class SceneHierarchy;
 };

@@ -68,7 +68,7 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 		if (m_RendererID)
 		{
 			glDeleteFramebuffers(1, &m_RendererID);
-			glDeleteTextures(1, &m_ColorAttachment);
+			glDeleteTextures(1, &m_ColourAttachment);
 			glDeleteTextures(1, &m_DepthAttachment);
 		}
 
@@ -79,8 +79,8 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 
 		if (multisample)
 		{
-			glCreateTextures(GL_TEXTURE_2D_MULTISAMPLE, 1, &m_ColorAttachment);
-			glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_ColorAttachment);
+			glCreateTextures(GL_TEXTURE_2D_MULTISAMPLE, 1, &m_ColourAttachment);
+			glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_ColourAttachment);
 
 			// TODO: Create Hazel texture object based on format here
 			if (m_Specification.Format == FramebufferFormat::RGBA16F)
@@ -96,8 +96,8 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 		}
 		else
 		{
-			glCreateTextures(GL_TEXTURE_2D, 1, &m_ColorAttachment);
-			glBindTexture(GL_TEXTURE_2D, m_ColorAttachment);
+			glCreateTextures(GL_TEXTURE_2D, 1, &m_ColourAttachment);
+			glBindTexture(GL_TEXTURE_2D, m_ColourAttachment);
 
 			// TODO: Create Hazel texture object based on format here
 			if (m_Specification.Format == FramebufferFormat::RGBA16F)
@@ -112,7 +112,7 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColorAttachment, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColourAttachment, 0);
 		}
 
 		if (multisample)
@@ -136,11 +136,11 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 
 		if (multisample)
 		{
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_ColorAttachment, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_ColourAttachment, 0);
 		}
 		else
 		{
-			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_ColorAttachment, 0);
+			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_ColourAttachment, 0);
 		}
 
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, m_DepthAttachment, 0);
@@ -172,6 +172,6 @@ void Framebuffer::BindTexture(uint32_t slot) const
 {
 	Renderer::Submit([=]()
 	{
-		glBindTextureUnit(slot, m_ColorAttachment);
+		glBindTextureUnit(slot, m_ColourAttachment);
 	});
 }

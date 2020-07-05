@@ -16,7 +16,7 @@
 #define M_PI 3.14159f
 
 Camera::Camera(const glm::mat4& projectionMatrix)
-	: m_ProjectionMatrix(projectionMatrix), m_Window(Application::Get().GetWindow())
+	: m_ProjectionMatrix(projectionMatrix)
 {
 	m_Rotation = glm::vec3(90.0f, 0.0f, 0.0f);
 	m_FocalPoint = glm::vec3(0.0f);
@@ -77,24 +77,26 @@ float Camera::ZoomSpeed() const
 
 void Camera::OnUpdate(Timestep ts)
 {
-	if (m_Window.IsKeyPressed(GLFW_KEY_LEFT_ALT))
+	Window& window = Application::Get().GetWindow();
+
+	if (window.IsKeyPressed(GLFW_KEY_LEFT_ALT))
 	{
-		const glm::vec2& mouse{ m_Window.GetMouseX(), m_Window.GetMouseY() };
+		const glm::vec2& mouse{ window.GetMouseX(), window.GetMouseY() };
 
 		glm::vec2 delta = mouse - m_InitialMousePosition;
 		m_InitialMousePosition = mouse;
 
 		delta *= ts.GetSeconds();
 
-		if (m_Window.IsMouseButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE))
+		if (window.IsMouseButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE))
 		{
 			MousePan(delta);
 		}
-		else if (m_Window.IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
+		else if (window.IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
 		{
 			MouseRotate(delta);
 		}
-		else if (m_Window.IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
+		else if (window.IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
 		{
 			MouseZoom(delta.y);
 		}

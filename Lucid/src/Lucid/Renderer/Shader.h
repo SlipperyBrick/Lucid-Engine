@@ -135,6 +135,8 @@ public:
 
 	const ShaderResourceList& GetResources() const { return m_Resources; }
 
+	static std::vector<Ref<Shader>> s_AllShaders;
+
 private:
 
 	void Load(const std::string& source);
@@ -181,8 +183,6 @@ private:
 	void UploadUniformFloat4(const std::string& name, const glm::vec4& value);
 
 	void UploadUniformMat4(const std::string& name, const glm::mat4& value);
-
-	static std::vector<Ref<Shader>> s_AllShaders;
 
 private:
 

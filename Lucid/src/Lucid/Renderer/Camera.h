@@ -5,8 +5,6 @@
 #include "Lucid/Core/Timestep.h"
 #include "Lucid/Core/Events/MouseEvent.h"
 
-class Window;
-
 class Camera
 {
 
@@ -53,8 +51,6 @@ private:
 	float ZoomSpeed() const;
 
 private:
-
-	Window& m_Window;
 
 	glm::mat4 m_ProjectionMatrix;
 	glm::mat4 m_ViewMatrix;

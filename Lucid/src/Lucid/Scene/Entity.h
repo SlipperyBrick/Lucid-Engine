@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include "Lucid/Renderer/Mesh.h"
 
 class Entity

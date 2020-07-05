@@ -129,6 +129,9 @@
     <ClCompile Include="src\Lucid\Renderer\Renderer2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Lucid\Scene\SceneHierarchy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ldpch.h">
@@ -263,12 +266,15 @@
     <ClInclude Include="src\Lucid\Renderer\Renderer2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Lucid\Scene\SceneHierarchy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shaders\Flat.glsl" />
     <None Include="assets\shaders\Grid.glsl" />
-    <None Include="assets\shaders\Skybox.glsl" />
     <None Include="assets\shaders\Line.glsl" />
     <None Include="assets\shaders\Quad.glsl" />
+    <None Include="assets\shaders\Composite.glsl" />
+    <None Include="assets\shaders\Scene.glsl" />
   </ItemGroup>
 </Project>

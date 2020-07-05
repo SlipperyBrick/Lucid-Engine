@@ -87,7 +87,7 @@ void Renderer2D::Init()
 	s_Data.QuadVertexBuffer->SetLayout
 	({
 		{ ShaderDataType::Float3, "a_Position" },
-		{ ShaderDataType::Float4, "a_Color" },
+		{ ShaderDataType::Float4, "a_Colour" },
 		{ ShaderDataType::Float2, "a_TexCoord" },
 		{ ShaderDataType::Float, "a_TexIndex" },
 		{ ShaderDataType::Float, "a_TilingFactor" }
@@ -146,7 +146,7 @@ void Renderer2D::Init()
 	s_Data.LineVertexBuffer->SetLayout
 	({
 		{ ShaderDataType::Float3, "a_Position" },
-		{ ShaderDataType::Float4, "a_Color" }
+		{ ShaderDataType::Float4, "a_Colour" }
 	});
 
 	s_Data.LineVertexArray->AddVertexBuffer(s_Data.LineVertexBuffer);
@@ -448,6 +448,7 @@ void Renderer2D::DrawRotatedQuad(const glm::vec3& position, const glm::vec2& siz
 		if (*s_Data.TextureSlots[i].get() == *texture.get())
 		{
 			textureIndex = (float)i;
+
 			break;
 		}
 	}

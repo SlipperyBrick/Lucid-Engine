@@ -465,6 +465,12 @@ void Shader::ParseUniformStruct(const std::string& block, ShaderDomain domain)
 
 	std::string name = tokens[index++];
 
+	// Strip the semi-colon from the name (if present)
+	if (const char* s = strstr(name.c_str(), "\r"))
+	{
+		name = std::string(name.c_str(), s - name.c_str());
+	}
+
 	ShaderStruct* uniformStruct = new ShaderStruct(name);
 
 	// The opening curly brace
@@ -475,6 +481,11 @@ void Shader::ParseUniformStruct(const std::string& block, ShaderDomain domain)
 		if (tokens[index] == "}")
 		{
 			break;
+		}
+
+		if (tokens[index] == "\r" || tokens[index] == "\n")
+		{
+			index++;
 		}
 
 		std::string type = tokens[index++];

@@ -14,7 +14,7 @@ struct FramebufferSpecification
 	uint32_t Width = 1280;
 	uint32_t Height = 720;
 
-	glm::vec4 ClearColor;
+	glm::vec4 ClearColour;
 
 	FramebufferFormat Format;
 
@@ -40,7 +40,7 @@ public:
 	void BindTexture(uint32_t slot = 0) const;
 
 	RendererID GetRendererID() const { return m_RendererID; }
-	RendererID GetColorAttachmentRendererID() const { return m_ColorAttachment; }
+	RendererID GetColourAttachmentRendererID() const { return m_ColourAttachment; }
 	RendererID GetDepthAttachmentRendererID() const { return m_DepthAttachment; }
 
 	const FramebufferSpecification& GetSpecification() const { return m_Specification; }
@@ -52,7 +52,7 @@ private:
 	FramebufferSpecification m_Specification;
 
 	RendererID m_RendererID = 0;
-	RendererID m_ColorAttachment = 0;
+	RendererID m_ColourAttachment = 0;
 	RendererID m_DepthAttachment = 0;
 };
 

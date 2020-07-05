@@ -1,8 +1,13 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include "Lucid/Renderer/RenderCommandQueue.h"
 #include "Lucid/Renderer/RenderPass.h"
 #include "Lucid/Renderer/ShaderLibrary.h"
+#include "Lucid/Renderer/Mesh.h"
+
+#include "Lucid/Core/Math/AABB.h"
 
 enum class PrimitiveType
 {
@@ -11,7 +16,7 @@ enum class PrimitiveType
 	Lines
 };
 
-struct RenderCapabilities
+struct RendererCapabilities
 {
 	std::string Vendor;
 	std::string Renderer;
@@ -21,9 +26,9 @@ struct RenderCapabilities
 	float MaxAnisotropy = 0.0f;
 	int MaxTextureUnits = 0;
 
-	static RenderCapabilities& GetCapabilities()
+	static RendererCapabilities& GetCapabilities()
 	{
-		static RenderCapabilities capabilities;
+		static RendererCapabilities capabilities;
 
 		return capabilities;
 	}
@@ -68,6 +73,13 @@ public:
 
 	static void BeginRenderPass(const Ref<RenderPass>& renderPass, bool clear = true);
 	static void EndRenderPass();
+
+	static void SubmitQuad(const Ref<MaterialInstance>& material, const glm::mat4& transform = glm::mat4(1.0f));
+	static void SubmitFullscreenQuad(const Ref<MaterialInstance>& material);
+	static void SubmitMesh(const Ref<Mesh>& mesh, const glm::mat4& transform, const Ref<MaterialInstance>& overrideMaterial = nullptr);
+
+	static void DrawAABB(const AABB& aabb, const glm::mat4& transform, const glm::vec4& colour = glm::vec4(1.0f));
+	static void DrawAABB(const Ref<Mesh>& mesh, const glm::mat4& transform, const glm::vec4& colour = glm::vec4(1.0f));
 
 private:
 

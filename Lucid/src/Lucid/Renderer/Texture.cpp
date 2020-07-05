@@ -70,7 +70,7 @@ Texture2D::Texture2D(TextureFormat format, uint32_t width, uint32_t height, Text
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
-		glTextureParameterf(m_RendererID, GL_TEXTURE_MAX_ANISOTROPY, RenderCapabilities::GetCapabilities().MaxAnisotropy);
+		glTextureParameterf(m_RendererID, GL_TEXTURE_MAX_ANISOTROPY, RendererCapabilities::GetCapabilities().MaxAnisotropy);
 
 		glTexImage2D(GL_TEXTURE_2D, 0, SetTextureFormat(m_Format), m_Width, m_Height, 0, SetTextureFormat(m_Format), GL_UNSIGNED_BYTE, nullptr);
 
@@ -350,7 +350,7 @@ TextureCube::TextureCube(const std::string& path)
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-		glTextureParameterf(m_RendererID, GL_TEXTURE_MAX_ANISOTROPY, RenderCapabilities::GetCapabilities().MaxAnisotropy);
+		glTextureParameterf(m_RendererID, GL_TEXTURE_MAX_ANISOTROPY, RendererCapabilities::GetCapabilities().MaxAnisotropy);
 
 		auto format = SetTextureFormat(m_Format);
 

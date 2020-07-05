@@ -12,6 +12,7 @@ out vec2 v_TexCoord;
 void main()
 {
 	vec4 position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
+
 	gl_Position = position;
 
 	v_TexCoord = a_TexCoord;
@@ -20,16 +21,17 @@ void main()
 #type fragment
 #version 430
 
-layout(location = 0) out vec4 color;
+layout(location = 0) out vec4 colour;
 
 uniform float u_Scale;
 uniform float u_Res;
 
 in vec2 v_TexCoord;
 
-float grid(vec2 st, float res)
+float Grid(vec2 st, float res)
 {
 	vec2 grid = fract(st);
+
 	return step(res, grid.x) * step(res, grid.y);
 }
 
@@ -38,6 +40,7 @@ void main()
 	float scale = u_Scale;
 	float resolution = u_Res;
 
-	float x = grid(v_TexCoord * scale, resolution);
-	color = vec4(vec3(0.2), 0.5) * (1.0 - x);
+	float x = Grid(v_TexCoord * scale, resolution);
+
+	colour = vec4(vec3(0.2), 0.5) * (1.0 - x);
 }

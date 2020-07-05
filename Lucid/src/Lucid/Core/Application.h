@@ -38,6 +38,8 @@ public:
 	void PushOverlay(Layer* layer);
 	void RenderImGui();
 
+	std::string OpenFile(const std::string& filter) const;
+
 	// Get the applications window
 	inline Window& GetWindow() { return *m_Window; }
 
