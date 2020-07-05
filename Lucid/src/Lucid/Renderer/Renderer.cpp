@@ -161,35 +161,23 @@ void Renderer::Init()
 
 void Renderer::Clear()
 {
-	Renderer::Submit([]()
-	{
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	});
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void Renderer::Clear(float r, float g, float b, float a)
 {
-	Renderer::Submit([=]()
-	{
-		glClearColor(r, g, b, a);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	});
+	glClearColor(r, g, b, a);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::SetClearColour(float r, float g, float b, float a)
 {
-	Renderer::Submit([=]()
-	{
-		glClearColor(r, g, b, a);
-	});
+	glClearColor(r, g, b, a);
 }
 
 void Renderer::SetLineThickness(float thickness)
 {
-	Renderer::Submit([=]()
-	{
-		glLineWidth(thickness);
-	});
+	glLineWidth(thickness);
 }
 
 void Renderer::DrawIndexed(uint32_t count, PrimitiveType type, bool depthTest)
@@ -307,7 +295,6 @@ void Renderer::SubmitMesh(const Ref<Mesh>& mesh, const glm::mat4& transform, con
 {
 	mesh->m_VertexArray->Bind();
 
-	// COME BACK TO THIS (https://www.youtube.com/watch?v=fbYknr-HPYE)
 	const auto& materials = mesh->GetMaterials();
 
 	for (Submesh& submesh : mesh->m_Submeshes)

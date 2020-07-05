@@ -4,7 +4,7 @@
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec3 a_Normal;
 layout(location = 2) in vec3 a_Tangent;
-layout(location = 3) in vec3 a_Binormal;
+layout(location = 3) in vec3 a_Bitangent;
 layout(location = 4) in vec2 a_TexCoord;
 
 struct Light
@@ -39,7 +39,7 @@ void main()
     mat3 normalMatrix = transpose(inverse(mat3(u_Transform)));
 
 	vec3 T = normalize(normalMatrix * a_Tangent);
-	vec3 B = normalize(normalMatrix * a_Binormal);
+	vec3 B = normalize(normalMatrix * a_Bitangent);
 	vec3 N = normalize(normalMatrix * a_Normal);
 
 	mat3 TBN = transpose(mat3(T, B, N));
@@ -125,5 +125,7 @@ vec4 Lighting()
 
 void main()
 {
-	colour = vec4(Lighting());
+	vec4 result = Lighting();
+	
+	colour = result;
 }

@@ -26,7 +26,7 @@ struct SceneRendererData
 
 	Ref<Shader> CompositeShader;
 
-	Ref<RenderPass> GeoPass;
+	Ref<RenderPass> GeometryPass;
 	Ref<RenderPass> CompositePass;
 
 	struct DrawCommand
@@ -56,7 +56,7 @@ void SceneRenderer::Init()
 
 	RenderPassSpecification geoRenderPassSpec;
 	geoRenderPassSpec.TargetFramebuffer = Framebuffer::Create(geoFramebufferSpec);
-	s_Data.GeoPass = RenderPass::Create(geoRenderPassSpec);
+	s_Data.GeometryPass = RenderPass::Create(geoRenderPassSpec);
 
 	FramebufferSpecification compFramebufferSpec;
 	compFramebufferSpec.Width = 1280;
@@ -84,7 +84,7 @@ void SceneRenderer::Init()
 
 void SceneRenderer::SetViewportSize(uint32_t width, uint32_t height)
 {
-	s_Data.GeoPass->GetSpecification().TargetFramebuffer->Resize(width, height);
+	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->Resize(width, height);
 	s_Data.CompositePass->GetSpecification().TargetFramebuffer->Resize(width, height);
 }
 
@@ -123,7 +123,7 @@ void SceneRenderer::SubmitEntity(Entity* entity)
 
 void SceneRenderer::GeometryPass()
 {
-	Renderer::BeginRenderPass(s_Data.GeoPass);
+	Renderer::BeginRenderPass(s_Data.GeometryPass);
 
 	auto viewProjection = s_Data.SceneData.SceneCamera.GetViewProjection();
 
@@ -169,8 +169,8 @@ void SceneRenderer::CompositePass()
 	Renderer::BeginRenderPass(s_Data.CompositePass);
 
 	s_Data.CompositeShader->Bind();
-	s_Data.CompositeShader->SetInt("u_TextureSamples", s_Data.GeoPass->GetSpecification().TargetFramebuffer->GetSpecification().Samples);
-	s_Data.GeoPass->GetSpecification().TargetFramebuffer->BindTexture();
+	s_Data.CompositeShader->SetInt("u_TextureSamples", s_Data.GeometryPass->GetSpecification().TargetFramebuffer->GetSpecification().Samples);
+	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindTexture();
 
 	Renderer::SubmitFullscreenQuad(nullptr);
 

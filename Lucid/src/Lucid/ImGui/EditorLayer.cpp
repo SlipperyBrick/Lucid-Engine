@@ -436,7 +436,7 @@ void EditorLayer::OnImGuiRender()
 
 	#pragma region Viewport
 
-	ImGui::Begin("Viewport");
+	ImGui::Begin("Viewport"), ImGuiWindowFlags_NoTitleBar;
 
 	// Offset includes the tab-bar
 	auto viewportOffset = ImGui::GetCursorPos();

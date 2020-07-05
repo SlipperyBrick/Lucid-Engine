@@ -165,10 +165,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\Composite.glsl" />
-    <None Include="assets\shaders\Scene.glsl" />
     <None Include="assets\shaders\Grid.glsl" />
     <None Include="assets\shaders\Line.glsl" />
     <None Include="assets\shaders\Quad.glsl" />
+    <None Include="assets\shaders\Scene.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

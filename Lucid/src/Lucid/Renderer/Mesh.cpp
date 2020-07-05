@@ -308,7 +308,7 @@ Mesh::Mesh(const std::string& filename)
 		{ ShaderDataType::Float3, "a_Position" },
 		{ ShaderDataType::Float3, "a_Normal" },
 		{ ShaderDataType::Float3, "a_Tangent" },
-		{ ShaderDataType::Float3, "a_Binormal" },
+		{ ShaderDataType::Float3, "a_Bitangent" },
 		{ ShaderDataType::Float2, "a_TexCoord" },
 		});
 
