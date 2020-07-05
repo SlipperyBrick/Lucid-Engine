@@ -15,6 +15,7 @@ struct QuadVertex
 	glm::vec3 Position;
 	glm::vec4 Color;
 	glm::vec2 TexCoord;
+
 	float TexIndex;
 	float TilingFactor;
 };
@@ -132,8 +133,8 @@ void Renderer2D::Init()
 	s_Data.TextureSlots[0] = s_Data.WhiteTexture;
 
 	s_Data.QuadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
-	s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
-	s_Data.QuadVertexPositions[2] = { 0.5f,  0.5f, 0.0f, 1.0f };
+	s_Data.QuadVertexPositions[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
+	s_Data.QuadVertexPositions[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
 	s_Data.QuadVertexPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
 
 	#pragma region Lines
@@ -227,19 +228,6 @@ void Renderer2D::EndScene()
 
 		s_Data.Stats.DrawCalls++;
 	}
-}
-
-void Renderer2D::Flush()
-{
-#if OLD
-	// Bind textures
-	for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
-		s_Data.TextureSlots[i]->Bind(i);
-
-	s_Data.QuadVertexArray->Bind();
-	Renderer::DrawIndexed(s_Data.QuadIndexCount, false);
-	s_Data.Stats.DrawCalls++;
-#endif
 }
 
 void Renderer2D::FlushAndReset()

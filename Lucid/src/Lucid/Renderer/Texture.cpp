@@ -197,7 +197,7 @@ void Texture2D::Resize(uint32_t width, uint32_t height)
 
 	m_ImageData.Allocate(width * height * Texture2D::GetBPP(m_Format));
 
-	m_ImageData.ZeroInitialize();
+	//m_ImageData.ZeroInitialize();
 }
 
 Memory Texture2D::GetWriteableBuffer()
@@ -260,8 +260,6 @@ TextureCube::TextureCube(TextureFormat format, uint32_t width, uint32_t height)
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-		// glTextureParameterf(m_RendererID, GL_TEXTURE_MAX_ANISOTROPY, 16);
 	});
 }
 

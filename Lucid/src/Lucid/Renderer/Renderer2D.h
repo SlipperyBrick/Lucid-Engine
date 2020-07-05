@@ -14,7 +14,6 @@ public:
 
 	static void BeginScene(const glm::mat4& viewProj, bool depthTest = true);
 	static void EndScene();
-	static void Flush();
 
 	// Primitives
 	static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color);

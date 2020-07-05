@@ -1,12 +1,14 @@
 #include "ldpch.h"
 
-#include <glfw/glfw3.h>
+#include "ImGuiLayer.h"
 
 #include <imgui.h>
+
+#define IMGUI_IMPL_API
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
 
-#include "ImGuiLayer.h"
+#include <glfw/glfw3.h>
 
 #include "Lucid/ImGui/ImGuiGizmo.h"
 
@@ -31,7 +33,7 @@ void ImGuiLayer::OnAttach()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 
-	ImGuiIO& io = ImGui::GetIO();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
 
 	// Enable keyboard controls
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
@@ -51,6 +53,13 @@ void ImGuiLayer::OnAttach()
 
 	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones
 	ImGuiStyle& style = ImGui::GetStyle();
+
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		style.WindowRounding = 0.0f;
+		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	}
+
 	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.15f, 0.15f, 0.15f, style.Colors[ImGuiCol_WindowBg].w);
 
 	// Get application instance and retrieve GLFW window

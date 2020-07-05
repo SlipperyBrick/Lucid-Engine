@@ -168,12 +168,10 @@ void EditorLayer::OnUpdate(Timestep ts)
 
 void EditorLayer::OnImGuiRender()
 {
-	Window& window = Application::Get().GetWindow();
-
 	static bool p_open = true;
 
-	static ImGuiDockNodeFlags opt_flags = ImGuiDockNodeFlags_None;
 	static bool opt_fullscreen_persistant = true;
+	static ImGuiDockNodeFlags opt_flags = ImGuiDockNodeFlags_None;
 	bool opt_fullscreen = opt_fullscreen_persistant;
 
 	// ImGuiWindowFlags_NoDocking is used to ensure that the parent window isn't a dockable region
@@ -257,6 +255,7 @@ void EditorLayer::OnImGuiRender()
 		if (ImGui::Button("...##Mesh"))
 		{
 			std::string filename = Application::Get().OpenFile("");
+
 			if (filename != "")
 			{
 				auto newMesh = CreateRef<Mesh>(filename);
@@ -475,6 +474,8 @@ void EditorLayer::OnImGuiRender()
 		ImGuizmo::SetDrawlist();
 		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, rw, rh);
 
+		Window& window = Application::Get().GetWindow();
+
 		bool snap = window.IsKeyPressed(LD_KEY_LEFT_CONTROL);
 
 		ImGuizmo::Manipulate(glm::value_ptr(m_ActiveScene->GetCamera().GetViewMatrix() * m_MeshEntity->Transform()), glm::value_ptr(m_ActiveScene->GetCamera().GetProjectionMatrix()), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(*m_CurrentlySelectedTransform), nullptr, snap ? &m_SnapValue : nullptr);
@@ -490,33 +491,71 @@ void EditorLayer::OnImGuiRender()
 	// Menu bar
 	if (ImGui::BeginMenuBar())
 	{
-		if (ImGui::BeginMenu("Docking"))
+		if (ImGui::BeginMenu("File"))
 		{
-			if (ImGui::MenuItem("Flag: NoSplit", "", (opt_flags & ImGuiDockNodeFlags_NoSplit) != 0))
+			if (ImGui::MenuItem("New", "", false))
 			{
-				opt_flags ^= ImGuiDockNodeFlags_NoSplit;
+				
 			}
 
-			if (ImGui::MenuItem("Flag: NoDockingInCentralNode", "", (opt_flags & ImGuiDockNodeFlags_NoDockingInCentralNode) != 0))
+			if (ImGui::MenuItem("Open", "", false))
 			{
-				opt_flags ^= ImGuiDockNodeFlags_NoDockingInCentralNode;
+
 			}
 
-			if (ImGui::MenuItem("Flag: NoResize", "", (opt_flags & ImGuiDockNodeFlags_NoResize) != 0))
+			if (ImGui::MenuItem("Save", "", false))
 			{
-				opt_flags ^= ImGuiDockNodeFlags_NoResize;
+
 			}
 
-			if (ImGui::MenuItem("Flag: AutoHideTabBar", "", (opt_flags & ImGuiDockNodeFlags_AutoHideTabBar) != 0))
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Edit"))
+		{
+			if (ImGui::MenuItem("Copy", "", false))
 			{
-				opt_flags ^= ImGuiDockNodeFlags_AutoHideTabBar;
+
 			}
 
-			ImGui::Separator();
-
-			if (ImGui::MenuItem("Close Dockspace", NULL, false, p_open != NULL))
+			if (ImGui::MenuItem("Paste", "", false))
 			{
-				p_open = false;
+
+			}
+
+			if (ImGui::MenuItem("Delete", "", false))
+			{
+
+			}
+
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("View"))
+		{
+			if (ImGui::MenuItem("Renderer Info", "", false))
+			{
+
+			}
+
+			if (ImGui::MenuItem("Grid", "", false))
+			{
+
+			}
+
+			if (ImGui::MenuItem("Bounding Boxes", "", false))
+			{
+
+			}
+
+			if (ImGui::MenuItem("Scene Hierarchy", "", false))
+			{
+
+			}
+
+			if (ImGui::MenuItem("Properties", "", false))
+			{
+
 			}
 
 			ImGui::EndMenu();
