@@ -37,11 +37,11 @@ void Scene::OnUpdate(Timestep ts)
 	{
 		if (m_SelectedEntity == entity)
 		{
-			SceneRenderer::SubmitSelectedMesh(entity, transformComponent);
+			//SceneRenderer::SubmitSelectedMesh(entity, transformComponent);
 		}
 		else
 		{
-			SceneRenderer::SubmitMesh(entity, transformComponent, nullptr);
+			//SceneRenderer::SubmitMesh(entity, transformComponent, nullptr);
 		}
 	}
 
