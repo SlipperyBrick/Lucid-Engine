@@ -6,6 +6,8 @@
 
 #include "Lucid/Renderer/SceneRenderer.h"
 
+#include "Lucid/Scene/Components.h"
+
 static const std::string DefaultEntityName = "Entity";
 
 Scene::Scene(const std::string& debugName)
@@ -33,7 +35,14 @@ void Scene::OnUpdate(Timestep ts)
 	// Render all entities
 	for (auto entity : m_Entities)
 	{
-		SceneRenderer::SubmitEntity(entity);
+		if (m_SelectedEntity == entity)
+		{
+			SceneRenderer::SubmitSelectedMesh(entity, transformComponent);
+		}
+		else
+		{
+			SceneRenderer::SubmitMesh(entity, transformComponent, nullptr);
+		}
 	}
 
 	SceneRenderer::EndScene();

@@ -117,7 +117,7 @@ public:
 
 typedef std::vector<ShaderUniformDeclaration*> ShaderUniformList;
 
-class ShaderUniformBufferDeclaration
+class ShaderUniformBufferDeclaration : public RefCounted
 {
 
 private:

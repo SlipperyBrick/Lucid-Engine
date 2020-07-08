@@ -6,7 +6,7 @@
 
 Ref<RenderPass> RenderPass::Create(const RenderPassSpecification& spec)
 {
-	return std::make_shared<RenderPass>(spec);
+	return Ref<RenderPass>::Create(spec);
 }
 
 RenderPass::RenderPass(const RenderPassSpecification& spec)

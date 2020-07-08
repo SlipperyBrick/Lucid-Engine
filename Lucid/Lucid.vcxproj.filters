@@ -269,6 +269,12 @@
     <ClInclude Include="src\Lucid\Scene\SceneHierarchy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Lucid\Scene\Components.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Lucid\Core\Ref.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\Composite.glsl" />
@@ -276,5 +282,6 @@
     <None Include="assets\shaders\Line.glsl" />
     <None Include="assets\shaders\Quad.glsl" />
     <None Include="assets\shaders\Scene.glsl" />
+    <None Include="assets\shaders\Outline.glsl" />
   </ItemGroup>
 </Project>

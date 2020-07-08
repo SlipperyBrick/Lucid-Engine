@@ -10,17 +10,17 @@
 
 Ref<VertexBuffer> VertexBuffer::Create(void* data, uint32_t size, VertexBufferUsage usage)
 {
-	return std::make_shared<VertexBuffer>(data, size, usage);
+	return Ref<VertexBuffer>::Create(data, size, usage);
 }
 
 Ref<VertexBuffer> VertexBuffer::Create(uint32_t size, VertexBufferUsage usage)
 {
-	return std::make_shared<VertexBuffer>(size, usage);
+	return Ref<VertexBuffer>::Create(size, usage);
 }
 
 Ref<IndexBuffer> IndexBuffer::Create(void* data, uint32_t size)
 {
-	return std::make_shared<IndexBuffer>(data, size);
+	return Ref<IndexBuffer>::Create(data, size);
 }
 
 static GLenum OpenGLUsage(VertexBufferUsage usage)
@@ -47,20 +47,25 @@ VertexBuffer::VertexBuffer(void* data, uint32_t size, VertexBufferUsage usage)
 {
 	m_LocalData = Memory::Copy(data, size);
 
-	Renderer::Submit([=]()
+	Ref<VertexBuffer> instance = this;
+
+	Renderer::Submit([instance]() mutable
 	{
-		glCreateBuffers(1, &m_RendererID);
-		glNamedBufferData(m_RendererID, m_Size, m_LocalData.Data, OpenGLUsage(m_Usage));
+		glCreateBuffers(1, &instance->m_RendererID);
+		glNamedBufferData(instance->m_RendererID, instance->m_Size, instance->m_LocalData.Data, OpenGLUsage(instance->m_Usage));
 	});
 }
 
 VertexBuffer::VertexBuffer(uint32_t size, VertexBufferUsage usage)
 	: m_Size(size), m_Usage(usage)
 {
-	Renderer::Submit([this]()
+
+	Ref<VertexBuffer> instance = this;
+
+	Renderer::Submit([instance]() mutable
 	{
-		glCreateBuffers(1, &m_RendererID);
-		glNamedBufferData(m_RendererID, m_Size, nullptr, OpenGLUsage(m_Usage));
+		glCreateBuffers(1, &instance->m_RendererID);
+		glNamedBufferData(instance->m_RendererID, instance->m_Size, nullptr, OpenGLUsage(instance->m_Usage));
 	});
 }
 
@@ -77,9 +82,11 @@ void VertexBuffer::SetData(void* data, uint32_t size, uint32_t offset)
 	m_LocalData = Memory::Copy(data, size);
 	m_Size = size;
 
-	Renderer::Submit([this, offset]()
+	Ref<VertexBuffer> instance = this;
+
+	Renderer::Submit([instance, offset]()
 	{
-		glNamedBufferSubData(m_RendererID, offset, m_Size, m_LocalData.Data);
+		glNamedBufferSubData(instance->m_RendererID, offset, instance->m_Size, instance->m_LocalData.Data);
 	});
 }
 
@@ -96,10 +103,12 @@ IndexBuffer::IndexBuffer(void* data, uint32_t size)
 {
 	m_LocalData = Memory::Copy(data, size);
 
-	Renderer::Submit([this]()
+	Ref<IndexBuffer> instance = this;
+
+	Renderer::Submit([instance]() mutable
 	{
-		glCreateBuffers(1, &m_RendererID);
-		glNamedBufferData(m_RendererID, m_Size, m_LocalData.Data, GL_STATIC_DRAW);
+		glCreateBuffers(1, &instance->m_RendererID);
+		glNamedBufferData(instance->m_RendererID, instance->m_Size, instance->m_LocalData.Data, GL_STATIC_DRAW);
 	});
 }
 
@@ -116,9 +125,11 @@ void IndexBuffer::SetData(void* data, uint32_t size, uint32_t offset)
 	m_LocalData = Memory::Copy(data, size);
 	m_Size = size;
 
-	Renderer::Submit([this, offset]()
+	Ref<IndexBuffer> instance = this;
+
+	Renderer::Submit([instance, offset]()
 	{
-		glNamedBufferSubData(m_RendererID, offset, m_Size, m_LocalData.Data);
+		glNamedBufferSubData(instance->m_RendererID, offset, instance->m_Size, instance->m_LocalData.Data);
 	});
 }
 

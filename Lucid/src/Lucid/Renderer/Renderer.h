@@ -51,7 +51,7 @@ public:
 
 	static void DrawIndexed(uint32_t count, PrimitiveType type, bool depthTest = true);
 
-	static const Scope<ShaderLibrary>& GetShaderLibrary();
+	static Ref<ShaderLibrary> GetShaderLibrary();
 
 	// Allocates memory in the render command queue for each submitted command to the renderer
 	template<typename FuncT>
@@ -71,15 +71,15 @@ public:
 
 	static void ExecuteRenderCommands();
 
-	static void BeginRenderPass(const Ref<RenderPass>& renderPass, bool clear = true);
+	static void BeginRenderPass(Ref<RenderPass> renderPass, bool clear = true);
 	static void EndRenderPass();
 
-	static void SubmitQuad(const Ref<MaterialInstance>& material, const glm::mat4& transform = glm::mat4(1.0f));
-	static void SubmitFullscreenQuad(const Ref<MaterialInstance>& material);
-	static void SubmitMesh(const Ref<Mesh>& mesh, const glm::mat4& transform, const Ref<MaterialInstance>& overrideMaterial = nullptr);
+	static void SubmitQuad(Ref<MaterialInstance> material, const glm::mat4& transform = glm::mat4(1.0f));
+	static void SubmitFullscreenQuad(Ref<MaterialInstance> material);
+	static void SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform, Ref<MaterialInstance> overrideMaterial = nullptr);
 
 	static void DrawAABB(const AABB& aabb, const glm::mat4& transform, const glm::vec4& colour = glm::vec4(1.0f));
-	static void DrawAABB(const Ref<Mesh>& mesh, const glm::mat4& transform, const glm::vec4& colour = glm::vec4(1.0f));
+	static void DrawAABB(Ref<Mesh> mesh, const glm::mat4& transform, const glm::vec4& colour = glm::vec4(1.0f));
 
 private:
 

@@ -116,7 +116,7 @@ vec4 Lighting()
 	vec3 reflectDir = reflect(-lightDir, m_Params.Normal);
 	vec3 halfwayDir = normalize(lightDir + viewDir);
 
-	float spec = pow(max(dot(m_Params.Normal, halfwayDir), 0.0), m_Params.Specular);
+	float spec = pow(max(dot(m_Params.Normal, halfwayDir), 0.0), 32);
 
 	vec3 specular = vec3(0.2) * spec;
 

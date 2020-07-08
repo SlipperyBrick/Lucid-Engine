@@ -12,7 +12,7 @@ Ref<Framebuffer> Framebuffer::Create(const FramebufferSpecification& spec)
 {
 	Ref<Framebuffer> result = nullptr;
 
-	result = std::make_shared<Framebuffer>(spec);
+	result = Ref<Framebuffer>::Create(spec);
 
 	FramebufferPool::GetGlobal()->Add(result);
 
@@ -34,7 +34,7 @@ std::weak_ptr<Framebuffer> FramebufferPool::AllocateBuffer()
 	return std::weak_ptr<Framebuffer>();
 }
 
-void FramebufferPool::Add(std::weak_ptr<Framebuffer> framebuffer)
+void FramebufferPool::Add(Ref<Framebuffer> framebuffer)
 {
 	m_Pool.push_back(framebuffer);
 }

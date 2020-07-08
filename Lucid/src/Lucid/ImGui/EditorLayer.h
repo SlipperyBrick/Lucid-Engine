@@ -62,7 +62,7 @@ private:
 	std::pair<float, float> GetMouseViewportSpace();
 	std::pair<glm::vec3, glm::vec3> CastRay(float mx, float my);
 
-#pragma region Scene
+	#pragma region Scene
 
 	Scope<SceneHierarchy> m_SceneHierarchy;
 
@@ -71,13 +71,13 @@ private:
 
 	Entity* m_MeshEntity = nullptr;
 
-#pragma endregion
+	#pragma endregion
 
-#pragma region Textures
+	#pragma region Textures
 
 	struct DiffuseInput
 	{
-		glm::vec3 Colour = { 0.972f, 0.96f, 0.915f };
+		glm::vec3 Colour = { 0.5f, 0.5f, 0.5f };
 		Ref<Texture2D> TextureMap;
 		bool SRGB = true;
 		bool UseTexture = false;
@@ -104,9 +104,9 @@ private:
 
 	Ref<Material> m_MeshMaterial;
 
-#pragma endregion
+	#pragma endregion
 
-#pragma region Editor
+	#pragma region Editor
 
 	Ref<Texture2D> m_CheckerboardTex;
 
@@ -135,6 +135,6 @@ private:
 
 	glm::mat4* m_CurrentlySelectedTransform = nullptr;
 
-#pragma endregion
+	#pragma endregion
 
 };

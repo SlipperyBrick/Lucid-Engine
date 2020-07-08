@@ -18,7 +18,7 @@ struct WindowProps
 		: Title(title), Width(width), Height(height) {}
 };
 
-class Window
+class Window : public RefCounted
 {
 
 public:

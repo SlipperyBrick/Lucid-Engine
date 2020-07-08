@@ -314,7 +314,7 @@ void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, cons
 
 	for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++)
 	{
-		if (*s_Data.TextureSlots[i].get() == *texture.get())
+		if (*s_Data.TextureSlots[i].Raw() == *texture.Raw())
 		{
 			textureIndex = (float)i;
 
@@ -433,7 +433,7 @@ void Renderer2D::DrawRotatedQuad(const glm::vec3& position, const glm::vec2& siz
 
 	for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++)
 	{
-		if (*s_Data.TextureSlots[i].get() == *texture.get())
+		if (*s_Data.TextureSlots[i].Raw() == *texture.Raw())
 		{
 			textureIndex = (float)i;
 

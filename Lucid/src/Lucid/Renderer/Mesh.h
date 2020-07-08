@@ -66,7 +66,7 @@ public:
 	std::string MeshName;
 };
 
-class Mesh
+class Mesh : public RefCounted
 {
 
 public:

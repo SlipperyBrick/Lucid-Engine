@@ -189,7 +189,7 @@ private:
 	uint32_t m_Stride = 0;
 };
 
-class VertexBuffer
+class VertexBuffer : public RefCounted
 {
 
 public:
@@ -220,7 +220,7 @@ private:
 	Memory m_LocalData;
 };
 
-class IndexBuffer
+class IndexBuffer : public RefCounted
 {
 
 public:

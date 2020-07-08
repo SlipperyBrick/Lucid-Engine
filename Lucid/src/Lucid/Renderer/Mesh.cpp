@@ -82,9 +82,8 @@ Mesh::Mesh(const std::string& filename)
 
 	m_Scene = scene;
 
-	// REMEMBER TO CHANGE THE SHADER NAME WHEN A STATIC SHADER HAS BEEN MADE
 	m_MeshShader = Renderer::GetShaderLibrary()->Get("Scene");
-	m_BaseMaterial = CreateRef<Material>(m_MeshShader);
+	m_BaseMaterial = Ref<Material>(m_MeshShader);
 
 	m_InverseTransform = glm::inverse(Mat4FromAssimpMat4(scene->mRootNode->mTransformation));
 
@@ -172,7 +171,7 @@ Mesh::Mesh(const std::string& filename)
 			auto aiMaterial = scene->mMaterials[i];
 			auto aiMaterialName = aiMaterial->GetName();
 
-			auto mi = CreateRef<MaterialInstance>(m_BaseMaterial);
+			auto mi = Ref<MaterialInstance>(m_BaseMaterial);
 
 			m_Materials[i] = mi;
 
@@ -310,7 +309,7 @@ Mesh::Mesh(const std::string& filename)
 		{ ShaderDataType::Float3, "a_Tangent" },
 		{ ShaderDataType::Float3, "a_Bitangent" },
 		{ ShaderDataType::Float2, "a_TexCoord" },
-		});
+	});
 
 	m_VertexArray->AddVertexBuffer(vb);
 

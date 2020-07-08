@@ -69,7 +69,7 @@ void Application::RenderImGui()
 {
 	m_ImGuiLayer->Begin();
 
-	ImGui::Begin("Renderer");
+	ImGui::Begin("Renderer", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
 
 	auto& caps = RendererCapabilities::GetCapabilities();
 
@@ -205,10 +205,7 @@ bool Application::OnWindowResize(WindowResizeEvent& e)
 	// Resize all framebuffers
 	for (auto& fb : fbs)
 	{
-		if (auto fbp = fb.lock())
-		{
-			fbp->Resize(width, height);
-		}
+		fb->Resize(width, height);
 	}
 
 	return false;

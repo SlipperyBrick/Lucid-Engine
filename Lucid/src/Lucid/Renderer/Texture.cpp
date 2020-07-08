@@ -35,44 +35,44 @@ static GLenum SetTextureFormat(TextureFormat format)
 
 Ref<Texture2D> Texture2D::Create(TextureFormat format, uint32_t width, uint32_t height, TextureWrap wrap)
 {
-	return CreateRef<Texture2D>(format, width, height, wrap);
+	return Ref<Texture2D>::Create(format, width, height, wrap);
 }
 
 Ref<Texture2D> Texture2D::Create(const std::string& path, bool srgb)
 {
-	return CreateRef<Texture2D>(path, srgb);
+	return Ref<Texture2D>::Create(path, srgb);
 }
 
 Ref<TextureCube> TextureCube::Create(TextureFormat format, uint32_t width, uint32_t height)
 {
-	return CreateRef<TextureCube>(format, width, height);
+	return Ref<TextureCube>::Create(format, width, height);
 }
 
 Ref<TextureCube> TextureCube::Create(const std::string& path)
 {
-	return CreateRef<TextureCube>(path);
+	return Ref<TextureCube>::Create(path);
 }
 
 Texture2D::Texture2D(TextureFormat format, uint32_t width, uint32_t height, TextureWrap wrap)
 	: m_Format(format), m_Width(width), m_Height(height), m_Wrap(wrap)
 {
-	auto self = this;
+	Ref<Texture2D> instance = this;
 
-	Renderer::Submit([this]()
+	Renderer::Submit([instance]() mutable
 	{
-		glGenTextures(1, &m_RendererID);
-		glBindTexture(GL_TEXTURE_2D, m_RendererID);
+		glGenTextures(1, &instance->m_RendererID);
+		glBindTexture(GL_TEXTURE_2D, instance->m_RendererID);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		GLenum wrap = m_Wrap == TextureWrap::Clamp ? GL_CLAMP_TO_EDGE : GL_REPEAT;
+		GLenum wrap = instance->m_Wrap == TextureWrap::Clamp ? GL_CLAMP_TO_EDGE : GL_REPEAT;
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
-		glTextureParameterf(m_RendererID, GL_TEXTURE_MAX_ANISOTROPY, RendererCapabilities::GetCapabilities().MaxAnisotropy);
+		glTextureParameterf(instance->m_RendererID, GL_TEXTURE_MAX_ANISOTROPY, RendererCapabilities::GetCapabilities().MaxAnisotropy);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, SetTextureFormat(m_Format), m_Width, m_Height, 0, SetTextureFormat(m_Format), GL_UNSIGNED_BYTE, nullptr);
+		glTexImage2D(GL_TEXTURE_2D, 0, SetTextureFormat(instance->m_Format), instance->m_Width, instance->m_Height, 0, SetTextureFormat(instance->m_Format), GL_UNSIGNED_BYTE, nullptr);
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 	});
@@ -118,25 +118,27 @@ Texture2D::Texture2D(const std::string& path, bool srgb)
 	m_Width = width;
 	m_Height = height;
 
-	Renderer::Submit([=]()
+	Ref<Texture2D> instance = this;
+
+	Renderer::Submit([instance, srgb]() mutable
 	{
 		if (srgb)
 		{
-			glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
+			glCreateTextures(GL_TEXTURE_2D, 1, &instance->m_RendererID);
 
-			int levels = Texture2D::CalculateMipMapCount(m_Width, m_Height);
+			int levels = Texture2D::CalculateMipMapCount(instance->m_Width, instance->m_Height);
 
-			glTextureStorage2D(m_RendererID, levels, GL_SRGB8, m_Width, m_Height);
-			glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, levels > 1 ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
-			glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTextureStorage2D(instance->m_RendererID, levels, GL_SRGB8, instance->m_Width, instance->m_Height);
+			glTextureParameteri(instance->m_RendererID, GL_TEXTURE_MIN_FILTER, levels > 1 ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+			glTextureParameteri(instance->m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-			glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, GL_RGB, GL_UNSIGNED_BYTE, m_ImageData.Data);
-			glGenerateTextureMipmap(m_RendererID);
+			glTextureSubImage2D(instance->m_RendererID, 0, 0, 0, instance->m_Width, instance->m_Height, GL_RGB, GL_UNSIGNED_BYTE, instance->m_ImageData.Data);
+			glGenerateTextureMipmap(instance->m_RendererID);
 		}
 		else
 		{
-			glGenTextures(1, &m_RendererID);
-			glBindTexture(GL_TEXTURE_2D, m_RendererID);
+			glGenTextures(1, &instance->m_RendererID);
+			glBindTexture(GL_TEXTURE_2D, instance->m_RendererID);
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -144,35 +146,39 @@ Texture2D::Texture2D(const std::string& path, bool srgb)
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-			GLenum internalFormat = SetTextureFormat(m_Format);
+			GLenum internalFormat = SetTextureFormat(instance->m_Format);
 
 			// HDR equates to GL_RGB for now
-			GLenum format = srgb ? GL_SRGB8 : (m_IsHDR ? GL_RGB : SetTextureFormat(m_Format));
+			GLenum format = srgb ? GL_SRGB8 : (instance->m_IsHDR ? GL_RGB : SetTextureFormat(instance->m_Format));
 			GLenum type = internalFormat == GL_RGBA16F ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
-			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_Width, m_Height, 0, format, type, m_ImageData.Data);
+			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, instance->m_Width, instance->m_Height, 0, format, type, instance->m_ImageData.Data);
 			glGenerateMipmap(GL_TEXTURE_2D);
 
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 
-		stbi_image_free(m_ImageData.Data);
+		stbi_image_free(instance->m_ImageData.Data);
 	});
 }
 
 Texture2D::~Texture2D()
 {
-	Renderer::Submit([this]()
+	GLuint rendererID = m_RendererID;
+
+	Renderer::Submit([rendererID]()
 	{
-		glDeleteTextures(1, &m_RendererID);
+		glDeleteTextures(1, &rendererID);
 	});
 }
 
 void Texture2D::Bind(uint32_t slot) const
 {
-	Renderer::Submit([this, slot]()
+	Ref<const Texture2D> instance = this;
+
+	Renderer::Submit([instance, slot]()
 	{
-		glBindTextureUnit(slot, m_RendererID);
+		glBindTextureUnit(slot, instance->m_RendererID);
 	});
 }
 
@@ -185,9 +191,11 @@ void Texture2D::Unlock()
 {
 	m_Locked = false;
 
-	Renderer::Submit([this]()
+	Ref<Texture2D> instance = this;
+
+	Renderer::Submit([instance]()
 	{
-		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, SetTextureFormat(m_Format), GL_UNSIGNED_BYTE, m_ImageData.Data);
+		glTextureSubImage2D(instance->m_RendererID, 0, 0, 0, instance->m_Width, instance->m_Height, SetTextureFormat(instance->m_Format), GL_UNSIGNED_BYTE, instance->m_ImageData.Data);
 	});
 }
 
@@ -197,7 +205,7 @@ void Texture2D::Resize(uint32_t width, uint32_t height)
 
 	m_ImageData.Allocate(width * height * Texture2D::GetBPP(m_Format));
 
-	//m_ImageData.ZeroInitialize();
+	m_ImageData.ZeroInitialize();
 }
 
 Memory Texture2D::GetWriteableBuffer()
@@ -249,14 +257,16 @@ TextureCube::TextureCube(TextureFormat format, uint32_t width, uint32_t height)
 
 	uint32_t levels = Texture2D::CalculateMipMapCount(width, height);
 
-	Renderer::Submit([=]()
+	Ref<TextureCube> instance = this;
+
+	Renderer::Submit([instance, levels]() mutable
 	{
-		glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_RendererID);
+		glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &instance->m_RendererID);
 
-		glTextureStorage2D(m_RendererID, levels, SetTextureFormat(m_Format), width, height);
+		glTextureStorage2D(instance->m_RendererID, levels, SetTextureFormat(instance->m_Format), instance->m_Width, instance->m_Height);
 
-		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, levels > 1 ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
-		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTextureParameteri(instance->m_RendererID, GL_TEXTURE_MIN_FILTER, levels > 1 ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+		glTextureParameteri(instance->m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
@@ -337,10 +347,12 @@ TextureCube::TextureCube(const std::string& path)
 		faceIndex++;
 	}
 
-	Renderer::Submit([=]()
+	Ref<TextureCube> instance = this;
+
+	Renderer::Submit([instance, faceWidth, faceHeight, faces]() mutable
 	{
-		glGenTextures(1, &m_RendererID);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
+		glGenTextures(1, &instance->m_RendererID);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, instance->m_RendererID);
 
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -348,9 +360,9 @@ TextureCube::TextureCube(const std::string& path)
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-		glTextureParameterf(m_RendererID, GL_TEXTURE_MAX_ANISOTROPY, RendererCapabilities::GetCapabilities().MaxAnisotropy);
+		glTextureParameterf(instance->m_RendererID, GL_TEXTURE_MAX_ANISOTROPY, RendererCapabilities::GetCapabilities().MaxAnisotropy);
 
-		auto format = SetTextureFormat(m_Format);
+		auto format = SetTextureFormat(instance->m_Format);
 
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, format, faceWidth, faceHeight, 0, format, GL_UNSIGNED_BYTE, faces[2]);
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, format, faceWidth, faceHeight, 0, format, GL_UNSIGNED_BYTE, faces[0]);
@@ -370,25 +382,27 @@ TextureCube::TextureCube(const std::string& path)
 			delete[] faces[i];
 		}
 
-		stbi_image_free(m_ImageData);
+		stbi_image_free(instance->m_ImageData);
 	});
 }
 
 TextureCube::~TextureCube()
 {
-	auto self = this;
+	GLuint rendererID = m_RendererID;
 
-	Renderer::Submit([this]()
+	Renderer::Submit([rendererID]()
 	{
-		glDeleteTextures(1, &m_RendererID);
+		glDeleteTextures(1, &rendererID);
 	});
 }
 
 void TextureCube::Bind(uint32_t slot) const
 {
-	Renderer::Submit([this, slot]()
+	Ref<const TextureCube> instance = this;
+
+	Renderer::Submit([instance, slot]()
 	{
-		glBindTextureUnit(slot, m_RendererID);
+		glBindTextureUnit(slot, instance->m_RendererID);
 	});
 }
 

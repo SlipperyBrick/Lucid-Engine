@@ -12,7 +12,7 @@ struct Light
 	float Multiplier = 1.0f;
 };
 
-class Scene
+class Scene : public RefCounted
 {
 
 public:
@@ -38,6 +38,8 @@ private:
 	std::string m_DebugName;
 
 	std::vector<Entity*> m_Entities;
+
+	Entity* m_SelectedEntity;
 
 	Camera m_Camera;
 

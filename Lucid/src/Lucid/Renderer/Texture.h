@@ -18,7 +18,7 @@ enum class TextureWrap
 	Repeat = 2
 };
 
-class Texture2D
+class Texture2D : public RefCounted
 {
 
 public:
@@ -80,7 +80,7 @@ private:
 	std::string m_FilePath;
 };
 
-class TextureCube
+class TextureCube : public RefCounted
 {
 
 public:

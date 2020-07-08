@@ -2,7 +2,7 @@
 
 #include "Lucid/Renderer/Shader.h"
 
-class ShaderLibrary
+class ShaderLibrary : public RefCounted
 {
 
 public:

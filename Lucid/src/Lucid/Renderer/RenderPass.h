@@ -9,7 +9,7 @@ struct RenderPassSpecification
 	Ref<Framebuffer> TargetFramebuffer;
 };
 
-class RenderPass
+class RenderPass : public RefCounted
 {
 
 public:
@@ -17,7 +17,7 @@ public:
 	RenderPass(const RenderPassSpecification& spec);
 	~RenderPass();
 
-	const RenderPassSpecification& GetSpecification() const { return m_Specification; }
+	RenderPassSpecification& GetSpecification() { return m_Specification; }
 
 	static Ref<RenderPass> Create(const RenderPassSpecification& spec);
 

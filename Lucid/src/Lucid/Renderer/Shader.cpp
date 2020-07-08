@@ -145,7 +145,7 @@ Ref<Shader> Shader::Create(const std::string& filepath)
 {
 	Ref<Shader> result = nullptr;
 
-	result = std::make_shared<Shader>(filepath);
+	result = Ref<Shader>::Create(filepath);
 
 	s_AllShaders.push_back(result);
 
@@ -154,7 +154,7 @@ Ref<Shader> Shader::Create(const std::string& filepath)
 
 Ref<Shader> Shader::CreateFromString(const std::string& source)
 {
-	Ref<Shader> shader = std::make_shared<Shader>();
+	Ref<Shader> shader = Ref<Shader>();
 
 	shader->Load(source);
 

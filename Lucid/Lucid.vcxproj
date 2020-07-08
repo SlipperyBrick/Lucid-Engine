@@ -131,6 +131,7 @@
     <ClInclude Include="src\Lucid\Core\Log.h" />
     <ClInclude Include="src\Lucid\Core\Math\AABB.h" />
     <ClInclude Include="src\Lucid\Core\Math\Ray.h" />
+    <ClInclude Include="src\Lucid\Core\Ref.h" />
     <ClInclude Include="src\Lucid\Core\Timestep.h" />
     <ClInclude Include="src\Lucid\Core\Window.h" />
     <ClInclude Include="src\Lucid\ImGui\EditorLayer.h" />
@@ -151,6 +152,7 @@
     <ClInclude Include="src\Lucid\Renderer\Texture.h" />
     <ClInclude Include="src\Lucid\Renderer\VertexArray.h" />
     <ClInclude Include="src\Lucid\Renderer\VertexBuffer.h" />
+    <ClInclude Include="src\Lucid\Scene\Components.h" />
     <ClInclude Include="src\Lucid\Scene\Entity.h" />
     <ClInclude Include="src\Lucid\Scene\Scene.h" />
     <ClInclude Include="src\Lucid\Scene\SceneHierarchy.h" />
@@ -167,6 +169,7 @@
     <None Include="assets\shaders\Composite.glsl" />
     <None Include="assets\shaders\Grid.glsl" />
     <None Include="assets\shaders\Line.glsl" />
+    <None Include="assets\shaders\Outline.glsl" />
     <None Include="assets\shaders\Quad.glsl" />
     <None Include="assets\shaders\Scene.glsl" />
   </ItemGroup>

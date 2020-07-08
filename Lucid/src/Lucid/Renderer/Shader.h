@@ -90,7 +90,7 @@ struct UniformBufferDeclaration : public UniformBufferBase
 
 };
 
-class Shader
+class Shader : public RefCounted
 {
 
 public:

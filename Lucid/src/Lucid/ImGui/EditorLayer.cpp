@@ -30,55 +30,59 @@ void EditorLayer::OnAttach()
 
 	colours[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 	colours[ImGuiCol_TextDisabled] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
-	colours[ImGuiCol_WindowBg] = ImVec4(0.18f, 0.18f, 0.18f, 1.0f);
+	colours[ImGuiCol_WindowBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
 	colours[ImGuiCol_ChildBg] = ImVec4(1.0f, 1.0f, 1.0f, 0.0f);
-	colours[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colours[ImGuiCol_Border] = ImVec4(0.43f, 0.43f, 0.50f, 0.5f);
+	colours[ImGuiCol_PopupBg] = ImVec4(0.05f, 0.05f, 0.05f, 0.9f);
+	colours[ImGuiCol_Border] = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
 	colours[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
 	colours[ImGuiCol_FrameBg] = ImVec4(0.3f, 0.3f, 0.3f, 0.5f);
 	colours[ImGuiCol_FrameBgHovered] = ImVec4(0.4f, 0.4f, 0.4f, 0.4f);
 	colours[ImGuiCol_FrameBgActive] = ImVec4(0.4f, 0.4f, 0.4f, 0.6f);
 	colours[ImGuiCol_TitleBg] = ImVec4(0.04f, 0.04f, 0.04f, 1.0f);
-	colours[ImGuiCol_TitleBgActive] = ImVec4(0.29f, 0.29f, 0.29f, 1.0f);
-	colours[ImGuiCol_TitleBgCollapsed] = ImVec4(0.0f, 0.0f, 0.0f, 0.51f);
-	colours[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.0f);
-	colours[ImGuiCol_ScrollbarBg] = ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
-	colours[ImGuiCol_ScrollbarGrab] = ImVec4(0.31f, 0.31f, 0.31f, 1.0f);
-	colours[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.41f, 0.41f, 0.41f, 1.0f);
-	colours[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.51f, 0.51f, 0.51f, 1.0f);
-	colours[ImGuiCol_CheckMark] = ImVec4(0.94f, 0.94f, 0.94f, 1.0f);
-	colours[ImGuiCol_SliderGrab] = ImVec4(0.51f, 0.51f, 0.51f, 0.7f);
-	colours[ImGuiCol_SliderGrabActive] = ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
-	colours[ImGuiCol_Button] = ImVec4(0.44f, 0.44f, 0.44f, 0.4f);
-	colours[ImGuiCol_ButtonHovered] = ImVec4(0.46f, 0.47f, 0.48f, 1.0f);
+	colours[ImGuiCol_TitleBgActive] = ImVec4(0.04f, 0.04f, 0.04f, 1.0f);
+	colours[ImGuiCol_TitleBgCollapsed] = ImVec4(0.0f, 0.0f, 0.0f, 0.5f);
+	colours[ImGuiCol_MenuBarBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
+	colours[ImGuiCol_ScrollbarBg] = ImVec4(0.02f, 0.02f, 0.02f, 0.5f);
+	colours[ImGuiCol_ScrollbarGrab] = ImVec4(0.3f, 0.3f, 0.3f, 1.0f);
+	colours[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
+	colours[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+	colours[ImGuiCol_CheckMark] = ImVec4(0.95f, 0.95f, 0.95f, 1.0f);
+	colours[ImGuiCol_SliderGrab] = ImVec4(0.5f, 0.5f, 0.5f, 0.7f);
+	colours[ImGuiCol_SliderGrabActive] = ImVec4(0.6f, 0.6f, 0.6f, 1.0f);
+	colours[ImGuiCol_Button] = ImVec4(0.4f, 0.4f, 0.4f, 0.4f);
+	colours[ImGuiCol_ButtonHovered] = ImVec4(0.45f, 0.45f, 0.45f, 1.0f);
 	colours[ImGuiCol_ButtonActive] = ImVec4(0.42f, 0.42f, 0.42f, 1.0f);
-	colours[ImGuiCol_Header] = ImVec4(0.7f, 0.7f, 0.7f, 0.31f);
+	colours[ImGuiCol_Header] = ImVec4(0.7f, 0.7f, 0.7f, 0.3f);
 	colours[ImGuiCol_HeaderHovered] = ImVec4(0.7f, 0.7f, 0.7f, 0.8f);
-	colours[ImGuiCol_HeaderActive] = ImVec4(0.48f, 0.5f, 0.52f, 1.0f);
-	colours[ImGuiCol_Separator] = ImVec4(0.43f, 0.43f, 0.5f, 0.5f);
-	colours[ImGuiCol_SeparatorHovered] = ImVec4(0.72f, 0.72f, 0.72f, 0.78f);
-	colours[ImGuiCol_SeparatorActive] = ImVec4(0.51f, 0.51f, 0.51f, 1.0f);
-	colours[ImGuiCol_ResizeGrip] = ImVec4(0.91f, 0.91f, 0.91f, 0.25f);
-	colours[ImGuiCol_ResizeGripHovered] = ImVec4(0.81f, 0.81f, 0.81f, 0.67f);
-	colours[ImGuiCol_ResizeGripActive] = ImVec4(0.46f, 0.46f, 0.46f, 0.95f);
-	colours[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.0f);
-	colours[ImGuiCol_PlotLinesHovered] = ImVec4(1.0f, 0.43f, 0.35f, 1.0f);
-	colours[ImGuiCol_PlotHistogram] = ImVec4(0.73f, 0.6f, 0.15f, 1.0f);
-	colours[ImGuiCol_PlotHistogramHovered] = ImVec4(1.0f, 0.6f, 0.0f, 1.0f);
-	colours[ImGuiCol_TextSelectedBg] = ImVec4(0.87f, 0.87f, 0.87f, 0.35f);
+	colours[ImGuiCol_HeaderActive] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+	colours[ImGuiCol_Separator] = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
+	colours[ImGuiCol_SeparatorHovered] = ImVec4(0.7f, 0.7f, 0.7f, 0.75f);
+	colours[ImGuiCol_SeparatorActive] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+	colours[ImGuiCol_ResizeGrip] = ImVec4(0.9f, 0.9f, 0.9f, 0.25f);
+	colours[ImGuiCol_ResizeGripHovered] = ImVec4(0.8f, 0.8f, 0.8f, 0.7f);
+	colours[ImGuiCol_ResizeGripActive] = ImVec4(0.45f, 0.45f, 0.45f, 0.95f);
+	colours[ImGuiCol_PlotLines] = ImVec4(0.6f, 0.6f, 0.6f, 1.0f);
+	colours[ImGuiCol_PlotLinesHovered] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+	colours[ImGuiCol_PlotHistogram] = ImVec4(0.75f, 0.75f, 0.75f, 1.0f);
+	colours[ImGuiCol_PlotHistogramHovered] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+	colours[ImGuiCol_TextSelectedBg] = ImVec4(0.9f, 0.9f, 0.9f, 0.35f);
 	colours[ImGuiCol_ModalWindowDarkening] = ImVec4(0.8f, 0.8f, 0.8f, 0.35f);
-	colours[ImGuiCol_DragDropTarget] = ImVec4(1.0f, 1.0f, 0.0f, 0.9f);
-	colours[ImGuiCol_NavHighlight] = ImVec4(0.60f, 0.6f, 0.6f, 1.0f);
+	colours[ImGuiCol_DragDropTarget] = ImVec4(1.0f, 1.0f, 1.0f, 0.9f);
+	colours[ImGuiCol_NavHighlight] = ImVec4(0.6f, 0.6f, 0.6f, 1.0f);
 	colours[ImGuiCol_NavWindowingHighlight] = ImVec4(1.0f, 1.0f, 1.0f, 0.7f);
+	colours[ImGuiCol_Tab] = ImVec4(0.5f, 0.5f, 0.5f, 0.6f);
+	colours[ImGuiCol_TabActive] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+	colours[ImGuiCol_TabHovered] = ImVec4(0.5f, 0.5f, 0.5f, 0.5f);
+	colours[ImGuiCol_TabUnfocusedActive] = ImVec4(0.5f, 0.5f, 0.5f, 0.5f);
 
 	// Load our first entity
 	{
-		m_Scene = CreateRef<Scene>("Scene");
+		m_Scene = Ref<Scene>::Create("Scene");
 		m_Scene->SetCamera(Camera(glm::perspectiveFov(glm::radians(45.0f), 1280.0f, 720.0f, 0.1f, 10000.0f)));
 
 		m_MeshEntity = m_Scene->CreateEntity("Sponza");
 
-		auto mesh = CreateRef<Mesh>("assets/models/flintlock/pistol.obj");
+		auto mesh = Ref<Mesh>::Create("assets/models/flintlock/pistol.obj");
 		m_MeshEntity->SetMesh(mesh);
 
 		m_MeshMaterial = mesh->GetMaterial();
@@ -258,7 +262,7 @@ void EditorLayer::OnImGuiRender()
 
 			if (filename != "")
 			{
-				auto newMesh = CreateRef<Mesh>(filename);
+				auto newMesh = Ref<Mesh>::Create(filename);
 				m_MeshEntity->SetMesh(newMesh);
 			}
 		}
@@ -436,7 +440,7 @@ void EditorLayer::OnImGuiRender()
 
 	#pragma region Viewport
 
-	ImGui::Begin("Viewport"), ImGuiWindowFlags_NoTitleBar;
+	ImGui::Begin("Viewport", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
 	// Offset includes the tab-bar
 	auto viewportOffset = ImGui::GetCursorPos();
@@ -655,6 +659,7 @@ bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 			auto [origin, direction] = CastRay(mouseX, mouseY);
 
 			m_SelectedSubmeshes.clear();
+
 			auto mesh = m_MeshEntity->GetMesh();
 			auto& submeshes = mesh->GetSubmeshes();
 			float lastT = std::numeric_limits<float>::max();
