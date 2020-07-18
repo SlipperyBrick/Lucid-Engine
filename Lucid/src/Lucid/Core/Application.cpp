@@ -88,7 +88,7 @@ void Application::RenderImGui()
 	m_ImGuiLayer->End();
 }
 
-std::string Application::OpenFile(const std::string& filter) const
+std::string Application::OpenFile(const char* filter) const
 {
 	// Common dialog box structure
 	OPENFILENAMEA ofn;
@@ -118,7 +118,7 @@ std::string Application::OpenFile(const std::string& filter) const
 // Initalizes application specific components such as user-interface
 void Application::OnInit()
 {
-	PushLayer(new EditorLayer("Editor Layer"));
+	PushLayer(new EditorLayer());
 }
 
 // Applications run loop that processes all application logic

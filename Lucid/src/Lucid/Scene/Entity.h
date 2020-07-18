@@ -2,25 +2,61 @@
 
 #include <glm/glm.hpp>
 
+#include "Lucid/Scene/Scene.h"
+
 #include "Lucid/Renderer/Mesh.h"
+
+#include "Lucid/Scene/Components.h"
 
 class Entity
 {
 
 public:
 
-	~Entity();
+	Entity() = default;
 
-	void SetMesh(const Ref<Mesh>& mesh) { m_Mesh = mesh; }
-	Ref<Mesh> GetMesh() { return m_Mesh; }
+	Entity(entt::entity handle, Scene* scene)
+		: m_EntityHandle(handle), m_Scene(scene) {}
 
-	void SetMaterial(const Ref<MaterialInstance>& material) { m_Material = material; }
-	Ref<MaterialInstance> GetMaterial() { return m_Material; }
+	~Entity() {}
 
-	const glm::mat4& GetTransform() const { return m_Transform; }
-	glm::mat4& Transform() { return m_Transform; }
+	template<typename T, typename... Args>
+	T& AddComponent(Args&&... args)
+	{
+		return m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
+	}
 
-	const std::string& GetName() const { return m_Name; }
+	template<typename T>
+	T& GetComponent()
+	{
+		return m_Scene->m_Registry.get<T>(m_EntityHandle);
+	}
+
+	template<typename T>
+	bool HasComponent()
+	{
+		return m_Scene->m_Registry.has<T>(m_EntityHandle);
+	}
+
+	glm::mat4& Transform() { return m_Scene->m_Registry.get<TransformComponent>(m_EntityHandle); }
+	const glm::mat4& Transform() const { return m_Scene->m_Registry.get<TransformComponent>(m_EntityHandle); }
+
+	operator uint32_t () const { return (uint32_t)m_EntityHandle; }
+	operator entt::entity() const { return m_EntityHandle; }
+	operator bool() const { return (uint32_t)m_EntityHandle && m_Scene; }
+
+	bool operator==(const Entity& other) const
+	{
+		return m_EntityHandle == other.m_EntityHandle && m_Scene == other.m_Scene;
+	}
+
+	bool operator!=(const Entity& other) const
+	{
+		return !(*this == other);
+	}
+
+	LucidUUID GetUUID() { return GetComponent<IDComponent>().ID; }
+	LucidUUID GetSceneUUID() { return m_Scene->GetUUID(); }
 
 private:
 
@@ -28,12 +64,9 @@ private:
 
 private:
 
-	std::string m_Name;
+	entt::entity m_EntityHandle;
 
-	glm::mat4 m_Transform;
-
-	Ref<Mesh> m_Mesh;
-	Ref<MaterialInstance> m_Material;
+	Scene* m_Scene = nullptr;
 
 	friend class Scene;
 };

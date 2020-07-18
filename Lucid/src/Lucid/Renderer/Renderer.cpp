@@ -51,27 +51,34 @@ static void GLAPIENTRY OpenGLErrorLog(GLenum source, GLenum type, GLuint id, GLe
 	}
 }
 
+// Initalize OpenGL operations
 static void InitOpenGL()
 {
 	#pragma region Initalize OpenGL Renderer
 
+	// Set error logging
 	glDebugMessageCallback(OpenGLErrorLog, nullptr);
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
+	// Generate and bind vertex array
 	unsigned int vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
+	// Enable depth-testing by default and set winding-order of indices
 	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CCW);
 
+	// Enable blending and set blending operate (over blending)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	// Enable multisample and stencil test
 	glEnable(GL_MULTISAMPLE);
+	glEnable(GL_STENCIL_TEST);
 
+	// Set and log renderer capabilities
 	auto& caps = RendererCapabilities::GetCapabilities();
 
 	caps.Vendor = (const char*)glGetString(GL_VENDOR);
@@ -89,6 +96,7 @@ static void InitOpenGL()
 
 	GLenum error = glGetError();
 
+	// Ensure OpenGL successfully initialized
 	while (error != GL_NO_ERROR)
 	{
 		LD_CORE_ERROR("OpenGL Error {0}", error);
@@ -101,9 +109,10 @@ static void InitOpenGL()
 
 void Renderer::Init()
 {
-	s_Data.m_ShaderLibrary = Ref<ShaderLibrary>();
+	s_Data.m_ShaderLibrary = Ref<ShaderLibrary>::Create();
 
-	Renderer::Submit([](){ InitOpenGL(); });
+	// Submit OpenGL initialization to renderer command queue
+	Renderer::Submit([]() { InitOpenGL(); });
 
 	Renderer::GetShaderLibrary()->Load("assets/shaders/Scene.glsl");
 
@@ -167,7 +176,7 @@ void Renderer::Clear()
 void Renderer::Clear(float r, float g, float b, float a)
 {
 	glClearColor(r, g, b, a);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 void Renderer::SetClearColour(float r, float g, float b, float a)
@@ -300,7 +309,7 @@ void Renderer::SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform, Ref<Materi
 	for (Submesh& submesh : mesh->m_Submeshes)
 	{
 		// Material
-		auto material = materials[submesh.MaterialIndex];
+		auto material = overrideMaterial ? overrideMaterial : materials[submesh.MaterialIndex];
 		auto shader = material->GetShader();
 		material->Bind();
 

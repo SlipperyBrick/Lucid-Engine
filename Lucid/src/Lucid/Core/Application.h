@@ -38,7 +38,7 @@ public:
 	void PushOverlay(Layer* layer);
 	void RenderImGui();
 
-	std::string OpenFile(const std::string& filter) const;
+	std::string OpenFile(const char* filter = "All\0*.*\0") const;
 
 	// Get the applications window
 	inline Window& GetWindow() { return *m_Window; }

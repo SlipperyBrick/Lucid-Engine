@@ -10,13 +10,15 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include "Lucid/Core/Layer.h"
-#include "Lucid/Core/Events/KeyEvent.h"
-#include "Lucid/Core/Events/MouseEvent.h"
+#include "Lucid/ImGui/ImGuiLayer.h"
 
 #include "Lucid/Scene/SceneHierarchy.h"
 
-#include "Lucid/Renderer/Renderer.h"
+#include "Lucid/ImGui/EditorCamera.h"
+
+#include "Lucid/Core/Events/KeyEvent.h"
+
+#include "Lucid/Core/Math/Ray.h"
 
 class EditorLayer : public Layer
 {
@@ -32,7 +34,6 @@ public:
 public:
 
 	EditorLayer();
-	EditorLayer(const std::string& name);
 	virtual ~EditorLayer();
 
 	virtual void OnAttach() override;
@@ -57,19 +58,36 @@ public:
 
 	void ShowBoundingBoxes(bool show, bool onTop = false);
 
+	void SelectEntity(Entity entity);
+
 private:
 
 	std::pair<float, float> GetMouseViewportSpace();
 	std::pair<glm::vec3, glm::vec3> CastRay(float mx, float my);
 
+	struct SelectedSubmesh
+	{
+		Entity Entity;
+
+		Submesh* Mesh = nullptr;
+
+		float Distance = 0.0f;
+	};
+
+	void OnSelected(const SelectedSubmesh& selectionContext);
+	void OnEntityDeleted(Entity e);
+
+	Ray CastMouseRay();
+
+private:
+
 	#pragma region Scene
+
+	EditorCamera m_EditorCamera;
 
 	Scope<SceneHierarchy> m_SceneHierarchy;
 
-	Ref<Scene> m_Scene;
 	Ref<Scene> m_ActiveScene;
-
-	Entity* m_MeshEntity = nullptr;
 
 	#pragma endregion
 
@@ -125,14 +143,21 @@ private:
 	bool m_UIShowBoundingBoxes = false;
 	bool m_UIShowBoundingBoxesOnTop = false;
 
-	struct SelectedSubmesh
+	bool m_ViewportPanelMouseOver = false;
+	bool m_ViewportPanelFocused = false;
+
+	enum class SelectionMode
 	{
-		Submesh* Mesh;
-		float Distance;
+		None = 0,
+		Entity = 1,
+		SubMesh = 2
 	};
 
-	std::vector<SelectedSubmesh> m_SelectedSubmeshes;
+	SelectionMode m_SelectionMode = SelectionMode::Entity;
 
+	std::vector<SelectedSubmesh> m_SelectionContext;
+
+	glm::mat4* m_RelativeTransform = nullptr;
 	glm::mat4* m_CurrentlySelectedTransform = nullptr;
 
 	#pragma endregion

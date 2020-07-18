@@ -1,16 +1,16 @@
 #pragma once
 
-#include "Lucid/Scene/Entity.h"
+#include "Lucid/Core/LucidUUID.h"
 
-#include "Lucid/Renderer/Camera.h"
+#include <entt/entt.hpp>
 
-struct Light
-{
-	glm::vec3 Position;
-	glm::vec3 Radiance;
+#include "Lucid/ImGui/EditorCamera.h"
 
-	float Multiplier = 1.0f;
-};
+#include "Lucid/Renderer/Light.h"
+
+class Entity;
+
+using EntityMap = std::unordered_map<LucidUUID, Entity>;
 
 class Scene : public RefCounted
 {
@@ -22,30 +22,51 @@ public:
 
 	void Init();
 
-	void OnUpdate(Timestep ts);
+	void OnUpdate(Timestep ts, const EditorCamera& editorCamera);
 	void OnEvent(Event& e);
 
-	void SetCamera(const Camera& camera);
-	Camera& GetCamera() { return m_Camera; }
+	void SetViewportSize(uint32_t width, uint32_t height);
 
-	Light& GetLight() { return m_Light; }
+	Entity CreateEntity(const std::string& name = "");
+	Entity CreateEntityWithID(LucidUUID uuid, const std::string& name = "", bool runtimeMap = false);
 
-	void AddEntity(Entity* entity);
-	Entity* CreateEntity(const std::string& name = "");
+	void DestroyEntity(Entity entity);
+
+	void DuplicateEntity(Entity entity);
+
+	template<typename T>
+	auto GetAllEntitiesWith()
+	{
+		return m_Registry.view<T>();
+	}
+
+	const EntityMap& GetEntityMap() const { return m_EntityIDMap; }
+
+	void CopyTo(Ref<Scene>& target);
+
+	LucidUUID GetUUID() const { return m_SceneID; }
+
+	static Ref<Scene> GetScene(LucidUUID uuid);
+
+	void SetSelectedEntity(entt::entity entity) { m_SelectedEntity = entity; }
 
 private:
 
+	LucidUUID m_SceneID;
+
+	entt::entity m_SceneEntity;
+	entt::registry m_Registry;
+
+	EntityMap m_EntityIDMap;
+
 	std::string m_DebugName;
 
-	std::vector<Entity*> m_Entities;
+	uint32_t m_ViewportWidth = 0;
+	uint32_t m_ViewportHeight = 0;
 
-	Entity* m_SelectedEntity;
+	entt::entity m_SelectedEntity;
 
-	Camera m_Camera;
-
-	Light m_Light;
-	float m_LightMultiplier = 0.3f;
-
+	friend class Entity;
 	friend class SceneRenderer;
 	friend class SceneHierarchy;
 };

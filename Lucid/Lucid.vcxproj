@@ -43,8 +43,8 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>ldpch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)vendor\imgui;$(SolutionDir)Dependencies\spdlog\includes;$(SolutionDir)Dependencies\stb_image\includes;$(SolutionDir)Dependencies\glm\includes;$(SolutionDir)Dependencies\glfw\includes;$(SolutionDir)Dependencies\glad\includes;$(SolutionDir)Dependencies\assimp\includes;$(ProjectDir)src;$(ProjectDir)vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4172;4005;4018;6308;6262;6386;6001;26451;26450;4244;4996;26812;28182;26444;26495;26498;6255;6385;6011;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(ProjectDir)vendor\imgui;$(ProjectDir)vendor\entt;$(SolutionDir)Dependencies\spdlog\includes;$(SolutionDir)Dependencies\stb_image\includes;$(SolutionDir)Dependencies\glm\includes;$(SolutionDir)Dependencies\glfw\includes;$(SolutionDir)Dependencies\glad\includes;$(SolutionDir)Dependencies\assimp\includes;$(ProjectDir)src;$(ProjectDir)vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4003;26439;4172;4005;4018;6308;6262;6386;6001;26451;26450;4244;4996;26812;28182;26444;26495;26498;6255;6385;6011;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -64,17 +64,20 @@
     </ClCompile>
     <ClCompile Include="src\Lucid\Core\Memory.h" />
     <ClCompile Include="src\Lucid\Core\Timestep.cpp" />
+    <ClCompile Include="src\Lucid\Core\LucidUUID.cpp" />
     <ClCompile Include="src\Lucid\Core\Window.cpp" />
     <ClCompile Include="src\EntryPoint.cpp" />
     <ClCompile Include="src\ldpch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ldpch.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="src\Lucid\ImGui\EditorCamera.cpp" />
     <ClCompile Include="src\Lucid\ImGui\EditorLayer.cpp" />
     <ClCompile Include="src\Lucid\ImGui\ImGuiGizmo.cpp" />
     <ClCompile Include="src\Lucid\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Lucid\Renderer\Camera.cpp" />
     <ClCompile Include="src\Lucid\Renderer\Framebuffer.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\Light.cpp" />
     <ClCompile Include="src\Lucid\Renderer\Material.cpp" />
     <ClCompile Include="src\Lucid\Renderer\Mesh.cpp" />
     <ClCompile Include="src\Lucid\Renderer\RenderCommandQueue.cpp" />
@@ -133,12 +136,15 @@
     <ClInclude Include="src\Lucid\Core\Math\Ray.h" />
     <ClInclude Include="src\Lucid\Core\Ref.h" />
     <ClInclude Include="src\Lucid\Core\Timestep.h" />
+    <ClInclude Include="src\Lucid\Core\LucidUUID.h" />
     <ClInclude Include="src\Lucid\Core\Window.h" />
+    <ClInclude Include="src\Lucid\ImGui\EditorCamera.h" />
     <ClInclude Include="src\Lucid\ImGui\EditorLayer.h" />
     <ClInclude Include="src\Lucid\ImGui\ImGuiGizmo.h" />
     <ClInclude Include="src\Lucid\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Lucid\Renderer\Camera.h" />
     <ClInclude Include="src\Lucid\Renderer\Framebuffer.h" />
+    <ClInclude Include="src\Lucid\Renderer\Light.h" />
     <ClInclude Include="src\Lucid\Renderer\Material.h" />
     <ClInclude Include="src\Lucid\Renderer\Mesh.h" />
     <ClInclude Include="src\Lucid\Renderer\RenderCommandQueue.h" />

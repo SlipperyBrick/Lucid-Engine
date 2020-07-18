@@ -7,24 +7,15 @@ layout(location = 2) in vec3 a_Tangent;
 layout(location = 3) in vec3 a_Bitangent;
 layout(location = 4) in vec2 a_TexCoord;
 
-struct Light
-{
-	vec3 Position;
-	vec3 Radiance;
-	float Multiplier;
-};
-
 uniform mat4 u_ViewProjectionMatrix;
 uniform mat4 u_Transform;
 uniform vec3 u_CameraPosition;
-uniform Light lights;
 
 out VertexOutput
 {
 	vec2 TexCoord;
 	vec3 Normal;
 	vec3 FragPos;
-	vec3 TangentLightPos;
 	vec3 TangentViewPos;
 	vec3 TangentFragPos;
 
@@ -33,7 +24,10 @@ out VertexOutput
 void main()
 {
 	vs_Output.Normal = a_Normal;
-	vs_Output.TexCoord = a_TexCoord;
+
+	// Flip texture coordinates
+	vs_Output.TexCoord = vec2(a_TexCoord.x, 1.0 - a_TexCoord.y);
+
 	vs_Output.FragPos = vec3(u_Transform * vec4(a_Position, 1.0));
 
     mat3 normalMatrix = transpose(inverse(mat3(u_Transform)));
@@ -44,7 +38,6 @@ void main()
 
 	mat3 TBN = transpose(mat3(T, B, N));
 
-	vs_Output.TangentLightPos = TBN * lights.Position;
 	vs_Output.TangentViewPos = TBN * u_CameraPosition;
 	vs_Output.TangentFragPos = TBN * vs_Output.FragPos;
 
@@ -70,7 +63,6 @@ in VertexOutput
 	vec2 TexCoord;
 	vec3 Normal;
 	vec3 FragPos;
-	vec3 TangentLightPos;
 	vec3 TangentViewPos;
 	vec3 TangentFragPos;
 
@@ -88,44 +80,9 @@ uniform float u_DiffuseTexToggle;
 uniform float u_NormalTexToggle;
 uniform float u_SpecularTexToggle;
 
-vec4 Lighting()
-{
-	// Texture inputs
-	m_Params.Diffuse = u_DiffuseTexToggle > 0.5 ? texture(u_DiffuseTexture, vs_Input.TexCoord).rgb : u_DiffuseColour; 
-	m_Params.Specular = u_SpecularTexToggle > 0.5 ?  texture(u_SpecularTexture, vs_Input.TexCoord).r : u_Specular;
-
-	if (u_NormalTexToggle > 0.5)
-	{
-		m_Params.Normal = normalize(2.0 * texture(u_NormalTexture, vs_Input.TexCoord).rgb - 1.0);
-	}
-	else
-	{
-		// Normals
-		m_Params.Normal = normalize(vs_Input.Normal);
-	}
-
-	vec3 ambient = 0.1 * m_Params.Diffuse;
-
-	vec3 lightDir = normalize(vs_Input.TangentLightPos - vs_Input.TangentFragPos);
-
-	float diff = max(dot(lightDir, m_Params.Normal), 0.0);
-
-	vec3 diffuse = diff * m_Params.Diffuse;
-
-	vec3 viewDir = normalize(vs_Input.TangentViewPos - vs_Input.TangentFragPos);
-	vec3 reflectDir = reflect(-lightDir, m_Params.Normal);
-	vec3 halfwayDir = normalize(lightDir + viewDir);
-
-	float spec = pow(max(dot(m_Params.Normal, halfwayDir), 0.0), 32);
-
-	vec3 specular = vec3(0.2) * spec;
-
-	return vec4(ambient + diffuse + specular, 1.0);
-}
-
 void main()
-{
-	vec4 result = Lighting();
-	
-	colour = result;
+{	
+	m_Params.Diffuse = u_DiffuseTexToggle > 0.5 ? texture(u_DiffuseTexture, vs_Input.TexCoord).rgb : u_DiffuseColour; 
+
+	colour = vec4(m_Params.Diffuse, 1.0f);
 }

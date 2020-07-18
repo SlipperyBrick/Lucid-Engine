@@ -65,7 +65,7 @@ static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
 
 Ref<VertexArray> VertexArray::Create()
 {
-	return Ref<VertexArray>();
+	return Ref<VertexArray>::Create();
 }
 
 VertexArray::VertexArray()
@@ -78,23 +78,29 @@ VertexArray::VertexArray()
 
 VertexArray::~VertexArray()
 {
-	Renderer::Submit([this]()
+	GLuint rendererID = m_RendererID;
+
+	Renderer::Submit([rendererID]()
 	{
-		glDeleteVertexArrays(1, &m_RendererID);
+		glDeleteVertexArrays(1, &rendererID);
 	});
 }
 
 void VertexArray::Bind() const
 {
-	Renderer::Submit([this]()
+	Ref<const VertexArray> instance = this;
+
+	Renderer::Submit([instance]()
 	{
-		glBindVertexArray(m_RendererID);
+		glBindVertexArray(instance->m_RendererID);
 	});
 }
 
 void VertexArray::Unbind() const
 {
-	Renderer::Submit([this]()
+	Ref<const VertexArray> instance = this;
+
+	Renderer::Submit([instance]()
 	{
 		glBindVertexArray(0);
 	});
@@ -116,6 +122,7 @@ void VertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
 		for (const auto& element : layout)
 		{
 			auto glBaseType = ShaderDataTypeToOpenGLBaseType(element.Type);
+
 			glEnableVertexAttribArray(instance->m_VertexBufferIndex);
 
 			if (glBaseType == GL_INT)

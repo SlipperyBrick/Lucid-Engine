@@ -17,10 +17,7 @@ struct SceneRendererData
 
 	struct SceneInfo
 	{
-		Camera SceneCamera;
-
-		// Resources
-		Light ActiveLight;
+		SceneRendererCamera SceneCamera;
 
 	} SceneData;
 
@@ -97,14 +94,13 @@ void SceneRenderer::SetViewportSize(uint32_t width, uint32_t height)
 	s_Data.CompositePass->GetSpecification().TargetFramebuffer->Resize(width, height);
 }
 
-void SceneRenderer::BeginScene(const Scene* scene)
+void SceneRenderer::BeginScene(const Scene* scene, const SceneRendererCamera& camera)
 {
 	LD_CORE_ASSERT(!s_Data.ActiveScene, "");
 
 	s_Data.ActiveScene = scene;
 
-	s_Data.SceneData.SceneCamera = scene->m_Camera;
-	s_Data.SceneData.ActiveLight = scene->m_Light;
+	s_Data.SceneData.SceneCamera = camera;
 }
 
 void SceneRenderer::EndScene()
@@ -150,18 +146,18 @@ void SceneRenderer::GeometryPass()
 		});
 	}
 
-	auto viewProjection = s_Data.SceneData.SceneCamera.GetProjectionMatrix() * s_Data.SceneData.SceneCamera.GetViewMatrix();
-	glm::vec3 cameraPosition = glm::inverse(s_Data.SceneData.SceneCamera.GetViewMatrix())[3];
+	auto viewProjection = s_Data.SceneData.SceneCamera.Camera.GetProjectionMatrix() * s_Data.SceneData.SceneCamera.ViewMatrix;
+	glm::vec3 cameraPosition = glm::inverse(s_Data.SceneData.SceneCamera.ViewMatrix)[3];
 
 	// Render entities
 	for (auto& dc : s_Data.DrawList)
 	{
 		auto baseMaterial = dc.Mesh->GetMaterial();
 		baseMaterial->Set("u_ViewProjectionMatrix", viewProjection);
-		baseMaterial->Set("u_CameraPosition", s_Data.SceneData.SceneCamera.GetPosition());
+		baseMaterial->Set("u_CameraPosition", cameraPosition);
 
 		// Set lights (TODO: move to light environment and don't do per mesh)
-		baseMaterial->Set("lights", s_Data.SceneData.ActiveLight);
+		//baseMaterial->Set("lights", s_Data.SceneData.ActiveLight);
 
 		auto overrideMaterial = nullptr;
 		Renderer::SubmitMesh(dc.Mesh, dc.Transform, overrideMaterial);
@@ -183,7 +179,7 @@ void SceneRenderer::GeometryPass()
 		baseMaterial->Set("u_CameraPosition", cameraPosition);
 
 		// Set lights (TODO: move to light environment and don't do per mesh)
-		baseMaterial->Set("lights", s_Data.SceneData.ActiveLight);
+		//baseMaterial->Set("lights", s_Data.SceneData.ActiveLight);
 
 		auto overrideMaterial = nullptr;
 		Renderer::SubmitMesh(dc.Mesh, dc.Transform, overrideMaterial);
@@ -202,7 +198,7 @@ void SceneRenderer::GeometryPass()
 			glDisable(GL_DEPTH_TEST);
 		});
 
-		// Draw outline here
+		// Draw outline
 		s_Data.OutlineMaterial->Set("u_ViewProjection", viewProjection);
 
 		for (auto& dc : s_Data.SelectedMeshDrawList)
@@ -234,6 +230,7 @@ void SceneRenderer::GeometryPass()
 	if (GetOptions().ShowGrid)
 	{
 		s_Data.GridMaterial->Set("u_ViewProjection", viewProjection);
+
 		Renderer::SubmitQuad(s_Data.GridMaterial, glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(16.0f)));
 	}
 
@@ -273,6 +270,7 @@ void SceneRenderer::FlushDrawList()
 	CompositePass();
 
 	s_Data.DrawList.clear();
+	s_Data.SelectedMeshDrawList.clear();
 	s_Data.SceneData = {};
 }
 

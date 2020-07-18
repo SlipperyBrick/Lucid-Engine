@@ -29,7 +29,7 @@ glm::mat4 Mat4FromAssimpMat4(const aiMatrix4x4& matrix)
 {
 	glm::mat4 result;
 
-	//the a,b,c,d in assimp is the row ; the 1,2,3,4 is the column
+	// The a, b, c, d in assimp is the row within the matrix, the 1, 2, 3, 4 is the column
 	result[0][0] = matrix.a1; result[1][0] = matrix.a2; result[2][0] = matrix.a3; result[3][0] = matrix.a4;
 	result[0][1] = matrix.b1; result[1][1] = matrix.b2; result[2][1] = matrix.b3; result[3][1] = matrix.b4;
 	result[0][2] = matrix.c1; result[1][2] = matrix.c2; result[2][2] = matrix.c3; result[3][2] = matrix.c4;
@@ -39,14 +39,15 @@ glm::mat4 Mat4FromAssimpMat4(const aiMatrix4x4& matrix)
 }
 
 static const uint32_t s_MeshImportFlags =
-aiProcess_CalcTangentSpace |        // Create binormals/tangents just in case
-aiProcess_Triangulate |             // Make sure we're triangles
-aiProcess_SortByPType |             // Split meshes by primitive type
-aiProcess_GenNormals |              // Make sure we have legit normals
-aiProcess_GenUVCoords |             // Convert UVs if required 
-aiProcess_OptimizeMeshes |          // Batch draws where possible
-aiProcess_ValidateDataStructure;    // Validation
+aiProcess_CalcTangentSpace |        // Generate bitangents/tangents if mesh has none
+aiProcess_Triangulate |             // Triangulate meshes that aren't already triangulated
+aiProcess_SortByPType |             // Split all meshes by primitive type
+aiProcess_GenNormals |              // Generate normals if mesh has none
+aiProcess_GenUVCoords |             // Generate UV coordinates if mesh has none
+aiProcess_OptimizeMeshes |          // Batch meshes into single draw calls 
+aiProcess_ValidateDataStructure;    // Valid mesh structure
 
+// Create a new logger for logging assimp logstream data
 struct LogStream : public Assimp::LogStream
 {
 	static void Initialize()
@@ -75,6 +76,11 @@ Mesh::Mesh(const std::string& filename)
 
 	const aiScene* scene = m_Importer->ReadFile(filename, s_MeshImportFlags);
 
+	// Get file extension
+	size_t found = m_FilePath.find_last_of(".");
+	std::string fileExtension = found != std::string::npos ? m_FilePath.substr(found, std::string::npos) : m_FilePath;
+
+	// Check if the scene has any meshes
 	if (!scene || !scene->HasMeshes())
 	{
 		LD_CORE_ERROR("Failed to load mesh file: {0}", filename);
@@ -83,7 +89,7 @@ Mesh::Mesh(const std::string& filename)
 	m_Scene = scene;
 
 	m_MeshShader = Renderer::GetShaderLibrary()->Get("Scene");
-	m_BaseMaterial = Ref<Material>(m_MeshShader);
+	m_BaseMaterial = Ref<Material>::Create(m_MeshShader);
 
 	m_InverseTransform = glm::inverse(Mat4FromAssimpMat4(scene->mRootNode->mTransformation));
 
@@ -92,6 +98,7 @@ Mesh::Mesh(const std::string& filename)
 
 	m_Submeshes.reserve(scene->mNumMeshes);
 
+	// For every submesh
 	for (size_t m = 0; m < scene->mNumMeshes; m++)
 	{
 		aiMesh* mesh = scene->mMeshes[m];
@@ -110,18 +117,20 @@ Mesh::Mesh(const std::string& filename)
 		LD_CORE_ASSERT(mesh->HasPositions(), "Meshes require positions.");
 		LD_CORE_ASSERT(mesh->HasNormals(), "Meshes require normals.");
 
-		// Vertices
 		auto& aabb = submesh.BoundingBox;
 		aabb.Min = { FLT_MAX, FLT_MAX, FLT_MAX };
 		aabb.Max = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
 
+		// For ever vertex
 		for (size_t i = 0; i < mesh->mNumVertices; i++)
 		{
 			Vertex vertex;
 
+			// Store vertex positions and normals
 			vertex.Position = { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z };
 			vertex.Normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
 
+			// Set the minimum and maximum extends of the meshes AABB based off the vertex positions
 			aabb.Min.x = glm::min(vertex.Position.x, aabb.Min.x);
 			aabb.Min.y = glm::min(vertex.Position.y, aabb.Min.y);
 			aabb.Min.z = glm::min(vertex.Position.z, aabb.Min.z);
@@ -129,49 +138,58 @@ Mesh::Mesh(const std::string& filename)
 			aabb.Max.y = glm::max(vertex.Position.y, aabb.Max.y);
 			aabb.Max.z = glm::max(vertex.Position.z, aabb.Max.z);
 
+			// Check if the vertex has tangents and bitangents
 			if (mesh->HasTangentsAndBitangents())
 			{
 				vertex.Tangent = { mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z };
-				vertex.Binormal = { mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z };
+				vertex.Bitangent = { mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z };
 			}
 
+			// Check if the mesh has texture coordinates
 			if (mesh->HasTextureCoords(0))
 			{
-				vertex.Texcoord = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
+				vertex.TexCoord = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
 			}
 
+			// Push the vertex back to the vertices list
 			m_Vertices.push_back(vertex);
 		}
 
-		// Indices
+		// For every face
 		for (size_t i = 0; i < mesh->mNumFaces; i++)
 		{
 			LD_CORE_ASSERT(mesh->mFaces[i].mNumIndices == 3, "Must have 3 indices.");
 
+			// Create indices for each face of the model, a single index describes a single face
 			Index index = { mesh->mFaces[i].mIndices[0], mesh->mFaces[i].mIndices[1], mesh->mFaces[i].mIndices[2] };
 
+			// Push the indices back to the index list
 			m_Indices.push_back(index);
 
 			m_TriangleCache[m].emplace_back(m_Vertices[index.V1 + submesh.BaseVertex], m_Vertices[index.V2 + submesh.BaseVertex], m_Vertices[index.V3 + submesh.BaseVertex]);
 		}
 	}
 
+	// Recursively traverse the meshes node hierarchy
 	TraverseNodes(scene->mRootNode);
 
-	// Materials
+	// Check if materials exist
 	if (scene->HasMaterials())
 	{
+		aiTextureType type;
+
 		LD_MESH_LOG("---- Materials - {0} ----", filename);
 
 		m_Textures.resize(scene->mNumMaterials);
 		m_Materials.resize(scene->mNumMaterials);
 
+		// For every material
 		for (uint32_t i = 0; i < scene->mNumMaterials; i++)
 		{
 			auto aiMaterial = scene->mMaterials[i];
 			auto aiMaterialName = aiMaterial->GetName();
 
-			auto mi = Ref<MaterialInstance>(m_BaseMaterial);
+			auto mi = Ref<MaterialInstance>::Create(m_BaseMaterial);
 
 			m_Materials[i] = mi;
 
@@ -183,8 +201,8 @@ Mesh::Mesh(const std::string& filename)
 
 			LD_MESH_LOG("    TextureCount = {0}", textureCount);
 
-			aiColor3D aiColor;
-			aiMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, aiColor);
+			aiColor3D aiColour;
+			aiMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, aiColour);
 
 			float shininess;
 
@@ -192,7 +210,7 @@ Mesh::Mesh(const std::string& filename)
 
 			float specular = 1.0f - glm::sqrt(shininess / 100.0f);
 
-			LD_MESH_LOG("    COLOR = {0}, {1}, {2}", aiColor.r, aiColor.g, aiColor.b);
+			LD_MESH_LOG("    COLOR = {0}, {1}, {2}", aiColour.r, aiColour.g, aiColour.b);
 			LD_MESH_LOG("    SPECULARITY = {0}", specular);
 
 			bool hasDiffuseMap = aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexPath) == AI_SUCCESS;
@@ -222,12 +240,12 @@ Mesh::Mesh(const std::string& filename)
 					LD_CORE_ERROR("Could not load texture: {0}", texturePath);
 
 					// Fallback to diffuse colour
-					mi->Set("u_DiffuseColour", glm::vec3{ aiColor.r, aiColor.g, aiColor.b });
+					mi->Set("u_DiffuseColour", glm::vec3{ aiColour.r, aiColour.g, aiColour.b });
 				}
 			}
 			else
 			{
-				mi->Set("u_DiffuseColour", glm::vec3{ aiColor.r, aiColor.g, aiColor.b });
+				mi->Set("u_DiffuseColour", glm::vec3{ aiColour.r, aiColour.g, aiColour.b });
 
 				LD_MESH_LOG("    No diffuse map");
 			}
@@ -235,7 +253,17 @@ Mesh::Mesh(const std::string& filename)
 			// Normal maps
 			mi->Set("u_NormalTexToggle", 0.0f);
 
-			if (aiMaterial->GetTexture(aiTextureType_HEIGHT, 0, &aiTexPath) == AI_SUCCESS)
+			// Check what file format mesh is for correctly setting normals type
+			if (fileExtension == ".fbx")
+			{
+				type = aiTextureType_NORMALS;
+			}
+			else if (fileExtension == ".obj")
+			{
+				type = aiTextureType_HEIGHT;
+			}
+
+			if (aiMaterial->GetTexture(type, 0, &aiTexPath) == AI_SUCCESS)
 			{
 				std::filesystem::path path = filename;
 
@@ -366,9 +394,9 @@ void Mesh::DumpVertexBuffer()
 		LD_MESH_LOG("Vertex: {0}", i);
 		LD_MESH_LOG("Position: {0}, {1}, {2}", vertex.Position.x, vertex.Position.y, vertex.Position.z);
 		LD_MESH_LOG("Normal: {0}, {1}, {2}", vertex.Normal.x, vertex.Normal.y, vertex.Normal.z);
-		LD_MESH_LOG("Binormal: {0}, {1}, {2}", vertex.Binormal.x, vertex.Binormal.y, vertex.Binormal.z);
+		LD_MESH_LOG("Binormal: {0}, {1}, {2}", vertex.Bitangent.x, vertex.Bitangent.y, vertex.Bitangent.z);
 		LD_MESH_LOG("Tangent: {0}, {1}, {2}", vertex.Tangent.x, vertex.Tangent.y, vertex.Tangent.z);
-		LD_MESH_LOG("TexCoord: {0}, {1}", vertex.Texcoord.x, vertex.Texcoord.y);
+		LD_MESH_LOG("TexCoord: {0}, {1}", vertex.TexCoord.x, vertex.TexCoord.y);
 		LD_MESH_LOG("--");
 	}
 

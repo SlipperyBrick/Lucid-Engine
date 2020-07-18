@@ -61,11 +61,6 @@ public:
 		m_Textures[slot] = texture;
 	}
 
-	void Set(const std::string& name, const Ref<TextureCube>& texture)
-	{
-		Set(name, (const Ref<Texture2D>&)texture);
-	}
-
 public:
 
 	static Ref<Material> Create(const Ref<Shader>& shader);
@@ -117,7 +112,7 @@ public:
 		LD_CORE_ASSERT(decl, "Could not find uniform with name 'x'");
 
 		auto& buffer = GetUniformBufferTarget(decl);
-		buffer.Write((byte*)&value, decl->GetSize(), decl->GetOffset());
+		buffer.Write((byte*)& value, decl->GetSize(), decl->GetOffset());
 
 		m_OverriddenValues.insert(name);
 	}
@@ -139,11 +134,6 @@ public:
 		}
 
 		m_Textures[slot] = texture;
-	}
-
-	void Set(const std::string& name, const Ref<TextureCube>& texture)
-	{
-		Set(name, (const Ref<Texture2D>&)texture);
 	}
 
 	void Bind();

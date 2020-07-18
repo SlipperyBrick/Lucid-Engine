@@ -24,8 +24,8 @@ struct Vertex
 	glm::vec3 Position;
 	glm::vec3 Normal;
 	glm::vec3 Tangent;
-	glm::vec3 Binormal;
-	glm::vec2 Texcoord;
+	glm::vec3 Bitangent;
+	glm::vec2 TexCoord;
 };
 
 static const int NumAttributes = 5;
@@ -60,6 +60,7 @@ public:
 	uint32_t IndexCount;
 
 	glm::mat4 Transform;
+
 	AABB BoundingBox;
 
 	std::string NodeName;
@@ -112,8 +113,10 @@ private:
 	// Materials
 	Ref<Shader> m_MeshShader;
 	Ref<Material> m_BaseMaterial;
+
 	std::vector<Ref<Texture2D>> m_Textures;
 	std::vector<Ref<Texture2D>> m_NormalMaps;
+
 	std::vector<Ref<MaterialInstance>> m_Materials;
 
 	std::unordered_map<uint32_t, std::vector<Triangle>> m_TriangleCache;
