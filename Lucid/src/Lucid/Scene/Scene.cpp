@@ -145,6 +145,16 @@ void Scene::SetViewportSize(uint32_t width, uint32_t height)
 	m_ViewportHeight = height;
 }
 
+void Scene::SetLightEnvironment(const LightEnvironment& lightEnvironment)
+{
+	SceneRenderer::SetLightEnvironment(lightEnvironment);
+}
+
+const LightEnvironment& Scene::GetLightEnvironment()
+{
+	return SceneRenderer::GetLightEnvironment();
+}
+
 Entity Scene::CreateEntity(const std::string& name)
 {
 	auto entity = Entity{ m_Registry.create(), this };

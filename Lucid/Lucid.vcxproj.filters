@@ -1,299 +1,197 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
+    <ClCompile Include="src\Lucid\Core\Application.cpp" />
+    <ClCompile Include="src\Lucid\Core\Base.cpp" />
+    <ClCompile Include="src\Lucid\Core\Layer.cpp" />
+    <ClCompile Include="src\Lucid\Core\LayerStack.cpp" />
+    <ClCompile Include="src\Lucid\Core\Log.cpp" />
+    <ClCompile Include="src\Lucid\Core\Memory.h" />
+    <ClCompile Include="src\Lucid\Core\Timestep.cpp" />
+    <ClCompile Include="src\Lucid\Core\LucidUUID.cpp" />
+    <ClCompile Include="src\Lucid\Core\Window.cpp" />
+    <ClCompile Include="src\EntryPoint.cpp" />
+    <ClCompile Include="src\ldpch.cpp" />
+    <ClCompile Include="src\Lucid\ImGui\EditorCamera.cpp" />
+    <ClCompile Include="src\Lucid\ImGui\EditorLayer.cpp" />
+    <ClCompile Include="src\Lucid\ImGui\ImGuiGizmo.cpp" />
+    <ClCompile Include="src\Lucid\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\Camera.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\Framebuffer.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\Material.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\Mesh.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\RenderCommandQueue.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\Renderer2D.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\RenderPass.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\SceneRenderer.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\Shader.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\ShaderLibrary.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\ShaderUniform.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\Texture.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\Lucid\Renderer\VertexBuffer.cpp" />
+    <ClCompile Include="src\Lucid\Scene\Entity.cpp" />
+    <ClCompile Include="src\Lucid\Scene\Scene.cpp" />
+    <ClCompile Include="src\Lucid\Scene\SceneHierarchy.cpp" />
+    <ClCompile Include="src\Lucid\Scene\SceneSerializer.cpp" />
+    <ClCompile Include="vendor\glad\glad.c" />
+    <ClCompile Include="vendor\imgui\imgui.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_demo.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_draw.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="vendor\stbimage\stb_image.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\contrib\graphbuilder.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\contrib\graphbuilderadapter.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\binary.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\convert.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\depthguard.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\directives.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\emit.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\emitfromevents.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\emitter.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\emitterstate.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\emitterutils.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\exceptions.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\exp.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\memory.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\node.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\node_data.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\nodebuilder.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\nodeevents.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\null.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\ostream_wrapper.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\parse.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\parser.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\regex_yaml.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\scanner.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\scanscalar.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\scantag.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\scantoken.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\simplekey.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\singledocparser.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\stream.cpp" />
+    <ClCompile Include="vendor\yaml-cpp\src\tag.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\ldpch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Core\Log.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="vendor\glad\glad.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Core\LayerStack.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Core\Timestep.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="vendor\imgui\imgui.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="vendor\imgui\imgui_demo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="vendor\imgui\imgui_draw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="vendor\imgui\imgui_impl_glfw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="vendor\imgui\imgui_impl_opengl3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="vendor\imgui\imgui_widgets.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\ImGui\ImGuiLayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Core\Layer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\ImGui\ImGuiGizmo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Core\Application.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Core\Base.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Core\Memory.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Renderer\Renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Renderer\RenderCommandQueue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Core\Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\ImGui\EditorLayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Renderer\Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\EntryPoint.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Renderer\VertexBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Renderer\VertexArray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Renderer\Framebuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="vendor\stbimage\stb_image.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Renderer\Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Renderer\RenderPass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Renderer\ShaderUniform.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Renderer\Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Renderer\ShaderLibrary.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Renderer\Material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Renderer\Mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Renderer\SceneRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Scene\Entity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Scene\Scene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Renderer\Renderer2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Scene\SceneHierarchy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\ImGui\EditorCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Lucid\Core\LucidUUID.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\ldpch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Core\Log.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Core\Events\Event.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Core\Base.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Core\Events\ApplicationEvent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Core\Events\KeyEvent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Core\Events\MouseEvent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Core\KeyCodes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Core\Assert.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Core\LayerStack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Core\Timestep.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vendor\imgui\imconfig.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vendor\imgui\imgui.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vendor\imgui\imgui_impl_glfw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vendor\imgui\imgui_impl_opengl3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vendor\imgui\imgui_internal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vendor\imgui\imstb_rectpack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vendor\imgui\imstb_textedit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vendor\imgui\imstb_truetype.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\ImGui\ImGuiLayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Core\Layer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\ImGui\ImGuiGizmo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Core\Application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Renderer\Renderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Renderer\RenderCommandQueue.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Core\Window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\ImGui\EditorLayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Renderer\Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Renderer\VertexBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Renderer\VertexArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Renderer\Framebuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Renderer\Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Renderer\RenderPass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Renderer\ShaderUniform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Renderer\Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Renderer\ShaderLibrary.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Renderer\Material.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Core\Math\AABB.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Core\Math\Ray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Renderer\Mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Renderer\SceneRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Scene\Entity.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Scene\Scene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Renderer\Renderer2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Scene\SceneHierarchy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Scene\Components.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Core\Ref.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\ImGui\EditorCamera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Core\LucidUUID.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="src\ldpch.h" />
+    <ClInclude Include="src\Lucid\Core\Application.h" />
+    <ClInclude Include="src\Lucid\Core\Assert.h" />
+    <ClInclude Include="src\Lucid\Core\Base.h" />
+    <ClInclude Include="src\Lucid\Core\Events\ApplicationEvent.h" />
+    <ClInclude Include="src\Lucid\Core\Events\Event.h" />
+    <ClInclude Include="src\Lucid\Core\Events\KeyEvent.h" />
+    <ClInclude Include="src\Lucid\Core\Events\MouseEvent.h" />
+    <ClInclude Include="src\Lucid\Core\KeyCodes.h" />
+    <ClInclude Include="src\Lucid\Core\Layer.h" />
+    <ClInclude Include="src\Lucid\Core\LayerStack.h" />
+    <ClInclude Include="src\Lucid\Core\Log.h" />
+    <ClInclude Include="src\Lucid\Core\Math\AABB.h" />
+    <ClInclude Include="src\Lucid\Core\Math\Ray.h" />
+    <ClInclude Include="src\Lucid\Core\Ref.h" />
+    <ClInclude Include="src\Lucid\Core\Timestep.h" />
+    <ClInclude Include="src\Lucid\Core\LucidUUID.h" />
+    <ClInclude Include="src\Lucid\Core\Window.h" />
+    <ClInclude Include="src\Lucid\ImGui\EditorCamera.h" />
+    <ClInclude Include="src\Lucid\ImGui\EditorLayer.h" />
+    <ClInclude Include="src\Lucid\ImGui\ImGuiGizmo.h" />
+    <ClInclude Include="src\Lucid\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="src\Lucid\Renderer\Camera.h" />
+    <ClInclude Include="src\Lucid\Renderer\Framebuffer.h" />
+    <ClInclude Include="src\Lucid\Renderer\Material.h" />
+    <ClInclude Include="src\Lucid\Renderer\Mesh.h" />
+    <ClInclude Include="src\Lucid\Renderer\RenderCommandQueue.h" />
+    <ClInclude Include="src\Lucid\Renderer\Renderer.h" />
+    <ClInclude Include="src\Lucid\Renderer\Renderer2D.h" />
+    <ClInclude Include="src\Lucid\Renderer\RenderPass.h" />
+    <ClInclude Include="src\Lucid\Renderer\SceneRenderer.h" />
+    <ClInclude Include="src\Lucid\Renderer\Shader.h" />
+    <ClInclude Include="src\Lucid\Renderer\ShaderLibrary.h" />
+    <ClInclude Include="src\Lucid\Renderer\ShaderUniform.h" />
+    <ClInclude Include="src\Lucid\Renderer\Texture.h" />
+    <ClInclude Include="src\Lucid\Renderer\VertexArray.h" />
+    <ClInclude Include="src\Lucid\Renderer\VertexBuffer.h" />
+    <ClInclude Include="src\Lucid\Scene\Components.h" />
+    <ClInclude Include="src\Lucid\Scene\Entity.h" />
+    <ClInclude Include="src\Lucid\Scene\Scene.h" />
+    <ClInclude Include="src\Lucid\Scene\SceneHierarchy.h" />
+    <ClInclude Include="src\Lucid\Scene\SceneSerializer.h" />
+    <ClInclude Include="vendor\imgui\imconfig.h" />
+    <ClInclude Include="vendor\imgui\imgui.h" />
+    <ClInclude Include="vendor\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="vendor\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="vendor\imgui\imgui_internal.h" />
+    <ClInclude Include="vendor\imgui\imstb_rectpack.h" />
+    <ClInclude Include="vendor\imgui\imstb_textedit.h" />
+    <ClInclude Include="vendor\imgui\imstb_truetype.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\contrib\anchordict.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\contrib\graphbuilder.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\node\detail\impl.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\node\detail\iterator.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\node\detail\iterator_fwd.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\node\detail\memory.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\node\detail\node.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\node\detail\node_data.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\node\detail\node_iterator.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\node\detail\node_ref.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\node\convert.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\node\emit.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\node\impl.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\node\iterator.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\node\node.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\node\parse.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\node\ptr.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\node\type.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\anchor.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\binary.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\depthguard.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\dll.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\emitfromevents.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\emitter.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\emitterdef.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\emittermanip.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\emitterstyle.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\eventhandler.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\exceptions.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\mark.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\noexcept.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\null.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\ostream_wrapper.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\parser.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\stlemitter.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\traits.h" />
+    <ClInclude Include="vendor\yaml-cpp\includes\yaml-cpp\yaml.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\contrib\graphbuilderadapter.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\collectionstack.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\directives.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\emitterstate.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\emitterutils.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\exp.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\indentation.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\nodebuilder.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\nodeevents.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\ptr_vector.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\regex_yaml.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\regeximpl.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\scanner.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\scanscalar.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\scantag.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\setting.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\singledocparser.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\stream.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\streamcharsource.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\stringsource.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\tag.h" />
+    <ClInclude Include="vendor\yaml-cpp\src\token.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\Composite.glsl" />
     <None Include="assets\shaders\Grid.glsl" />
     <None Include="assets\shaders\Line.glsl" />
+    <None Include="assets\shaders\Outline.glsl" />
     <None Include="assets\shaders\Quad.glsl" />
     <None Include="assets\shaders\Scene.glsl" />
-    <None Include="assets\shaders\Outline.glsl" />
   </ItemGroup>
 </Project>

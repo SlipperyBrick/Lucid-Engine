@@ -2,6 +2,8 @@
 
 #include "EditorLayer.h"
 
+#include <filesystem>
+
 #include "Lucid/ImGui/ImGuiGizmo.h"
 
 #include "Lucid/Core/Application.h"
@@ -9,6 +11,8 @@
 #include "Lucid/Renderer/Renderer2D.h"
 #include "Lucid/Renderer/Renderer.h"
 #include "Lucid/Renderer/SceneRenderer.h"
+
+#include "Lucid/Scene/SceneSerializer.h"
 
 EditorLayer::EditorLayer()
 	: m_EditorCamera(glm::perspectiveFov(glm::radians(45.0f), 1280.0f, 720.0f, 0.1f, 10000.0f))
@@ -194,12 +198,7 @@ void EditorLayer::OnImGuiRender()
 
 	if (Property("Show Bounding Boxes", m_UIShowBoundingBoxes))
 	{
-		ShowBoundingBoxes(m_UIShowBoundingBoxes, m_UIShowBoundingBoxesOnTop);
-	}
-
-	if (m_UIShowBoundingBoxes && Property("On Top", m_UIShowBoundingBoxesOnTop))
-	{
-		ShowBoundingBoxes(m_UIShowBoundingBoxes, m_UIShowBoundingBoxesOnTop);
+		ShowBoundingBoxes(m_UIShowBoundingBoxes);
 	}
 
 	const char* label = m_SelectionMode == SelectionMode::Entity ? "Entity" : "Mesh";
@@ -463,69 +462,40 @@ void EditorLayer::OnImGuiRender()
 	{
 		if (ImGui::BeginMenu("File"))
 		{
-			if (ImGui::MenuItem("New", "", false))
-			{
-				
-			}
-
 			if (ImGui::MenuItem("Open", "", false))
 			{
+				auto& app = Application::Get();
+				std::string filepath = app.OpenFile("Lucid Scene (*.lcd)\0*.lcd\0");
 
+				if (!filepath.empty())
+				{
+					Ref<Scene> newScene = Ref<Scene>::Create();
+
+					SceneSerializer serializer(newScene);
+					serializer.Deserialize(filepath);
+
+					m_ActiveScene = newScene;
+					std::filesystem::path path = filepath;
+					UpdateWindowTitle(path.filename().string());
+
+					m_SceneHierarchy->SetContext(m_ActiveScene);
+
+					m_ActiveScene->SetSelectedEntity({});
+					m_SelectionContext.clear();
+				}
 			}
 
 			if (ImGui::MenuItem("Save", "", false))
 			{
+				auto& app = Application::Get();
 
-			}
+				std::string filepath = app.SaveFile("Lucid Scene (*.lcd)\0*.lcd\0");
 
-			ImGui::EndMenu();
-		}
+				SceneSerializer serializer(m_ActiveScene);
+				serializer.Serialize(filepath);
 
-		if (ImGui::BeginMenu("Edit"))
-		{
-			if (ImGui::MenuItem("Copy", "", false))
-			{
-
-			}
-
-			if (ImGui::MenuItem("Paste", "", false))
-			{
-
-			}
-
-			if (ImGui::MenuItem("Delete", "", false))
-			{
-
-			}
-
-			ImGui::EndMenu();
-		}
-
-		if (ImGui::BeginMenu("View"))
-		{
-			if (ImGui::MenuItem("Renderer Info", "", false))
-			{
-
-			}
-
-			if (ImGui::MenuItem("Grid", "", false))
-			{
-
-			}
-
-			if (ImGui::MenuItem("Bounding Boxes", "", false))
-			{
-
-			}
-
-			if (ImGui::MenuItem("Scene Hierarchy", "", false))
-			{
-
-			}
-
-			if (ImGui::MenuItem("Properties", "", false))
-			{
-
+				std::filesystem::path path = filepath;
+				UpdateWindowTitle(path.filename().string());
 			}
 
 			ImGui::EndMenu();
@@ -624,7 +594,7 @@ bool EditorLayer::OnKeyPressedEvent(KeyPressedEvent& e)
 				{
 					m_UIShowBoundingBoxes = !m_UIShowBoundingBoxes;
 
-					ShowBoundingBoxes(m_UIShowBoundingBoxes, m_UIShowBoundingBoxesOnTop);
+					ShowBoundingBoxes(m_UIShowBoundingBoxes);
 				}
 
 				break;
@@ -822,11 +792,9 @@ void EditorLayer::Property(const std::string& name, glm::vec4& value, float min,
 	ImGui::NextColumn();
 }
 
-void EditorLayer::ShowBoundingBoxes(bool show, bool onTop)
+void EditorLayer::ShowBoundingBoxes(bool show)
 {
-	SceneRenderer::GetOptions().ShowBoundingBoxes = show && !onTop;
-
-	m_DrawOnTopBoundingBoxes = show && onTop;
+	SceneRenderer::GetOptions().ShowBoundingBoxes = show;
 }
 
 std::pair<float, float> EditorLayer::GetMouseViewportSpace()
@@ -900,4 +868,10 @@ Ray EditorLayer::CastMouseRay()
 	}
 
 	return Ray::Zero();
+}
+
+void EditorLayer::UpdateWindowTitle(const std::string& sceneName)
+{
+	std::string title = sceneName + " - Lucid Engine";
+	Application::Get().GetWindow().SetTitle(title);
 }

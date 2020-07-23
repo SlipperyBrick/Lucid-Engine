@@ -39,6 +39,7 @@ public:
 	void RenderImGui();
 
 	std::string OpenFile(const char* filter = "All\0*.*\0") const;
+	std::string SaveFile(const char* filter = "All\0*.*\0") const;
 
 	// Get the applications window
 	inline Window& GetWindow() { return *m_Window; }

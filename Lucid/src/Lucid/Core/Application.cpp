@@ -104,6 +104,30 @@ std::string Application::OpenFile(const char* filter) const
 	return std::string();
 }
 
+std::string Application::SaveFile(const char* filter) const
+{
+	// Common dialog box structure
+	OPENFILENAMEA ofn;
+	CHAR szFile[260] = { 0 };
+
+	// Initialize OPENFILENAME
+	ZeroMemory(&ofn, sizeof(OPENFILENAME));
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)m_Window.get()->GetWindowPointer());
+	ofn.lpstrFile = szFile;
+	ofn.nMaxFile = sizeof(szFile);
+	ofn.lpstrFilter = filter;
+	ofn.nFilterIndex = 1;
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+
+	if (GetSaveFileNameA(&ofn) == TRUE)
+	{
+		return ofn.lpstrFile;
+	}
+
+	return std::string();
+}
+
 // Initalizes application specific components such as user-interface
 void Application::OnInit()
 {

@@ -6,6 +6,30 @@
 
 #include "Lucid/ImGui/EditorCamera.h"
 
+struct DirectionalLight
+{
+	glm::vec3 Direction = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 Colour = { 1.0f, 1.0f, 1.0f };
+
+	float Brightness = 0.0f;
+};
+
+struct PointLight
+{
+	glm::vec3 Position = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 Colour = { 1.0f, 1.0f, 1.0f };
+
+	float Brightness = 0.0f;
+	float Falloff = 0.0f;
+	float Slope = 0.0f;
+};
+
+struct LightEnvironment
+{
+	DirectionalLight DirectionalLights[4];
+	PointLight PointLights[4];
+};
+
 class Entity;
 
 using EntityMap = std::unordered_map<LucidUUID, Entity>;
@@ -24,6 +48,15 @@ public:
 	void OnEvent(Event& e);
 
 	void SetViewportSize(uint32_t width, uint32_t height);
+
+	void SetLightEnvironment(const LightEnvironment& lightEnvironment);
+	const LightEnvironment& GetLightEnvironment();
+
+	void SetDirectionalLights(const DirectionalLight& directionalLights);
+	const DirectionalLight& GetDirectionalLights();
+
+	void SetPointLights(const PointLight& pointLights);
+	const PointLight& GetPointLights();
 
 	Entity CreateEntity(const std::string& name = "");
 	Entity CreateEntityWithID(LucidUUID uuid, const std::string& name = "", bool runtimeMap = false);
@@ -67,4 +100,5 @@ private:
 	friend class Entity;
 	friend class SceneRenderer;
 	friend class SceneHierarchy;
+	friend class SceneSerializer;
 };

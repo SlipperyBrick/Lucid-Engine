@@ -133,6 +133,11 @@ void SceneRenderer::SetLightEnvironment(const LightEnvironment& lightEnvironment
 	s_Data.SceneLightEnvironment = lightEnvironment;
 }
 
+const LightEnvironment& SceneRenderer::GetLightEnvironment()
+{
+	return s_Data.SceneLightEnvironment;
+}
+
 void SceneRenderer::GeometryPass()
 {
 	bool outline = s_Data.SelectedMeshDrawList.size() > 0;

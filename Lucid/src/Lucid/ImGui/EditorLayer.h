@@ -56,7 +56,7 @@ public:
 	void Property(const std::string& name, glm::vec4& value, PropertyFlag flags);
 	void Property(const std::string& name, glm::vec4& value, float min = -1.0f, float max = 1.0f, PropertyFlag flags = PropertyFlag::None);
 
-	void ShowBoundingBoxes(bool show, bool onTop = false);
+	void ShowBoundingBoxes(bool show);
 
 	void SelectEntity(Entity entity);
 
@@ -65,6 +65,8 @@ public:
 	void SetNormalInput(const Ref<Texture2D>& texture) { m_NormalInput.TextureMap = texture; }
 
 private:
+
+	void UpdateWindowTitle(const std::string& sceneName);
 
 	std::pair<float, float> GetMouseViewportSpace();
 	std::pair<glm::vec3, glm::vec3> CastRay(float mx, float my);
@@ -147,7 +149,6 @@ private:
 	bool m_DrawOnTopBoundingBoxes = false;
 
 	bool m_UIShowBoundingBoxes = false;
-	bool m_UIShowBoundingBoxesOnTop = false;
 
 	bool m_ViewportPanelMouseOver = false;
 	bool m_ViewportPanelFocused = false;

@@ -38,6 +38,8 @@ public:
 	std::pair<uint32_t, uint32_t> GetSize() const { return { m_Data.Width, m_Data.Height }; }
 	std::pair<float, float> GetWindowPos() const;
 
+	void SetTitle(const std::string& title);
+
 	inline void SetEventCallback(const EventCallbackFn& callback) { m_Data.EventCallback = callback; }
 	void SetVSync(bool enabled);
 	bool IsVSync() const;
