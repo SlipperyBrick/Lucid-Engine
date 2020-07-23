@@ -73,6 +73,8 @@ void EditorLayer::OnAttach()
 
 	// Editor resources
 	m_CheckerboardTex = Texture2D::Create("assets/textures/Checkerboard.tga");
+	m_PointLightTex = Texture2D::Create("assets/textures/PointLight.tga");
+	m_DirLightTex = Texture2D::Create("assets/textures/DirectionalLight.tga");
 
 	m_ActiveScene = Ref<Scene>::Create();
 
@@ -214,30 +216,6 @@ void EditorLayer::OnImGuiRender()
 	ImGui::Separator();
 	{
 		ImGui::Text("Mesh");
-
-		/*auto meshComponent = m_MeshEntity.GetComponent<MeshComponent>();
-
-		std::string fullpath = meshComponent.Mesh ? meshComponent.Mesh->GetFilePath() : "None";
-
-		size_t found = fullpath.find_last_of("/\\");
-		std::string path = found != std::string::npos ? fullpath.substr(found + 1) : fullpath;
-
-		ImGui::Text(path.c_str()); ImGui::SameLine();
-
-		if (ImGui::Button("...##Mesh"))
-		{
-			std::string filename = Application::Get().OpenFile("");
-
-			if (filename != "")
-			{
-				auto newMesh = Ref<Mesh>::Create(filename);
-				
-				m_MeshMaterial.Reset(new Material(newMesh->GetMaterial()));
-				m_MeshEntity->SetMaterial(m_MeshMaterial);
-
-				meshComponent.Mesh = newMesh;
-			}
-		}*/
 	}
 
 	ImGui::Separator();
@@ -380,30 +358,6 @@ void EditorLayer::OnImGuiRender()
 	}
 
 	#pragma endregion
-
-	ImGui::Separator();
-
-	if (ImGui::TreeNode("Shaders"))
-	{
-		auto& shaders = Shader::s_AllShaders;
-
-		for (auto& shader : shaders)
-		{
-			if (ImGui::TreeNode(shader->GetName().c_str()))
-			{
-				std::string buttonName = "Reload##" + shader->GetName();
-
-				if (ImGui::Button(buttonName.c_str()))
-				{
-					shader->Reload();
-				}
-
-				ImGui::TreePop();
-			}
-		}
-
-		ImGui::TreePop();
-	}
 
 	ImGui::End();
 

@@ -6,8 +6,6 @@
 
 #include "Lucid/ImGui/EditorCamera.h"
 
-#include "Lucid/Renderer/Light.h"
-
 class Entity;
 
 using EntityMap = std::unordered_map<LucidUUID, Entity>;

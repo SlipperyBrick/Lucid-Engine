@@ -69,17 +69,6 @@ void Application::RenderImGui()
 {
 	m_ImGuiLayer->Begin();
 
-	ImGui::Begin("Renderer", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
-
-	auto& caps = RendererCapabilities::GetCapabilities();
-
-	ImGui::Text("Vendor: %s", caps.Vendor.c_str());
-	ImGui::Text("Renderer: %s", caps.Renderer.c_str());
-	ImGui::Text("Version: %s", caps.Version.c_str());
-	ImGui::Text("Frame Time: %.2fms\n", m_TimeStep.GetMilliseconds());
-
-	ImGui::End();
-
 	for (Layer* layer : m_LayerStack)
 	{
 		layer->OnImGuiRender();

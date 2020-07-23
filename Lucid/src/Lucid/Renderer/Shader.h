@@ -118,6 +118,8 @@ public:
 
 	void SetFloat(const std::string& name, float value);
 	void SetInt(const std::string& name, int value);
+	void SetVec3(const std::string& name, const glm::vec3& value);
+	void SetVec4(const std::string& name, const glm::vec4& value);
 	void SetIntArray(const std::string& name, int* values, uint32_t size);
 	void SetMat4(const std::string& name, const glm::mat4& value);
 	void SetMat4FromRenderThread(const std::string& name, const glm::mat4& value, bool bind = true);

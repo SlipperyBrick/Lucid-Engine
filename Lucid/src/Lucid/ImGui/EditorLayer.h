@@ -60,6 +60,10 @@ public:
 
 	void SelectEntity(Entity entity);
 
+	void SetDiffuseInput(const Ref<Texture2D>& texture) { m_DiffuseInput.TextureMap = texture; }
+	void SetSpecularInput(const Ref<Texture2D>& texture) { m_SpecularInput.TextureMap = texture; }
+	void SetNormalInput(const Ref<Texture2D>& texture) { m_NormalInput.TextureMap = texture; }
+
 private:
 
 	std::pair<float, float> GetMouseViewportSpace();
@@ -127,6 +131,8 @@ private:
 	#pragma region Editor
 
 	Ref<Texture2D> m_CheckerboardTex;
+	Ref<Texture2D> m_PointLightTex;
+	Ref<Texture2D> m_DirLightTex;
 
 	float m_GridScale = 16.025f;
 	float m_GridSize = 0.025f;

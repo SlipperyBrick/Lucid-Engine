@@ -138,9 +138,6 @@
     <ClCompile Include="src\Lucid\Core\LucidUUID.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Lucid\Renderer\Light.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ldpch.h">
@@ -288,9 +285,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Lucid\Core\LucidUUID.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Lucid\Renderer\Light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

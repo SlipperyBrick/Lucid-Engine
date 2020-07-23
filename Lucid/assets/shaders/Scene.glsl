@@ -16,30 +16,17 @@ out VertexOutput
 	vec2 TexCoord;
 	vec3 Normal;
 	vec3 FragPos;
-	vec3 TangentViewPos;
-	vec3 TangentFragPos;
 
 } vs_Output;
 
 void main()
 {
-	vs_Output.Normal = a_Normal;
+	vs_Output.Normal = mat3(u_Transform) * a_Normal;
 
 	// Flip texture coordinates
 	vs_Output.TexCoord = vec2(a_TexCoord.x, 1.0 - a_TexCoord.y);
 
 	vs_Output.FragPos = vec3(u_Transform * vec4(a_Position, 1.0));
-
-    mat3 normalMatrix = transpose(inverse(mat3(u_Transform)));
-
-	vec3 T = normalize(normalMatrix * a_Tangent);
-	vec3 B = normalize(normalMatrix * a_Bitangent);
-	vec3 N = normalize(normalMatrix * a_Normal);
-
-	mat3 TBN = transpose(mat3(T, B, N));
-
-	vs_Output.TangentViewPos = TBN * u_CameraPosition;
-	vs_Output.TangentFragPos = TBN * vs_Output.FragPos;
 
 	gl_Position = u_ViewProjectionMatrix * u_Transform * vec4(a_Position, 1.0);
 }
@@ -48,6 +35,18 @@ void main()
 #version 430 core
 
 layout(location = 0) out vec4 colour;
+
+struct Light
+{
+	vec3 Position;
+    vec3 Direction;
+	vec3 Ambient;
+    vec3 Diffuse;
+    vec3 Specular;
+	float Brightness;
+	float Falloff;
+	float Slope;
+};
 
 struct MaterialParameters
 {
@@ -63,26 +62,113 @@ in VertexOutput
 	vec2 TexCoord;
 	vec3 Normal;
 	vec3 FragPos;
-	vec3 TangentViewPos;
-	vec3 TangentFragPos;
 
 } vs_Input;
+
+// Light inputs
+uniform Light r_DirectionalLights[4];
+uniform int r_DirectionalLightCount;
+
+uniform Light r_PointLights[4];
+uniform int r_PointLightCount;
 
 // Material texture inputs
 uniform sampler2D u_DiffuseTexture;
 uniform sampler2D u_NormalTexture;
 uniform sampler2D u_SpecularTexture;
 
+// Material inputs
 uniform vec3 u_DiffuseColour;
 uniform float u_Specular;
 
+// ImGui texture toggles
 uniform float u_DiffuseTexToggle;
 uniform float u_NormalTexToggle;
 uniform float u_SpecularTexToggle;
 
+uniform vec3 r_CameraPosition;
+
 void main()
 {	
-	m_Params.Diffuse = u_DiffuseTexToggle > 0.5 ? texture(u_DiffuseTexture, vs_Input.TexCoord).rgb : u_DiffuseColour; 
+	m_Params.Diffuse = u_DiffuseTexToggle > 0.5 ? texture(u_DiffuseTexture, vs_Input.TexCoord).rgb : u_DiffuseColour;
+	m_Params.Specular = u_SpecularTexToggle > 0.5 ? texture(u_SpecularTexture, vs_Input.TexCoord).r : u_Specular;
 
-	colour = vec4(m_Params.Diffuse, 1.0f);
+	if (u_NormalTexToggle > 0.5)
+	{
+		// Use texture maps normals
+		m_Params.Normal = normalize(2.0 * texture(u_NormalTexture, vs_Input.TexCoord).rgb - 1.0);
+	}
+	else
+	{
+		// Use mesh normals
+		m_Params.Normal = normalize(vs_Input.Normal);
+	}
+
+	// Light attributes
+	vec3 dirDiffuse = vec3(0.0);
+	vec3 dirSpecular = vec3(0.0);
+	vec3 dirAmbient = vec3(0.0);
+
+	// Iterate over directional lights
+	for (int i = 0; i < r_DirectionalLightCount; i++)
+	{
+		// Ambient constant (cheap global illumination
+		dirAmbient += r_DirectionalLights[i].Ambient * m_Params.Diffuse;
+
+		// Diffuse component
+		vec3 lightDir = normalize(-r_DirectionalLights[i].Direction);
+		float diff = max(dot(m_Params.Normal, lightDir), 0.0);
+		dirDiffuse += r_DirectionalLights[i].Diffuse * diff * m_Params.Diffuse * r_DirectionalLights[i].Brightness;
+
+		// Specular component
+		float shininess = 32.0;
+		vec3 viewDir = normalize(r_CameraPosition - vs_Input.FragPos);
+		vec3 reflectDir = reflect(-lightDir, m_Params.Normal);
+
+		// Specular factor
+		vec3 halfwayDir = normalize(lightDir + viewDir);  
+        float spec = pow(max(dot(m_Params.Normal, halfwayDir), 0.0), shininess);
+		dirSpecular += r_DirectionalLights[i].Specular * spec;
+	}
+
+	// Light attributes
+	vec3 pointDiffuse = vec3(0.0);
+	vec3 pointSpecular = vec3(0.0);
+	vec3 pointAmbient = vec3(0.0);
+
+	// Iterate over point lights
+	for (int i = 0; i < r_PointLightCount; i++)
+	{
+		// Ambient constant (cheap global illumination
+		pointAmbient += r_PointLights[i].Ambient * m_Params.Diffuse;
+
+		// Diffuse component
+		vec3 lightDir = normalize(r_PointLights[i].Position - vs_Input.FragPos);
+		float diff = max(dot(m_Params.Normal, lightDir), 0.0);
+		pointDiffuse += r_PointLights[i].Diffuse * diff * m_Params.Diffuse * (r_PointLights[i].Brightness);
+
+		// Specular component
+		float shininess = 32.0;
+		vec3 viewDir = normalize(r_CameraPosition - vs_Input.FragPos);
+		vec3 reflectDir = reflect(-lightDir, m_Params.Normal);
+
+		// Specular factor
+		vec3 halfwayDir = normalize(lightDir + viewDir);  
+        float spec = pow(max(dot(m_Params.Normal, halfwayDir), 0.0), shininess);
+		pointSpecular += r_PointLights[i].Specular * spec;
+
+		// Attenuation
+		float distance = length(r_PointLights[i].Position - vs_Input.FragPos);
+		float attenuation = 1.0 / (r_PointLights[i].Brightness + (-r_PointLights[i].Falloff * distance + r_PointLights[i].Slope * (distance * distance)));    
+		pointAmbient  *= attenuation; 
+		pointDiffuse   *= attenuation;
+		pointSpecular *= attenuation;
+
+		// Accumulate lighting values
+		dirAmbient += pointAmbient;
+		dirDiffuse += pointDiffuse;
+		dirSpecular += pointSpecular;
+	}
+
+	colour = vec4(dirDiffuse + dirSpecular + dirAmbient, 1.0f);
 }

@@ -128,13 +128,17 @@ ShaderUniformBufferDeclaration::ShaderUniformBufferDeclaration(const std::string
 void ShaderUniformBufferDeclaration::PushUniform(ShaderUniformDeclaration* uniform)
 {
 	uint32_t offset = 0;
+
 	if (m_Uniforms.size())
 	{
 		ShaderUniformDeclaration* previous = (ShaderUniformDeclaration*)m_Uniforms.back();
+
 		offset = previous->m_Offset + previous->m_Size;
 	}
+
 	uniform->SetOffset(offset);
 	m_Size += uniform->GetSize();
+
 	m_Uniforms.push_back(uniform);
 }
 
@@ -143,8 +147,11 @@ ShaderUniformDeclaration* ShaderUniformBufferDeclaration::FindUniform(const std:
 	for (ShaderUniformDeclaration* uniform : m_Uniforms)
 	{
 		if (uniform->GetName() == name)
+		{
 			return uniform;
+		}
 	}
+
 	return nullptr;
 }
 
@@ -157,9 +164,20 @@ ShaderResourceDeclaration::ShaderResourceDeclaration(Type type, const std::strin
 
 ShaderResourceDeclaration::Type ShaderResourceDeclaration::StringToType(const std::string& type)
 {
-	if (type == "sampler2D")    return Type::TEXTURE2D;
-	if (type == "sampler2DMS")  return Type::TEXTURE2D;
-	if (type == "samplerCube")  return Type::TEXTURECUBE;
+	if (type == "sampler2D")
+	{
+		return Type::TEXTURE2D;
+	}
+
+	if (type == "sampler2DMS")
+	{
+		return Type::TEXTURE2D;
+	}
+
+	if (type == "samplerCube")
+	{
+		return Type::TEXTURECUBE;
+	}
 
 	return Type::NONE;
 }
@@ -168,8 +186,15 @@ std::string ShaderResourceDeclaration::TypeToString(Type type)
 {
 	switch (type)
 	{
-	case Type::TEXTURE2D:	return "sampler2D";
-	case Type::TEXTURECUBE:	return "samplerCube";
+		case Type::TEXTURE2D:
+		{
+			return "sampler2D";
+		}
+		case Type::TEXTURECUBE:
+		{
+			return "samplerCube";
+		}
 	}
+
 	return "Invalid Type";
 }

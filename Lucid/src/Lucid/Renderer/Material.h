@@ -65,6 +65,8 @@ public:
 
 	static Ref<Material> Create(const Ref<Shader>& shader);
 
+	Ref<Shader> GetShader() { return m_Shader; }
+
 private:
 
 	void AllocateStorage();

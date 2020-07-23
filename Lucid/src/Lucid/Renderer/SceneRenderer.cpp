@@ -11,6 +11,8 @@
 #include "Lucid/Renderer/Renderer.h"
 #include "Lucid/Renderer/Renderer2D.h"
 
+#include "Lucid/ImGui/EditorLayer.h"
+
 struct SceneRendererData
 {
 	const Scene* ActiveScene = nullptr;
@@ -39,6 +41,8 @@ struct SceneRendererData
 
 	Ref<MaterialInstance> GridMaterial;
 	Ref<MaterialInstance> OutlineMaterial;
+
+	LightEnvironment SceneLightEnvironment;
 
 	SceneRendererOptions Options;
 };
@@ -124,6 +128,11 @@ void SceneRenderer::SubmitSelectedMesh(Ref<Mesh> mesh, const glm::mat4& transfor
 	s_Data.SelectedMeshDrawList.push_back({ mesh, nullptr, transform });
 }
 
+void SceneRenderer::SetLightEnvironment(const LightEnvironment& lightEnvironment)
+{
+	s_Data.SceneLightEnvironment = lightEnvironment;
+}
+
 void SceneRenderer::GeometryPass()
 {
 	bool outline = s_Data.SelectedMeshDrawList.size() > 0;
@@ -132,7 +141,7 @@ void SceneRenderer::GeometryPass()
 	{
 		Renderer::Submit([]()
 		{
-			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+			glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
 		});
 	}
 
@@ -153,11 +162,55 @@ void SceneRenderer::GeometryPass()
 	for (auto& dc : s_Data.DrawList)
 	{
 		auto baseMaterial = dc.Mesh->GetMaterial();
+		auto shader = baseMaterial->GetShader();
+
 		baseMaterial->Set("u_ViewProjectionMatrix", viewProjection);
 		baseMaterial->Set("u_CameraPosition", cameraPosition);
 
-		// Set lights (TODO: move to light environment and don't do per mesh)
-		//baseMaterial->Set("lights", s_Data.SceneData.ActiveLight);
+		shader->SetVec3("r_CameraPosition", cameraPosition);
+
+		// Light iterator
+		int it = 0;
+
+		for (it; it < 4; it++)
+		{
+			auto& dirLight = s_Data.SceneLightEnvironment.DirectionalLights[it];
+
+			if (dirLight.Brightness == 0.0f)
+			{
+				break;
+			}
+
+			shader->SetVec3("r_DirectionalLights[" + std::to_string(it) + "].Direction", dirLight.Direction);
+			shader->SetVec3("r_DirectionalLights[" + std::to_string(it) + "].Ambient", { 0.2f, 0.2f, 0.2f });
+			shader->SetVec3("r_DirectionalLights[" + std::to_string(it) + "].Diffuse", dirLight.Colour);
+			shader->SetFloat("r_DirectionalLights[" + std::to_string(it) + "].Brightness", dirLight.Brightness);
+			shader->SetVec3("r_DirectionalLights[" + std::to_string(it) + "].Specular", glm::vec3{ 0.1f, 0.1f, 0.1f });
+		}
+
+		shader->SetInt("r_DirectionalLightCount", it);
+
+		it = 0;
+
+		for (it; it < 4; it++)
+		{
+			auto& pointLight = s_Data.SceneLightEnvironment.PointLights[it];
+
+			if (pointLight.Brightness == 0.0f)
+			{
+				break;
+			}
+
+			shader->SetVec3("r_PointLights[" + std::to_string(it) + "].Position", pointLight.Position);
+			shader->SetVec3("r_PointLights[" + std::to_string(it) + "].Ambient", { 0.2f, 0.2f, 0.2f });
+			shader->SetVec3("r_PointLights[" + std::to_string(it) + "].Diffuse", pointLight.Colour);
+			shader->SetFloat("r_PointLights[" + std::to_string(it) + "].Brightness", pointLight.Brightness);
+			shader->SetFloat("r_PointLights[" + std::to_string(it) + "].Falloff", pointLight.Falloff);
+			shader->SetFloat("r_PointLights[" + std::to_string(it) + "].Slope", pointLight.Slope);
+			shader->SetVec3("r_PointLights[" + std::to_string(it) + "].Specular", glm::vec3{ 0.1f, 0.1f, 0.1f });
+		}
+
+		shader->SetInt("r_PointLightCount", it);
 
 		auto overrideMaterial = nullptr;
 		Renderer::SubmitMesh(dc.Mesh, dc.Transform, overrideMaterial);
@@ -177,9 +230,6 @@ void SceneRenderer::GeometryPass()
 		auto baseMaterial = dc.Mesh->GetMaterial();
 		baseMaterial->Set("u_ViewProjectionMatrix", viewProjection);
 		baseMaterial->Set("u_CameraPosition", cameraPosition);
-
-		// Set lights (TODO: move to light environment and don't do per mesh)
-		//baseMaterial->Set("lights", s_Data.SceneData.ActiveLight);
 
 		auto overrideMaterial = nullptr;
 		Renderer::SubmitMesh(dc.Mesh, dc.Transform, overrideMaterial);

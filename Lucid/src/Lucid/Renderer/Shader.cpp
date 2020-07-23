@@ -423,10 +423,20 @@ void Shader::ParseUniform(const std::string& statement, ShaderDomain domain)
 		{
 			if (domain == ShaderDomain::Vertex)
 			{
+				if (m_VSRendererUniformBuffers.size() == 0)
+				{
+					m_VSRendererUniformBuffers.emplace_back(new ShaderUniformBufferDeclaration("", domain));
+				}
+
 				((ShaderUniformBufferDeclaration*)m_VSRendererUniformBuffers.front())->PushUniform(declaration);
 			}
 			else if (domain == ShaderDomain::Fragment)
 			{
+				if (m_FSRendererUniformBuffers.size() == 0)
+				{
+					m_FSRendererUniformBuffers.emplace_back(new ShaderUniformBufferDeclaration("", domain));
+				}
+
 				((ShaderUniformBufferDeclaration*)m_FSRendererUniformBuffers.front())->PushUniform(declaration);
 			}
 		}
@@ -1086,6 +1096,22 @@ void Shader::SetInt(const std::string& name, int value)
 	Renderer::Submit([=]()
 	{
 		UploadUniformInt(name, value);
+	});
+}
+
+void Shader::SetVec3(const std::string& name, const glm::vec3& value)
+{
+	Renderer::Submit([=]()
+	{
+		UploadUniformFloat3(name, value);
+	});
+}
+
+void Shader::SetVec4(const std::string& name, const glm::vec4& value)
+{
+	Renderer::Submit([=]()
+	{
+		UploadUniformFloat4(name, value);
 	});
 }
 

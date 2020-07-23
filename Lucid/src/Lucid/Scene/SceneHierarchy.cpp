@@ -90,13 +90,14 @@ static void Property(const char* label, const char* value)
 	s_IDBuffer[1] = '#';
 	memset(s_IDBuffer + 2, 0, 14);
 	itoa(s_Counter++, s_IDBuffer + 2, 16);
+
 	ImGui::InputText(s_IDBuffer, (char*)value, 256, ImGuiInputTextFlags_ReadOnly);
 
 	ImGui::PopItemWidth();
 	ImGui::NextColumn();
 }
 
-static bool Property(const char* label, int& value)
+static bool Property(const char* label, int& value, float min = 0.0f, float max = 1.0f)
 {
 	bool modified = false;
 
@@ -109,7 +110,7 @@ static bool Property(const char* label, int& value)
 	memset(s_IDBuffer + 2, 0, 14);
 	itoa(s_Counter++, s_IDBuffer + 2, 16);
 
-	if (ImGui::DragInt(s_IDBuffer, &value))
+	if (ImGui::DragInt(s_IDBuffer, &value, 0.1f, min, max))
 	{
 		modified = true;
 	}
@@ -120,7 +121,7 @@ static bool Property(const char* label, int& value)
 	return modified;
 }
 
-static bool Property(const char* label, float& value, float delta = 0.1f)
+static bool Property(const char* label, float& value, float min = 0.0f, float max = 1.0f)
 {
 	bool modified = false;
 
@@ -133,7 +134,7 @@ static bool Property(const char* label, float& value, float delta = 0.1f)
 	memset(s_IDBuffer + 2, 0, 14);
 	itoa(s_Counter++, s_IDBuffer + 2, 16);
 
-	if (ImGui::DragFloat(s_IDBuffer, &value, delta))
+	if (ImGui::DragFloat(s_IDBuffer, &value, 0.1f, min, max))
 	{
 		modified = true;
 	}
@@ -144,7 +145,7 @@ static bool Property(const char* label, float& value, float delta = 0.1f)
 	return modified;
 }
 
-static bool Property(const char* label, glm::vec2& value, float delta = 0.1f)
+static bool Property(const char* label, glm::vec2& value, float min = 0.0f, float max = 1.0f)
 {
 	bool modified = false;
 
@@ -157,7 +158,7 @@ static bool Property(const char* label, glm::vec2& value, float delta = 0.1f)
 	memset(s_IDBuffer + 2, 0, 14);
 	itoa(s_Counter++, s_IDBuffer + 2, 16);
 
-	if (ImGui::DragFloat2(s_IDBuffer, glm::value_ptr(value), delta))
+	if (ImGui::DragFloat2(s_IDBuffer, glm::value_ptr(value), 0.1f, min, max))
 	{
 		modified = true;
 	}
@@ -168,7 +169,7 @@ static bool Property(const char* label, glm::vec2& value, float delta = 0.1f)
 	return modified;
 }
 
-static bool Property(const char* label, glm::vec3& value, float delta = 0.1f)
+static bool Property(const char* label, glm::vec3& value, float min = 0.0f, float max = 1.0f)
 {
 	bool modified = false;
 
@@ -181,7 +182,7 @@ static bool Property(const char* label, glm::vec3& value, float delta = 0.1f)
 	memset(s_IDBuffer + 2, 0, 14);
 	itoa(s_Counter++, s_IDBuffer + 2, 16);
 
-	if (ImGui::DragFloat3(s_IDBuffer, glm::value_ptr(value), delta))
+	if (ImGui::DragFloat3(s_IDBuffer, glm::value_ptr(value), 0.1f, min, max))
 	{
 		modified = true;
 	}
@@ -192,7 +193,7 @@ static bool Property(const char* label, glm::vec3& value, float delta = 0.1f)
 	return modified;
 }
 
-static bool Property(const char* label, glm::vec4& value, float delta = 0.1f)
+static bool Property(const char* label, glm::vec4& value, float min = 0.0f, float max = 1.0f)
 {
 	bool modified = false;
 
@@ -205,7 +206,31 @@ static bool Property(const char* label, glm::vec4& value, float delta = 0.1f)
 	memset(s_IDBuffer + 2, 0, 14);
 	itoa(s_Counter++, s_IDBuffer + 2, 16);
 
-	if (ImGui::DragFloat4(s_IDBuffer, glm::value_ptr(value), delta))
+	if (ImGui::DragFloat4(s_IDBuffer, glm::value_ptr(value), 0.1f, min, max))
+	{
+		modified = true;
+	}
+
+	ImGui::PopItemWidth();
+	ImGui::NextColumn();
+
+	return modified;
+}
+
+static bool PropertyColour(const char* label, glm::vec3& value)
+{
+	bool modified = false;
+
+	ImGui::Text(label);
+	ImGui::NextColumn();
+	ImGui::PushItemWidth(-1);
+
+	s_IDBuffer[0] = '#';
+	s_IDBuffer[1] = '#';
+	memset(s_IDBuffer + 2, 0, 14);
+	itoa(s_Counter++, s_IDBuffer + 2, 16);
+
+	if (ImGui::ColorEdit3(s_IDBuffer, glm::value_ptr(value)))
 	{
 		modified = true;
 	}
@@ -585,104 +610,81 @@ void SceneHierarchy::DrawComponents(Entity entity)
 		ImGui::Separator();
 	}
 
-	//if (entity.HasComponent<LightComponent>())
-	//{
-	//	auto& lc = entity.GetComponent<LightComponent>();
-	//	if (ImGui::TreeNodeEx((void*)((uint32_t)entity | typeid(LightComponent).hash_code()), ImGuiTreeNodeFlags_DefaultOpen, "Light"))
-	//	{
-	//		// Light type
-	//		const char* lightTypeStrings[] = { "Point", "Spot", "Directional" };
-	//		const char* currentType = lightTypeStrings[(int)lc.LightComp.GetLightType()];
+	if (entity.HasComponent<LightComponent>())
+	{
+		auto& lc = entity.GetComponent<LightComponent>();
 
-	//		if (ImGui::BeginCombo("Light Type", currentType))
-	//		{
-	//			for (int type = 0; type < 3; type++)
-	//			{
-	//				bool is_selected = (currentType == lightTypeStrings[type]);
+		if (ImGui::TreeNodeEx((void*)((uint32_t)entity | typeid(LightComponent).hash_code()), ImGuiTreeNodeFlags_DefaultOpen, "Light"))
+		{
+			// Light Type
+			const char* lightTypeStrings[] = { "Directional", "Point" };
+			const char* currentType = lightTypeStrings[(int)lc.LightType];
 
-	//				if (ImGui::Selectable(lightTypeStrings[type], is_selected))
-	//				{
-	//					currentType = lightTypeStrings[type];
+			if (ImGui::BeginCombo("Light Type", currentType))
+			{
+				for (int type = 0; type < 2; type++)
+				{
+					bool is_selected = (currentType == lightTypeStrings[type]);
 
-	//					lc.LightComp.SetLightType((Light::Type)type);
-	//				}
+					if (ImGui::Selectable(lightTypeStrings[type], is_selected))
+					{
+						currentType = lightTypeStrings[type];
+						lc.LightType = (LightComponent::Type)type;
+					}
 
-	//				if (is_selected)
-	//				{
-	//					ImGui::SetItemDefaultFocus();
-	//				}
-	//			}
+					if (is_selected)
+					{
+						ImGui::SetItemDefaultFocus();
+					}
+				}
 
-	//			ImGui::EndCombo();
-	//		}
+				ImGui::EndCombo();
+			}
 
-	//		BeginPropertyGrid();
+			BeginPropertyGrid();
 
-	//		// Point light parameters
-	//		if (lc.LightComp.GetLightType() == Light::Type::Point)
-	//		{
-	//			float brightness = lc.LightComp.GetBrightness();
+			// Directional light parameters
+			if (lc.LightType == LightComponent::Type::Directional)
+			{
+				ImGui::Columns(3);
 
-	//			if (Property("Brightness", brightness))
-	//			{
-	//				lc.LightComp.SetBrightness(brightness);
-	//			}
+				BeginPropertyGrid();
 
-	//			float attentuation = lc.LightComp.GetAttentuation();
+				Property("Brightness", lc.Brightness, 0.0f, 1.0f);
+				PropertyColour("Diffuse", lc.Diffuse);
 
-	//			if (Property("Attenuation", attentuation))
-	//			{
-	//				lc.LightComp.SetAttentuation(attentuation);
-	//			}
-	//		}
+				EndPropertyGrid();
 
-	//		// Spot light parameters
-	//		if (lc.LightComp.GetLightType() == Light::Type::Spot)
-	//		{
-	//			float brightness = lc.LightComp.GetBrightness();
+				ImGui::NextColumn();
+				ImGui::Columns(1);
+			}
 
-	//			if (Property("Brightness", brightness))
-	//			{
-	//				lc.LightComp.SetBrightness(brightness);
-	//			}
+			// Point light parameters
+			else if (lc.LightType == LightComponent::Type::Point)
+			{
+				ImGui::Columns(3);
 
-	//			float attentuation = lc.LightComp.GetAttentuation();
+				BeginPropertyGrid();
 
-	//			if (Property("Attenuation", attentuation))
-	//			{
-	//				lc.LightComp.SetAttentuation(attentuation);
-	//			}
+				Property("Brightness", lc.Brightness, 0.0f, 5.0f);
+				PropertyColour("Diffuse", lc.Diffuse);
+				Property("Slope", lc.Slope, 0.0f, 2.0f);
+				Property("Falloff", lc.Falloff, 0.0f, 2.0f);
 
-	//			float angle = lc.LightComp.GetAngle();
+				EndPropertyGrid();
 
-	//			if (Property("Angle", angle))
-	//			{
-	//				lc.LightComp.SetAngle(angle);
-	//			}
-	//		}
-	//		
-	//		// Directional light parameters
-	//		if (lc.LightComp.GetLightType() == Light::Type::Directional)
-	//		{
-	//			float brightness = lc.LightComp.GetBrightness();
+				ImGui::NextColumn();
+				ImGui::Columns(1);
+			}
 
-	//			if (Property("Brightness", brightness))
-	//			{
-	//				lc.LightComp.SetBrightness(brightness);
-	//			}
+			EndPropertyGrid();
 
-	//			float angle = lc.LightComp.GetAngle();
+			ImGui::NextColumn();
+			ImGui::Columns(1);
 
-	//			if (Property("Angle", angle))
-	//			{
-	//				lc.LightComp.SetAngle(angle);
-	//			}
-	//		}
+			ImGui::TreePop();
+		}
 
-	//		EndPropertyGrid();
-	//		ImGui::TreePop();
-	//	}
-
-	//	ImGui::Separator();
-	//}
+		ImGui::Separator();
+	}
 }

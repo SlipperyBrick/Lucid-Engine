@@ -61,15 +61,18 @@ struct MeshComponent
 
 struct LightComponent
 {
-	Ref<Light> LightComp;
+	enum class Type
+	{
+		Directional = 0,
+		Point = 1
+	};
+
+	Type LightType = Type::Directional;
+	glm::vec3 Diffuse = { 1.0f, 1.0f, 1.0f };
+	float Brightness = 1.0f;
+	float Falloff = 1.0f;
+	float Slope = 1.0f;
 
 	LightComponent() = default;
-
-	LightComponent(const LightComponent& other)
-		: LightComp(other.LightComp) {}
-
-	LightComponent(const Ref<Light>& light)
-		: LightComp(light) {}
-
-	operator Ref<Light>() { return LightComp; }
+	LightComponent(const LightComponent& other) = default;
 };

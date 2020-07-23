@@ -4,6 +4,10 @@
 
 #include "Scene.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+
 #include "Lucid/Renderer/SceneRenderer.h"
 
 #include "Lucid/Scene/Entity.h"
@@ -12,6 +16,19 @@
 static const std::string DefaultEntityName = "Entity";
 
 std::unordered_map<LucidUUID, Scene*> s_ActiveScenes;
+
+static std::tuple<glm::vec3, glm::quat, glm::vec3> GetTransformDecomposition(const glm::mat4& transform)
+{
+	glm::vec3 scale;
+	glm::vec3 translation;
+	glm::vec3 skew;
+	glm::vec4 perspective;
+	glm::quat orientation;
+
+	glm::decompose(transform, scale, orientation, translation, skew, perspective);
+
+	return { translation, orientation, scale };
+}
 
 struct SceneComponent
 {
@@ -41,23 +58,76 @@ void Scene::Init()
 
 void Scene::OnUpdate(Timestep ts, const EditorCamera& editorCamera)
 {
-	auto group = m_Registry.group<MeshComponent>(entt::get<TransformComponent>);
-
 	SceneRenderer::BeginScene(this, { editorCamera, editorCamera.GetViewMatrix() });
 
-	for (auto entity : group)
+	// Iterate over all lights
 	{
-		auto [transformComponent, meshComponent] = group.get<TransformComponent, MeshComponent>(entity);
+		const auto& group = m_Registry.group<LightComponent>(entt::get<TransformComponent>);
 
-		if (meshComponent.MeshComp)
+		int directionalLightIndex = 0;
+		int pointLightIndex = 0;
+
+		LightEnvironment lightEnvironment;
+
+		for (auto entity : group)
 		{
-			if (m_SelectedEntity == entity)
+			const auto& [transformComponent, lightComponent] = group.get<TransformComponent, LightComponent>(entity);
+
+			if (lightComponent.Brightness <= 0.0f)
 			{
-				SceneRenderer::SubmitSelectedMesh(meshComponent, transformComponent);
+				continue;
 			}
-			else
+
+			const auto& [translation, rotation, scale] = GetTransformDecomposition(transformComponent);
+
+			switch (lightComponent.LightType)
 			{
-				SceneRenderer::SubmitMesh(meshComponent, transformComponent, nullptr);
+				case LightComponent::Type::Directional:
+				{
+					DirectionalLight& light = lightEnvironment.DirectionalLights[directionalLightIndex++];
+
+					light.Direction = rotation * glm::vec3(0.0, 1.0, 1.0);
+					light.Brightness = lightComponent.Brightness;
+					light.Colour = lightComponent.Diffuse;
+
+					break;
+				}
+				case LightComponent::Type::Point:
+				{
+					PointLight& light = lightEnvironment.PointLights[pointLightIndex++];
+
+					light.Position = translation;
+					light.Brightness = lightComponent.Brightness;
+					light.Colour = lightComponent.Diffuse;
+					light.Falloff = lightComponent.Falloff;
+					light.Slope = lightComponent.Slope;
+
+					break;
+				}
+			}
+		}
+
+		SceneRenderer::SetLightEnvironment(lightEnvironment);
+	}
+
+	// Iterate over all meshes
+	{
+		const auto& group = m_Registry.group<MeshComponent>(entt::get<TransformComponent>);
+
+		for (auto entity : group)
+		{
+			const auto& [transformComponent, meshComponent] = group.get<TransformComponent, MeshComponent>(entity);
+
+			if (meshComponent.MeshComp)
+			{
+				if (m_SelectedEntity == entity)
+				{
+					SceneRenderer::SubmitSelectedMesh(meshComponent, transformComponent);
+				}
+				else
+				{
+					SceneRenderer::SubmitMesh(meshComponent, transformComponent, nullptr);
+				}
 			}
 		}
 	}
@@ -158,8 +228,10 @@ void Scene::DuplicateEntity(Entity entity)
 		newEntity = CreateEntity();
 	}
 
+	CopyComponentIfExists<TagComponent>(newEntity.m_EntityHandle, entity.m_EntityHandle, m_Registry);
 	CopyComponentIfExists<TransformComponent>(newEntity.m_EntityHandle, entity.m_EntityHandle, m_Registry);
 	CopyComponentIfExists<MeshComponent>(newEntity.m_EntityHandle, entity.m_EntityHandle, m_Registry);
+	CopyComponentIfExists<LightComponent>(newEntity.m_EntityHandle, entity.m_EntityHandle, m_Registry);
 }
 
 void Scene::CopyTo(Ref<Scene>& target)
@@ -178,6 +250,7 @@ void Scene::CopyTo(Ref<Scene>& target)
 	CopyComponent<TagComponent>(target->m_Registry, m_Registry, enttMap);
 	CopyComponent<TransformComponent>(target->m_Registry, m_Registry, enttMap);
 	CopyComponent<MeshComponent>(target->m_Registry, m_Registry, enttMap);
+	CopyComponent<LightComponent>(target->m_Registry, m_Registry, enttMap);
 }
 
 Ref<Scene> Scene::GetScene(LucidUUID uuid)
