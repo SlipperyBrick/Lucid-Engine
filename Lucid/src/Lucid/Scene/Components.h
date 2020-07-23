@@ -63,13 +63,14 @@ struct LightComponent
 {
 	enum class Type
 	{
-		Directional = 0,
-		Point = 1
+		Point = 0
 	};
 
-	Type LightType = Type::Directional;
+	Type LightType = Type::Point;
 	glm::vec3 Diffuse = { 1.0f, 1.0f, 1.0f };
-	float Brightness = 1.0f;
+	glm::vec3 Ambient = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 Specular = { 0.1f, 0.1f, 0.1f };
+	float Brightness = 0.0f;
 	float Falloff = 1.0f;
 	float Slope = 1.0f;
 

@@ -21,6 +21,9 @@ struct SceneRendererData
 	{
 		SceneRendererCamera SceneCamera;
 
+		DirectionalLight DirLight;
+		LightEnvironment LightEnv;
+
 	} SceneData;
 
 	Ref<Shader> CompositeShader;
@@ -41,8 +44,6 @@ struct SceneRendererData
 
 	Ref<MaterialInstance> GridMaterial;
 	Ref<MaterialInstance> OutlineMaterial;
-
-	LightEnvironment SceneLightEnvironment;
 
 	SceneRendererOptions Options;
 };
@@ -105,6 +106,8 @@ void SceneRenderer::BeginScene(const Scene* scene, const SceneRendererCamera& ca
 	s_Data.ActiveScene = scene;
 
 	s_Data.SceneData.SceneCamera = camera;
+	s_Data.SceneData.DirLight = scene->m_Light;
+	s_Data.SceneData.LightEnv = scene->m_LightEnvironment;
 }
 
 void SceneRenderer::EndScene()
@@ -126,16 +129,6 @@ void SceneRenderer::SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform, Ref<M
 void SceneRenderer::SubmitSelectedMesh(Ref<Mesh> mesh, const glm::mat4& transform)
 {
 	s_Data.SelectedMeshDrawList.push_back({ mesh, nullptr, transform });
-}
-
-void SceneRenderer::SetLightEnvironment(const LightEnvironment& lightEnvironment)
-{
-	s_Data.SceneLightEnvironment = lightEnvironment;
-}
-
-const LightEnvironment& SceneRenderer::GetLightEnvironment()
-{
-	return s_Data.SceneLightEnvironment;
 }
 
 void SceneRenderer::GeometryPass()
@@ -172,34 +165,22 @@ void SceneRenderer::GeometryPass()
 		baseMaterial->Set("u_ViewProjectionMatrix", viewProjection);
 		baseMaterial->Set("u_CameraPosition", cameraPosition);
 
+		// Set directional light
 		shader->SetVec3("r_CameraPosition", cameraPosition);
+
+		shader->SetFloat("r_DirectionalLight.Brightness", s_Data.SceneData.DirLight.Brightness);
+		shader->SetVec3("r_DirectionalLight.Direction", s_Data.SceneData.DirLight.Direction);
+		shader->SetVec3("r_DirectionalLight.Diffuse", s_Data.SceneData.DirLight.Colour);
+		shader->SetVec3("r_DirectionalLight.Ambient", s_Data.SceneData.DirLight.Ambient);
+		shader->SetVec3("r_DirectionalLight.Specular", s_Data.SceneData.DirLight.Specular);
 
 		// Light iterator
 		int it = 0;
 
+		// Iterate over all point lights
 		for (it; it < 4; it++)
 		{
-			auto& dirLight = s_Data.SceneLightEnvironment.DirectionalLights[it];
-
-			if (dirLight.Brightness == 0.0f)
-			{
-				break;
-			}
-
-			shader->SetVec3("r_DirectionalLights[" + std::to_string(it) + "].Direction", dirLight.Direction);
-			shader->SetVec3("r_DirectionalLights[" + std::to_string(it) + "].Ambient", { 0.2f, 0.2f, 0.2f });
-			shader->SetVec3("r_DirectionalLights[" + std::to_string(it) + "].Diffuse", dirLight.Colour);
-			shader->SetFloat("r_DirectionalLights[" + std::to_string(it) + "].Brightness", dirLight.Brightness);
-			shader->SetVec3("r_DirectionalLights[" + std::to_string(it) + "].Specular", glm::vec3{ 0.1f, 0.1f, 0.1f });
-		}
-
-		shader->SetInt("r_DirectionalLightCount", it);
-
-		it = 0;
-
-		for (it; it < 4; it++)
-		{
-			auto& pointLight = s_Data.SceneLightEnvironment.PointLights[it];
+			auto& pointLight = s_Data.SceneData.LightEnv.PointLights[it];
 
 			if (pointLight.Brightness == 0.0f)
 			{
@@ -207,12 +188,12 @@ void SceneRenderer::GeometryPass()
 			}
 
 			shader->SetVec3("r_PointLights[" + std::to_string(it) + "].Position", pointLight.Position);
-			shader->SetVec3("r_PointLights[" + std::to_string(it) + "].Ambient", { 0.2f, 0.2f, 0.2f });
+			shader->SetVec3("r_PointLights[" + std::to_string(it) + "].Ambient", s_Data.SceneData.DirLight.Ambient);
 			shader->SetVec3("r_PointLights[" + std::to_string(it) + "].Diffuse", pointLight.Colour);
 			shader->SetFloat("r_PointLights[" + std::to_string(it) + "].Brightness", pointLight.Brightness);
 			shader->SetFloat("r_PointLights[" + std::to_string(it) + "].Falloff", pointLight.Falloff);
 			shader->SetFloat("r_PointLights[" + std::to_string(it) + "].Slope", pointLight.Slope);
-			shader->SetVec3("r_PointLights[" + std::to_string(it) + "].Specular", glm::vec3{ 0.1f, 0.1f, 0.1f });
+			shader->SetVec3("r_PointLights[" + std::to_string(it) + "].Specular", pointLight.Specular);
 		}
 
 		shader->SetInt("r_PointLightCount", it);
@@ -233,8 +214,43 @@ void SceneRenderer::GeometryPass()
 	for (auto& dc : s_Data.SelectedMeshDrawList)
 	{
 		auto baseMaterial = dc.Mesh->GetMaterial();
+		auto shader = baseMaterial->GetShader();
+
 		baseMaterial->Set("u_ViewProjectionMatrix", viewProjection);
 		baseMaterial->Set("u_CameraPosition", cameraPosition);
+
+		// Set directional light
+		shader->SetVec3("r_CameraPosition", cameraPosition);
+
+		shader->SetFloat("r_DirectionalLight.Brightness", s_Data.SceneData.DirLight.Brightness);
+		shader->SetVec3("r_DirectionalLight.Direction", s_Data.SceneData.DirLight.Direction);
+		shader->SetVec3("r_DirectionalLight.Diffuse", s_Data.SceneData.DirLight.Colour);
+		shader->SetVec3("r_DirectionalLight.Ambient", s_Data.SceneData.DirLight.Ambient);
+		shader->SetVec3("r_DirectionalLight.Specular", s_Data.SceneData.DirLight.Specular);
+
+		// Light iterator
+		int it = 0;
+
+		// Iterate over all point lights
+		for (it; it < 4; it++)
+		{
+			auto& pointLight = s_Data.SceneData.LightEnv.PointLights[it];
+
+			if (pointLight.Brightness == 0.0f)
+			{
+				break;
+			}
+
+			shader->SetVec3("r_PointLights[" + std::to_string(it) + "].Position", pointLight.Position);
+			shader->SetVec3("r_PointLights[" + std::to_string(it) + "].Ambient", s_Data.SceneData.DirLight.Ambient);
+			shader->SetVec3("r_PointLights[" + std::to_string(it) + "].Diffuse", pointLight.Colour);
+			shader->SetFloat("r_PointLights[" + std::to_string(it) + "].Brightness", pointLight.Brightness);
+			shader->SetFloat("r_PointLights[" + std::to_string(it) + "].Falloff", pointLight.Falloff);
+			shader->SetFloat("r_PointLights[" + std::to_string(it) + "].Slope", pointLight.Slope);
+			shader->SetVec3("r_PointLights[" + std::to_string(it) + "].Specular", pointLight.Specular);
+		}
+
+		shader->SetInt("r_PointLightCount", it);
 
 		auto overrideMaterial = nullptr;
 		Renderer::SubmitMesh(dc.Mesh, dc.Transform, overrideMaterial);

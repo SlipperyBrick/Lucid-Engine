@@ -28,7 +28,9 @@ public:
 	enum class PropertyFlag
 	{
 		None = 0,
-		ColourProperty = 1
+		ColourProperty = 1,
+		DragProperty = 2, 
+		SliderProperty = 4
 	};
 
 public:
@@ -48,13 +50,13 @@ public:
 
 	// ImGui UI helpers
 	bool Property(const std::string& name, bool& value);
-	void Property(const std::string& name, float& value, float min = -1.0f, float max = 1.0f, PropertyFlag flags = PropertyFlag::None);
-	void Property(const std::string& name, glm::vec2& value, PropertyFlag flags);
-	void Property(const std::string& name, glm::vec2& value, float min = -1.0f, float max = 1.0f, PropertyFlag flags = PropertyFlag::None);
-	void Property(const std::string& name, glm::vec3& value, PropertyFlag flags);
-	void Property(const std::string& name, glm::vec3& value, float min = -1.0f, float max = 1.0f, PropertyFlag flags = PropertyFlag::None);
-	void Property(const std::string& name, glm::vec4& value, PropertyFlag flags);
-	void Property(const std::string& name, glm::vec4& value, float min = -1.0f, float max = 1.0f, PropertyFlag flags = PropertyFlag::None);
+	bool Property(const std::string& name, float& value, float min = -1.0f, float max = 1.0f, PropertyFlag flags = PropertyFlag::None);
+	bool Property(const std::string& name, glm::vec2& value, PropertyFlag flags);
+	bool Property(const std::string& name, glm::vec2& value, float min = -1.0f, float max = 1.0f, PropertyFlag flags = PropertyFlag::None);
+	bool Property(const std::string& name, glm::vec3& value, PropertyFlag flags);
+	bool Property(const std::string& name, glm::vec3& value, float min = -1.0f, float max = 1.0f, PropertyFlag flags = PropertyFlag::None);
+	bool Property(const std::string& name, glm::vec4& value, PropertyFlag flags);
+	bool Property(const std::string& name, glm::vec4& value, float min = -1.0f, float max = 1.0f, PropertyFlag flags = PropertyFlag::None);
 
 	void ShowBoundingBoxes(bool show);
 
@@ -133,6 +135,8 @@ private:
 	#pragma region Editor
 
 	Ref<Texture2D> m_CheckerboardTex;
+	Ref<Texture2D> m_GizmoSpaceTex;
+	Ref<Texture2D> m_BoundingBoxesTex;
 	Ref<Texture2D> m_PointLightTex;
 	Ref<Texture2D> m_DirLightTex;
 

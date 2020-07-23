@@ -36,10 +36,18 @@ void main()
 
 layout(location = 0) out vec4 colour;
 
-struct Light
+struct DirectionalLight
+{
+    vec3 Direction;
+	vec3 Diffuse;
+    vec3 Ambient;
+    vec3 Specular;
+	float Brightness;
+};
+
+struct PointLight
 {
 	vec3 Position;
-    vec3 Direction;
 	vec3 Ambient;
     vec3 Diffuse;
     vec3 Specular;
@@ -66,10 +74,9 @@ in VertexOutput
 } vs_Input;
 
 // Light inputs
-uniform Light r_DirectionalLights[4];
-uniform int r_DirectionalLightCount;
+uniform DirectionalLight r_DirectionalLight;
 
-uniform Light r_PointLights[4];
+uniform PointLight r_PointLights[4];
 uniform int r_PointLightCount;
 
 // Material texture inputs
@@ -86,6 +93,7 @@ uniform float u_DiffuseTexToggle;
 uniform float u_NormalTexToggle;
 uniform float u_SpecularTexToggle;
 
+// Camera position
 uniform vec3 r_CameraPosition;
 
 void main()
@@ -109,27 +117,23 @@ void main()
 	vec3 dirSpecular = vec3(0.0);
 	vec3 dirAmbient = vec3(0.0);
 
-	// Iterate over directional lights
-	for (int i = 0; i < r_DirectionalLightCount; i++)
-	{
-		// Ambient constant (cheap global illumination
-		dirAmbient += r_DirectionalLights[i].Ambient * m_Params.Diffuse;
+	// Ambient constant
+	dirAmbient += r_DirectionalLight.Ambient * m_Params.Diffuse;
 
-		// Diffuse component
-		vec3 lightDir = normalize(-r_DirectionalLights[i].Direction);
-		float diff = max(dot(m_Params.Normal, lightDir), 0.0);
-		dirDiffuse += r_DirectionalLights[i].Diffuse * diff * m_Params.Diffuse * r_DirectionalLights[i].Brightness;
+	// Diffuse component
+	vec3 lightDir = normalize(-r_DirectionalLight.Direction);
+	float diff = max(dot(m_Params.Normal, lightDir), 0.0);
+	dirDiffuse += r_DirectionalLight.Diffuse * diff * m_Params.Diffuse * r_DirectionalLight.Brightness;
 
-		// Specular component
-		float shininess = 32.0;
-		vec3 viewDir = normalize(r_CameraPosition - vs_Input.FragPos);
-		vec3 reflectDir = reflect(-lightDir, m_Params.Normal);
+	// Specular component
+	float shininess = 32.0;
+	vec3 viewDir = normalize(r_CameraPosition - vs_Input.FragPos);
+	vec3 reflectDir = reflect(-lightDir, m_Params.Normal);
 
-		// Specular factor
-		vec3 halfwayDir = normalize(lightDir + viewDir);  
-        float spec = pow(max(dot(m_Params.Normal, halfwayDir), 0.0), shininess);
-		dirSpecular += r_DirectionalLights[i].Specular * spec;
-	}
+	// Specular factor
+	vec3 halfwayDir = normalize(lightDir + viewDir);  
+    float spec = pow(max(dot(m_Params.Normal, halfwayDir), 0.0), shininess);
+	dirSpecular += r_DirectionalLight.Specular * spec;
 
 	// Light attributes
 	vec3 pointDiffuse = vec3(0.0);
@@ -141,29 +145,29 @@ void main()
 	{
 		// Ambient constant (cheap global illumination
 		pointAmbient += r_PointLights[i].Ambient * m_Params.Diffuse;
-
+	
 		// Diffuse component
 		vec3 lightDir = normalize(r_PointLights[i].Position - vs_Input.FragPos);
 		float diff = max(dot(m_Params.Normal, lightDir), 0.0);
 		pointDiffuse += r_PointLights[i].Diffuse * diff * m_Params.Diffuse * (r_PointLights[i].Brightness);
-
+	
 		// Specular component
 		float shininess = 32.0;
 		vec3 viewDir = normalize(r_CameraPosition - vs_Input.FragPos);
 		vec3 reflectDir = reflect(-lightDir, m_Params.Normal);
-
+	
 		// Specular factor
 		vec3 halfwayDir = normalize(lightDir + viewDir);  
         float spec = pow(max(dot(m_Params.Normal, halfwayDir), 0.0), shininess);
 		pointSpecular += r_PointLights[i].Specular * spec;
-
+	
 		// Attenuation
 		float distance = length(r_PointLights[i].Position - vs_Input.FragPos);
 		float attenuation = 1.0 / (r_PointLights[i].Brightness + (-r_PointLights[i].Falloff * distance + r_PointLights[i].Slope * (distance * distance)));    
 		pointAmbient  *= attenuation; 
 		pointDiffuse   *= attenuation;
 		pointSpecular *= attenuation;
-
+	
 		// Accumulate lighting values
 		dirAmbient += pointAmbient;
 		dirDiffuse += pointDiffuse;

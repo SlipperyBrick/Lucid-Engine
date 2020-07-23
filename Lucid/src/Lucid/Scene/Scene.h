@@ -8,25 +8,28 @@
 
 struct DirectionalLight
 {
-	glm::vec3 Direction = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 Direction = { 0.0f, -1.0f, 1.0f };
 	glm::vec3 Colour = { 1.0f, 1.0f, 1.0f };
+	glm::vec3 Ambient = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 Specular = { 0.1f, 0.1f, 0.1f };
 
-	float Brightness = 0.0f;
+	float Brightness = 0.5f;
 };
 
 struct PointLight
 {
 	glm::vec3 Position = { 0.0f, 0.0f, 0.0f };
 	glm::vec3 Colour = { 1.0f, 1.0f, 1.0f };
+	glm::vec3 Specular = { 0.1f, 0.1f, 0.1f };
+	glm::vec3 Ambient = { 0.0f, 0.0f, 0.0f };
 
 	float Brightness = 0.0f;
-	float Falloff = 0.0f;
-	float Slope = 0.0f;
+	float Falloff = 1.0f;
+	float Slope = 1.0f;
 };
 
 struct LightEnvironment
 {
-	DirectionalLight DirectionalLights[4];
 	PointLight PointLights[4];
 };
 
@@ -50,13 +53,12 @@ public:
 	void SetViewportSize(uint32_t width, uint32_t height);
 
 	void SetLightEnvironment(const LightEnvironment& lightEnvironment);
-	const LightEnvironment& GetLightEnvironment();
 
-	void SetDirectionalLights(const DirectionalLight& directionalLights);
-	const DirectionalLight& GetDirectionalLights();
+	DirectionalLight& GetDirectionalLight() { return m_Light; }
+	const DirectionalLight& GetDirectionalLight() const { return m_Light; }
 
-	void SetPointLights(const PointLight& pointLights);
-	const PointLight& GetPointLights();
+	LightEnvironment& GetLightEnvironment() { return m_LightEnvironment; }
+	const LightEnvironment& GetLightEnvironment() const { return m_LightEnvironment; }
 
 	Entity CreateEntity(const std::string& name = "");
 	Entity CreateEntityWithID(LucidUUID uuid, const std::string& name = "", bool runtimeMap = false);
@@ -94,6 +96,10 @@ private:
 
 	uint32_t m_ViewportWidth = 0;
 	uint32_t m_ViewportHeight = 0;
+
+	LightEnvironment m_LightEnvironment;
+
+	DirectionalLight m_Light;
 
 	entt::entity m_SelectedEntity;
 

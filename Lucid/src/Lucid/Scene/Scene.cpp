@@ -60,11 +60,10 @@ void Scene::OnUpdate(Timestep ts, const EditorCamera& editorCamera)
 {
 	SceneRenderer::BeginScene(this, { editorCamera, editorCamera.GetViewMatrix() });
 
-	// Iterate over all lights
+	// Iterate over all point lights
 	{
 		const auto& group = m_Registry.group<LightComponent>(entt::get<TransformComponent>);
 
-		int directionalLightIndex = 0;
 		int pointLightIndex = 0;
 
 		LightEnvironment lightEnvironment;
@@ -82,16 +81,6 @@ void Scene::OnUpdate(Timestep ts, const EditorCamera& editorCamera)
 
 			switch (lightComponent.LightType)
 			{
-				case LightComponent::Type::Directional:
-				{
-					DirectionalLight& light = lightEnvironment.DirectionalLights[directionalLightIndex++];
-
-					light.Direction = rotation * glm::vec3(0.0, 1.0, 1.0);
-					light.Brightness = lightComponent.Brightness;
-					light.Colour = lightComponent.Diffuse;
-
-					break;
-				}
 				case LightComponent::Type::Point:
 				{
 					PointLight& light = lightEnvironment.PointLights[pointLightIndex++];
@@ -101,13 +90,15 @@ void Scene::OnUpdate(Timestep ts, const EditorCamera& editorCamera)
 					light.Colour = lightComponent.Diffuse;
 					light.Falloff = lightComponent.Falloff;
 					light.Slope = lightComponent.Slope;
+					light.Ambient = lightComponent.Ambient;
+					light.Specular = lightComponent.Specular;
 
 					break;
 				}
 			}
 		}
 
-		SceneRenderer::SetLightEnvironment(lightEnvironment);
+		SetLightEnvironment(lightEnvironment);
 	}
 
 	// Iterate over all meshes
@@ -147,12 +138,7 @@ void Scene::SetViewportSize(uint32_t width, uint32_t height)
 
 void Scene::SetLightEnvironment(const LightEnvironment& lightEnvironment)
 {
-	SceneRenderer::SetLightEnvironment(lightEnvironment);
-}
-
-const LightEnvironment& Scene::GetLightEnvironment()
-{
-	return SceneRenderer::GetLightEnvironment();
+	m_LightEnvironment = lightEnvironment;
 }
 
 Entity Scene::CreateEntity(const std::string& name)

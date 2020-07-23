@@ -32,9 +32,6 @@ public:
 	static void SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform = glm::mat4(1.0f), Ref<MaterialInstance> overrideMaterial = nullptr);
 	static void SubmitSelectedMesh(Ref<Mesh> mesh, const glm::mat4& transform = glm::mat4(1.0f));
 
-	static void SetLightEnvironment(const LightEnvironment& lightEnvironment);
-	static const LightEnvironment& GetLightEnvironment();
-
 	static Ref<RenderPass> GetFinalRenderPass();
 	static Ref<Texture2D> GetFinalColourBuffer();
 

@@ -14,6 +14,145 @@
 
 #include "Lucid/Scene/SceneSerializer.h"
 
+#pragma region ImGui UI Helpers
+
+bool EditorLayer::Property(const std::string& name, bool& value)
+{
+	ImGui::Text(name.c_str());
+	ImGui::NextColumn();
+	ImGui::PushItemWidth(-1);
+
+	std::string id = "##" + name;
+	bool result = ImGui::Checkbox(id.c_str(), &value);
+
+	ImGui::PopItemWidth();
+	ImGui::NextColumn();
+
+	return result;
+}
+
+bool EditorLayer::Property(const std::string& name, float& value, float min, float max, PropertyFlag flags)
+{
+	ImGui::Text(name.c_str());
+	ImGui::NextColumn();
+	ImGui::PushItemWidth(-1);
+
+	std::string id = "##" + name;
+	bool changed = false;
+
+	if (flags == PropertyFlag::SliderProperty)
+	{
+		changed = ImGui::SliderFloat(id.c_str(), &value, min, max);
+	}
+	else
+	{
+		changed = ImGui::DragFloat(id.c_str(), &value, 1.0f, min, max);
+	}
+
+	ImGui::PopItemWidth();
+	ImGui::NextColumn();
+
+	return changed;
+}
+
+bool EditorLayer::Property(const std::string& name, glm::vec2& value, EditorLayer::PropertyFlag flags)
+{
+	return Property(name, value, -1.0f, 1.0f, flags);
+}
+
+bool EditorLayer::Property(const std::string& name, glm::vec2& value, float min, float max, PropertyFlag flags)
+{
+	ImGui::Text(name.c_str());
+	ImGui::NextColumn();
+	ImGui::PushItemWidth(-1);
+
+	std::string id = "##" + name;
+	bool changed = false;
+
+	if (flags == PropertyFlag::SliderProperty)
+	{
+		changed = ImGui::SliderFloat2(id.c_str(), glm::value_ptr(value), min, max);
+	}
+	else
+	{
+		changed = ImGui::DragFloat2(id.c_str(), glm::value_ptr(value), 1.0f, min, max);
+	}
+
+	ImGui::PopItemWidth();
+	ImGui::NextColumn();
+
+	return changed;
+}
+
+bool EditorLayer::Property(const std::string& name, glm::vec3& value, EditorLayer::PropertyFlag flags)
+{
+	return Property(name, value, -1.0f, 1.0f, flags);
+}
+
+bool EditorLayer::Property(const std::string& name, glm::vec3& value, float min, float max, EditorLayer::PropertyFlag flags)
+{
+	ImGui::Text(name.c_str());
+	ImGui::NextColumn();
+	ImGui::PushItemWidth(-1);
+
+	std::string id = "##" + name;
+	bool changed = false;
+
+	if ((int)flags & (int)PropertyFlag::ColourProperty)
+	{
+		changed = ImGui::ColorEdit3(id.c_str(), glm::value_ptr(value), ImGuiColorEditFlags_NoInputs);
+	}
+	else if (flags == PropertyFlag::SliderProperty)
+	{
+		changed = ImGui::SliderFloat3(id.c_str(), glm::value_ptr(value), min, max);
+	}
+	else
+	{
+		changed = ImGui::DragFloat3(id.c_str(), glm::value_ptr(value), 1.0f, min, max);
+	}
+
+	ImGui::PopItemWidth();
+	ImGui::NextColumn();
+
+	return changed;
+}
+
+bool EditorLayer::Property(const std::string& name, glm::vec4& value, EditorLayer::PropertyFlag flags)
+{
+	return Property(name, value, -1.0f, 1.0f, flags);
+}
+
+bool EditorLayer::Property(const std::string& name, glm::vec4& value, float min, float max, EditorLayer::PropertyFlag flags)
+{
+	ImGui::Text(name.c_str());
+	ImGui::NextColumn();
+	ImGui::PushItemWidth(-1);
+
+	std::string id = "##" + name;
+	bool changed = false;
+
+	if ((int)flags & (int)PropertyFlag::ColourProperty)
+	{
+		changed = ImGui::ColorEdit4(id.c_str(), glm::value_ptr(value), ImGuiColorEditFlags_NoInputs);
+	}
+	else if (flags == PropertyFlag::SliderProperty)
+	{
+		changed = ImGui::SliderFloat4(id.c_str(), glm::value_ptr(value), min, max);
+	}
+	else
+	{
+		changed = ImGui::DragFloat4(id.c_str(), glm::value_ptr(value), 1.0f, min, max);
+	}
+
+	ImGui::PopItemWidth();
+	ImGui::NextColumn();
+
+	return changed;
+}
+
+#pragma endregion
+
+
 EditorLayer::EditorLayer()
 	: m_EditorCamera(glm::perspectiveFov(glm::radians(45.0f), 1280.0f, 720.0f, 0.1f, 10000.0f))
 {
@@ -77,10 +216,14 @@ void EditorLayer::OnAttach()
 
 	// Editor resources
 	m_CheckerboardTex = Texture2D::Create("assets/textures/Checkerboard.tga");
+	m_BoundingBoxesTex = Texture2D::Create("assets/textures/BoundingBoxes.tga");
+	m_GizmoSpaceTex = Texture2D::Create("assets/textures/GizmoSpace.tga");
 	m_PointLightTex = Texture2D::Create("assets/textures/PointLight.tga");
 	m_DirLightTex = Texture2D::Create("assets/textures/DirectionalLight.tga");
 
 	m_ActiveScene = Ref<Scene>::Create();
+
+	UpdateWindowTitle("Untitled Scene");
 
 	m_SceneHierarchy = CreateScope<SceneHierarchy>(m_ActiveScene);
 
@@ -100,21 +243,6 @@ void EditorLayer::OnUpdate(Timestep ts)
 	}
 
 	m_ActiveScene->OnUpdate(ts, m_EditorCamera);
-
-	if (m_DrawOnTopBoundingBoxes)
-	{
-		Renderer::BeginRenderPass(SceneRenderer::GetFinalRenderPass(), false);
-
-		auto viewProj = m_EditorCamera.GetViewProjection();
-
-		Renderer2D::BeginScene(viewProj, false);
-
-		// TODO: Renderer::DrawAABB(m_MeshEntity.GetComponent<MeshComponent>(), m_MeshEntity.GetComponent<TransformComponent>());
-
-		Renderer2D::EndScene();
-
-		Renderer::EndRenderPass();
-	}
 
 	if (m_SelectionContext.size() && false)
 	{
@@ -191,22 +319,23 @@ void EditorLayer::OnImGuiRender()
 
 	ImGui::Begin("Model");
 
-	ImGui::Begin("Options");
+	ImGui::Begin("Environment");
 
 	ImGui::Columns(2);
 	ImGui::AlignTextToFramePadding();
 
-	if (Property("Show Bounding Boxes", m_UIShowBoundingBoxes))
-	{
-		ShowBoundingBoxes(m_UIShowBoundingBoxes);
-	}
+	auto& light = m_ActiveScene->GetDirectionalLight();
 
-	const char* label = m_SelectionMode == SelectionMode::Entity ? "Entity" : "Mesh";
+	Property("Light Direction", light.Direction, PropertyFlag::SliderProperty);
+	Property("Light Brightness", light.Brightness, 0.0f, 0.5f, PropertyFlag::SliderProperty);
+	Property("Light Diffuse", light.Colour, PropertyFlag::ColourProperty);
+	Property("Light Ambient", light.Ambient, PropertyFlag::ColourProperty);
 
-	if (ImGui::Button(label))
-	{
-		m_SelectionMode = m_SelectionMode == SelectionMode::Entity ? SelectionMode::SubMesh : SelectionMode::Entity;
-	}
+
+	Property("Exposure", m_EditorCamera.GetExposure(), 0.0f, 5.0f, PropertyFlag::SliderProperty);
+
+	ImGui::Columns(2);
+	ImGui::AlignTextToFramePadding();
 
 	ImGui::Columns(1);
 
@@ -364,11 +493,50 @@ void EditorLayer::OnImGuiRender()
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(12, 4));
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
 
-	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.8f, 0.8f, 0.0f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
 
 	ImGui::Begin("Toolbar");
+
+	if (!m_UIShowBoundingBoxes)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_BoundingBoxesTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.5f)))
+		{
+			m_UIShowBoundingBoxes = true;
+
+			ShowBoundingBoxes(m_UIShowBoundingBoxes);
+		}
+	}
+
+	if (m_UIShowBoundingBoxes)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_BoundingBoxesTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+		{
+			m_UIShowBoundingBoxes = false;
+
+			ShowBoundingBoxes(m_UIShowBoundingBoxes);
+		}
+	}
+
+	ImGui::SameLine();
+
+	if (m_SelectionMode == SelectionMode::SubMesh)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_GizmoSpaceTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.5f)))
+		{
+			m_SelectionMode = SelectionMode::Entity;
+		}
+	}
+
+	if (m_SelectionMode == SelectionMode::Entity)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_GizmoSpaceTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+		{
+			m_SelectionMode = SelectionMode::SubMesh;
+		}
+	}
+
 	ImGui::End();
 
 	ImGui::PopStyleColor();
@@ -692,104 +860,6 @@ bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 	}
 
 	return false;
-}
-
-bool EditorLayer::Property(const std::string& name, bool& value)
-{
-	ImGui::Text(name.c_str());
-	ImGui::NextColumn();
-	ImGui::PushItemWidth(-1);
-
-	std::string id = "##" + name;
-	bool result = ImGui::Checkbox(id.c_str(), &value);
-
-	ImGui::PopItemWidth();
-	ImGui::NextColumn();
-
-	return result;
-}
-
-void EditorLayer::Property(const std::string& name, float& value, float min, float max, PropertyFlag flags)
-{
-	ImGui::Text(name.c_str());
-	ImGui::NextColumn();
-	ImGui::PushItemWidth(-1);
-
-	std::string id = "##" + name;
-	ImGui::SliderFloat(id.c_str(), &value, min, max);
-
-	ImGui::PopItemWidth();
-	ImGui::NextColumn();
-}
-
-void EditorLayer::Property(const std::string& name, glm::vec2& value, PropertyFlag flags)
-{
-	Property(name, value, -1.0f, 1.0f, flags);
-}
-
-void EditorLayer::Property(const std::string& name, glm::vec2& value, float min, float max, PropertyFlag flags)
-{
-	ImGui::Text(name.c_str());
-	ImGui::NextColumn();
-	ImGui::PushItemWidth(-1);
-
-	std::string id = "##" + name;
-	ImGui::SliderFloat2(id.c_str(), glm::value_ptr(value), min, max);
-
-	ImGui::PopItemWidth();
-	ImGui::NextColumn();
-}
-
-void EditorLayer::Property(const std::string& name, glm::vec3& value, PropertyFlag flags)
-{
-	Property(name, value, -1.0f, 1.0f, flags);
-}
-
-void EditorLayer::Property(const std::string& name, glm::vec3& value, float min, float max, PropertyFlag flags)
-{
-	ImGui::Text(name.c_str());
-	ImGui::NextColumn();
-	ImGui::PushItemWidth(-1);
-
-	std::string id = "##" + name;
-
-	if ((int)flags & (int)PropertyFlag::ColourProperty)
-	{
-		ImGui::ColorEdit3(id.c_str(), glm::value_ptr(value), ImGuiColorEditFlags_NoInputs);
-	}
-	else
-	{
-		ImGui::SliderFloat3(id.c_str(), glm::value_ptr(value), min, max);
-	}
-
-	ImGui::PopItemWidth();
-	ImGui::NextColumn();
-}
-
-void EditorLayer::Property(const std::string& name, glm::vec4& value, PropertyFlag flags)
-{
-	Property(name, value, -1.0f, 1.0f, flags);
-}
-
-void EditorLayer::Property(const std::string& name, glm::vec4& value, float min, float max, PropertyFlag flags)
-{
-	ImGui::Text(name.c_str());
-	ImGui::NextColumn();
-	ImGui::PushItemWidth(-1);
-
-	std::string id = "##" + name;
-
-	if ((int)flags & (int)PropertyFlag::ColourProperty)
-	{
-		ImGui::ColorEdit4(id.c_str(), glm::value_ptr(value), ImGuiColorEditFlags_NoInputs);
-	}
-	else
-	{
-		ImGui::SliderFloat4(id.c_str(), glm::value_ptr(value), min, max);
-	}
-
-	ImGui::PopItemWidth();
-	ImGui::NextColumn();
 }
 
 void EditorLayer::ShowBoundingBoxes(bool show)

@@ -237,41 +237,42 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity)
 		out << YAML::EndMap;
 	}
 
+	if (entity.HasComponent<LightComponent>())
+	{
+		// Light component
+		out << YAML::Key << "LightComponent";
+		out << YAML::BeginMap;
+
+		auto pointLights = entity.GetComponent<LightComponent>();
+
+		// Point lights data
+		out << YAML::Key << "Brightness" << YAML::Value << pointLights.Brightness;
+		out << YAML::Key << "Falloff" << YAML::Value << pointLights.Falloff;
+		out << YAML::Key << "Slope" << YAML::Value << pointLights.Slope;
+		out << YAML::Key << "Diffuse" << YAML::Value << pointLights.Diffuse;
+		out << YAML::Key << "Ambient" << YAML::Value << pointLights.Ambient;
+		out << YAML::Key << "Specular" << YAML::Value << pointLights.Specular;
+
+		out << YAML::EndMap;
+	}
+
 	out << YAML::EndMap;
 }
 
 static void SerializeEnvironment(YAML::Emitter& out, const Ref<Scene>& scene)
 {
-	// Environment
+	// Directional lights
+	out << YAML::Key << "Directional Light" << YAML::Value;
 	out << YAML::BeginMap;
-	//out << YAML::Key << "Light Environment" << YAML::Value << scene->GetLightEnvironment();
 
-	//// Directional lights
-	//out << YAML::Key << "Directional Lights" << YAML::Value;
-	//out << YAML::BeginMap;
+	const auto& dirLight = scene->GetDirectionalLight();
 
-	//const auto& dirLights = scene->GetDirectionalLights();
-
-	//// Directional lights data
-	//out << YAML::Key << "Direction" << YAML::Value << dirLights.Direction;
-	//out << YAML::Key << "Brightness" << YAML::Value << dirLights.Brightness;
-	//out << YAML::Key << "Diffuse" << YAML::Value << dirLights.Colour;
-
-	//out << YAML::EndMap;
-
-	//// Point lights
-	//out << YAML::Key << "Point Lights" << YAML::Value;
-	//out << YAML::BeginMap;
-
-	//const auto& pointLights = scene->GetPointLights();
-
-	//// Point lights data
-	//out << YAML::Key << "Brightness" << YAML::Value << pointLights.Brightness;
-	//out << YAML::Key << "Falloff" << YAML::Value << pointLights.Falloff;
-	//out << YAML::Key << "Slope" << YAML::Value << pointLights.Slope;
-	//out << YAML::Key << "Diffuse" << YAML::Value << pointLights.Colour;
-
-	//out << YAML::EndMap;
+	// Directional lights data
+	out << YAML::Key << "Direction" << YAML::Value << dirLight.Direction;
+	out << YAML::Key << "Brightness" << YAML::Value << dirLight.Brightness;
+	out << YAML::Key << "Diffuse" << YAML::Value << dirLight.Colour;
+	out << YAML::Key << "Ambient" << YAML::Value << dirLight.Ambient;
+	out << YAML::Key << "Specular" << YAML::Value << dirLight.Specular;
 
 	out << YAML::EndMap;
 }
@@ -325,9 +326,18 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 	std::string sceneName = data["Scene"].as<std::string>();
 	LD_CORE_INFO("Deserializing scene '{0}'", sceneName);
 
-	// Light environment data
-	//const auto& lightEnvironment = data["Light Environment"].as<LightEnvironment>();
-	//m_Scene->SetLightEnvironment(lightEnvironment);
+	// Directional light
+	auto directionalLight = data["Directional Light"];
+
+	auto& dirLight = m_Scene->GetDirectionalLight();
+
+	dirLight.Brightness = directionalLight["Brightness"].as<float>();
+	dirLight.Direction = directionalLight["Direction"].as<glm::vec3>();
+	dirLight.Colour = directionalLight["Diffuse"].as<glm::vec3>();
+	dirLight.Ambient = directionalLight["Ambient"].as<glm::vec3>();
+	dirLight.Specular = directionalLight["Specular"].as<glm::vec3>();
+
+	m_Scene->m_Light = dirLight;
 
 	// Scene data
 	auto entities = data["Entities"];
@@ -387,6 +397,33 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 			}
 
 			// Light component
+			auto lightComponent = entity["LightComponent"];
+
+			if (lightComponent)
+			{
+				if (!deserializedEntity.HasComponent<LightComponent>())
+				{
+					deserializedEntity.AddComponent<LightComponent>();
+
+					auto& pointLight = m_Scene->GetLightEnvironment().PointLights;
+
+					// Get the point lights translation
+					auto& transform = deserializedEntity.GetComponent<TransformComponent>().TransformComp;
+					glm::vec3 translation = transformComponent["Position"].as<glm::vec3>();
+					pointLight->Position = translation;
+
+					auto& pntLight = deserializedEntity.GetComponent<LightComponent>();
+					
+					pntLight.Brightness = lightComponent["Brightness"].as<float>();
+					pntLight.Diffuse = lightComponent["Diffuse"].as<glm::vec3>();
+					pntLight.Ambient = lightComponent["Ambient"].as<glm::vec3>();
+					pntLight.Specular = lightComponent["Specular"].as<glm::vec3>();
+					pntLight.Falloff = lightComponent["Falloff"].as<float>();
+					pntLight.Slope = lightComponent["Slope"].as<float>();
+				}
+
+				// Could output data to console here about each light
+			}
 		}
 	}
 

@@ -617,12 +617,12 @@ void SceneHierarchy::DrawComponents(Entity entity)
 		if (ImGui::TreeNodeEx((void*)((uint32_t)entity | typeid(LightComponent).hash_code()), ImGuiTreeNodeFlags_DefaultOpen, "Light"))
 		{
 			// Light Type
-			const char* lightTypeStrings[] = { "Directional", "Point" };
+			const char* lightTypeStrings[] = { "Point" };
 			const char* currentType = lightTypeStrings[(int)lc.LightType];
 
 			if (ImGui::BeginCombo("Light Type", currentType))
 			{
-				for (int type = 0; type < 2; type++)
+				for (int type = 0; type < 1; type++)
 				{
 					bool is_selected = (currentType == lightTypeStrings[type]);
 
@@ -643,33 +643,17 @@ void SceneHierarchy::DrawComponents(Entity entity)
 
 			BeginPropertyGrid();
 
-			// Directional light parameters
-			if (lc.LightType == LightComponent::Type::Directional)
-			{
-				ImGui::Columns(3);
-
-				BeginPropertyGrid();
-
-				Property("Brightness", lc.Brightness, 0.0f, 1.0f);
-				PropertyColour("Diffuse", lc.Diffuse);
-
-				EndPropertyGrid();
-
-				ImGui::NextColumn();
-				ImGui::Columns(1);
-			}
-
 			// Point light parameters
-			else if (lc.LightType == LightComponent::Type::Point)
+			if (lc.LightType == LightComponent::Type::Point)
 			{
 				ImGui::Columns(3);
 
 				BeginPropertyGrid();
 
-				Property("Brightness", lc.Brightness, 0.0f, 5.0f);
+				Property("Brightness", lc.Brightness, 0.0f, 100.0f);
 				PropertyColour("Diffuse", lc.Diffuse);
-				Property("Slope", lc.Slope, 0.0f, 2.0f);
-				Property("Falloff", lc.Falloff, 0.0f, 2.0f);
+				Property("Slope", lc.Slope, 1.0f, 10.0f);
+				Property("Falloff", lc.Falloff, 1.0f, 10.0f);
 
 				EndPropertyGrid();
 
