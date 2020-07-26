@@ -328,7 +328,9 @@ void SceneRenderer::CompositePass()
 	s_Data.CompositeShader->Bind();
 	s_Data.CompositeShader->SetFloat("u_Exposure", s_Data.SceneData.SceneCamera.Camera.GetExposure());
 	s_Data.CompositeShader->SetInt("u_TextureSamples", s_Data.GeometryPass->GetSpecification().TargetFramebuffer->GetSpecification().Samples);
-	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindTexture();
+
+	// Have to bind texture slot 1 when sample count of framebuffer is 1
+	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindTexture(1);
 
 	Renderer::SubmitFullscreenQuad(nullptr);
 
