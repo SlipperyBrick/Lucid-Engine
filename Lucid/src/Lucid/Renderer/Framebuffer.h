@@ -42,7 +42,7 @@ public:
 	void BindTexture(uint32_t slot = 0) const;
 
 	RendererID GetRendererID() const { return m_RendererID; }
-	RendererID GetColourAttachmentRendererID() const { return m_ColourAttachment; }
+	RendererID GetColourAttachmentRendererID(uint32_t attachment) const { return m_ColourAttachments.at(attachment); }
 	RendererID GetDepthAttachmentRendererID() const { return m_DepthAttachment; }
 
 	const FramebufferSpecification& GetSpecification() const { return m_Specification; }
@@ -54,7 +54,7 @@ private:
 	FramebufferSpecification m_Specification;
 
 	RendererID m_RendererID = 0;
-	RendererID m_ColourAttachment = 0;
+	std::vector<RendererID> m_ColourAttachments;
 	RendererID m_DepthAttachment = 0;
 };
 
