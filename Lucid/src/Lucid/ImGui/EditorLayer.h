@@ -135,8 +135,12 @@ private:
 	#pragma region Editor
 
 	Ref<Texture2D> m_CheckerboardTex;
-	Ref<Texture2D> m_GizmoSpaceTex;
+	Ref<Texture2D> m_TranslateTex;
+	Ref<Texture2D> m_RotateTex;
+	Ref<Texture2D> m_ScaleTex;
 	Ref<Texture2D> m_BoundingBoxesTex;
+	Ref<Texture2D> m_GridToggleTex;
+	Ref<Texture2D> m_DuplicateTex;
 	Ref<Texture2D> m_PointLightTex;
 	Ref<Texture2D> m_DirLightTex;
 

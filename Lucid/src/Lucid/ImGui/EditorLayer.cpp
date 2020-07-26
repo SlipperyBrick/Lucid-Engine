@@ -217,7 +217,11 @@ void EditorLayer::OnAttach()
 	// Editor resources
 	m_CheckerboardTex = Texture2D::Create("assets/textures/Checkerboard.tga");
 	m_BoundingBoxesTex = Texture2D::Create("assets/textures/BoundingBoxes.tga");
-	m_GizmoSpaceTex = Texture2D::Create("assets/textures/GizmoSpace.tga");
+	m_TranslateTex = Texture2D::Create("assets/textures/Translate.tga");
+	m_RotateTex = Texture2D::Create("assets/textures/Rotate.tga");
+	m_ScaleTex = Texture2D::Create("assets/textures/Scale.tga");
+	m_GridToggleTex = Texture2D::Create("assets/textures/GridToggle.tga");
+	m_DuplicateTex = Texture2D::Create("assets/textures/Duplicate.tga");
 	m_PointLightTex = Texture2D::Create("assets/textures/PointLight.tga");
 	m_DirLightTex = Texture2D::Create("assets/textures/DirectionalLight.tga");
 
@@ -494,11 +498,12 @@ void EditorLayer::OnImGuiRender()
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
 
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.8f, 0.8f, 0.0f));
-	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.8f, 0.8f, 0.2f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.8, 0.8, 0.8, 0.5));
 
 	ImGui::Begin("Toolbar");
 
+	// Bounding boxes
 	if (!m_UIShowBoundingBoxes)
 	{
 		if (ImGui::ImageButton((ImTextureID)(m_BoundingBoxesTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.5f)))
@@ -521,21 +526,61 @@ void EditorLayer::OnImGuiRender()
 
 	ImGui::SameLine();
 
-	if (m_SelectionMode == SelectionMode::SubMesh)
+	// Translate gizmo
+	if (ImGui::ImageButton((ImTextureID)(m_TranslateTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
 	{
-		if (ImGui::ImageButton((ImTextureID)(m_GizmoSpaceTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.5f)))
+		m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+	}
+
+	ImGui::SameLine();
+
+	// Rotate gizmo
+	if (ImGui::ImageButton((ImTextureID)(m_RotateTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+	{
+		m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+	}
+
+	ImGui::SameLine();
+
+	// Scale gizmo
+	if (ImGui::ImageButton((ImTextureID)(m_ScaleTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+	{
+		m_GizmoType = ImGuizmo::OPERATION::SCALE;
+	}
+
+	ImGui::SameLine();
+
+	// Grid toggle
+	if (SceneRenderer::GetOptions().ShowGrid)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_GridToggleTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
 		{
-			m_SelectionMode = SelectionMode::Entity;
+			SceneRenderer::GetOptions().ShowGrid = false;
 		}
 	}
 
-	if (m_SelectionMode == SelectionMode::Entity)
+	if (!SceneRenderer::GetOptions().ShowGrid)
 	{
-		if (ImGui::ImageButton((ImTextureID)(m_GizmoSpaceTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+		if (ImGui::ImageButton((ImTextureID)(m_GridToggleTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.5f)))
 		{
-			m_SelectionMode = SelectionMode::SubMesh;
+			SceneRenderer::GetOptions().ShowGrid = true;
 		}
 	}
+
+	ImGui::SameLine();
+
+	// Duplicate
+
+	if (ImGui::ImageButton((ImTextureID)(m_DuplicateTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+	{
+		if (m_SelectionContext.size())
+		{
+			Entity selectedEntity = m_SelectionContext[0].Entity;
+
+			m_ActiveScene->DuplicateEntity(selectedEntity);
+		}
+	}
+	
 
 	ImGui::End();
 
