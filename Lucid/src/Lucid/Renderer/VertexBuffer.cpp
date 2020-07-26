@@ -71,10 +71,17 @@ VertexBuffer::VertexBuffer(uint32_t size, VertexBufferUsage usage)
 
 VertexBuffer::~VertexBuffer()
 {
-	Renderer::Submit([this]()
+	GLuint rendererID = m_RendererID;
+
+	Renderer::Submit([rendererID]()
+	{
+		glDeleteBuffers(1, &rendererID);
+	});
+
+	/*Renderer::Submit([this]()
 	{
 		glDeleteBuffers(1, &m_RendererID);
-	});
+	});*/
 }
 
 void VertexBuffer::SetData(void* data, uint32_t size, uint32_t offset)
@@ -95,6 +102,20 @@ void VertexBuffer::Bind() const
 	Renderer::Submit([this]()
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+	});
+}
+
+IndexBuffer::IndexBuffer(uint32_t size)
+	: m_Size(size)
+{
+	// m_LocalData = Buffer(size);
+
+	Ref<IndexBuffer> instance = this;
+
+	Renderer::Submit([instance]() mutable 
+	{
+		glCreateBuffers(1, &instance->m_RendererID);
+		glNamedBufferData(instance->m_RendererID, instance->m_Size, nullptr, GL_DYNAMIC_DRAW);
 	});
 }
 

@@ -225,6 +225,7 @@ class IndexBuffer : public RefCounted
 
 public:
 
+	IndexBuffer(uint32_t size);
 	IndexBuffer(void* data, uint32_t size);
 	~IndexBuffer();
 
