@@ -28,7 +28,6 @@ ImGuiLayer::~ImGuiLayer()
 
 void ImGuiLayer::OnAttach()
 {
-
 	// Setup ImGui rendering context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -56,11 +55,12 @@ void ImGuiLayer::OnAttach()
 
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
+		style.TabRounding = 1.0f;
 		style.WindowRounding = 0.0f;
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
 
-	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.15f, 0.15f, 0.15f, style.Colors[ImGuiCol_WindowBg].w);
+	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.1f, 0.1f, 0.1f, style.Colors[ImGuiCol_WindowBg].w);
 
 	// Get application instance and retrieve GLFW window
 	Application& app = Application::Get();
