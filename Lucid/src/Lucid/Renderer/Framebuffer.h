@@ -16,6 +16,8 @@ struct FramebufferSpecification
 
 	glm::vec4 ClearColour;
 
+	int BufferCount;
+
 	FramebufferFormat Format;
 
 	// Multisampling
@@ -40,7 +42,7 @@ public:
 	void BindTexture(uint32_t slot = 0) const;
 
 	RendererID GetRendererID() const { return m_RendererID; }
-	RendererID GetColourAttachmentRendererID(uint32_t attachment) const { return m_ColourAttachments.at(attachment); }
+	RendererID GetColourAttachmentRendererID(uint32_t attachment = 0) const { return m_ColourAttachments.at(attachment); }
 	RendererID GetDepthAttachmentRendererID() const { return m_DepthAttachment; }
 
 	const FramebufferSpecification& GetSpecification() const { return m_Specification; }
