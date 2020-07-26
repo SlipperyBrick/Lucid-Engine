@@ -278,7 +278,7 @@ void EditorLayer::OnImGuiRender()
 
 	static bool opt_fullscreen_persistant = true;
 
-	static ImGuiDockNodeFlags opt_flags = ImGuiDockNodeFlags_None;
+	static ImGuiDockNodeFlags opt_flags = ImGuiDockNodeFlags_NoCloseButton | ImGuiDockNodeFlags_NoWindowMenuButton;
 
 	bool opt_fullscreen = opt_fullscreen_persistant;
 
@@ -344,12 +344,7 @@ void EditorLayer::OnImGuiRender()
 
 	ImGui::End();
 
-	ImGui::Separator();
-	{
-		ImGui::Text("Mesh");
-	}
-
-	ImGui::Separator();
+	ImGui::Text("Mesh Texture Slots");
 
 	#pragma region Texture Slots
 
@@ -500,7 +495,7 @@ void EditorLayer::OnImGuiRender()
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.8f, 0.8f, 0.2f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.8f, 0.8f, 0.8f, 0.5f));
 
-	ImGui::Begin("Toolbar");
+	ImGui::Begin("Toolbar", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
 	// Bounding boxes
 	if (!m_UIShowBoundingBoxes)

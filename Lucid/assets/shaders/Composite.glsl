@@ -43,20 +43,6 @@ vec4 MultiSampleTexture(sampler2DMS tex, ivec2 texCoord, int samples)
     return result;
 }
 
-vec4 SampleTexture(sampler2D tex, ivec2 texCoord, int samples)
-{
-    vec4 result = vec4(0.0);
-
-    for (int i = 0; i < samples; i++)
-	{
-        result += texelFetch(tex, texCoord, i);
-	}
-
-    result /= float(samples);
-
-    return result;
-}
-
 void main()
 {
 	const float gamma = 2.2;
@@ -81,15 +67,9 @@ void main()
 		// Gamma correction to final output
 		o_Colour = vec4(pow(mappedColour, vec3(1.0 / gamma)), 1.0);
 	}
-
-	if (u_TextureSamples == 1)
+	else
 	{
-		ivec2 texSize = textureSize(u_Texture, 0);
-		ivec2 texCoord = ivec2(v_TexCoord * texSize);
-
-		vec4 sColour = SampleTexture(u_Texture, texCoord, u_TextureSamples);
-
-		vec3 colour = sColour.rgb * u_Exposure;
+		vec3 colour = texture(u_Texture, v_TexCoord).rgb * u_Exposure;
 
 		// Reinhard tonemapping operator
 		float luminance = dot(colour, vec3(0.2126, 0.7152, 0.0722));
