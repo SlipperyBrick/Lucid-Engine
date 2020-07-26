@@ -335,8 +335,7 @@ void EditorLayer::OnImGuiRender()
 	Property("Light Diffuse", light.Colour, PropertyFlag::ColourProperty);
 	Property("Light Ambient", light.Ambient, PropertyFlag::ColourProperty);
 
-
-	Property("Exposure", m_EditorCamera.GetExposure(), 0.0f, 5.0f, PropertyFlag::SliderProperty);
+	Property("Exposure", m_EditorCamera.GetExposure(), 0.1f, 2.0f, PropertyFlag::SliderProperty);
 
 	ImGui::Columns(2);
 	ImGui::AlignTextToFramePadding();
@@ -499,7 +498,7 @@ void EditorLayer::OnImGuiRender()
 
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.8f, 0.8f, 0.2f));
-	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.8, 0.8, 0.8, 0.5));
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.8f, 0.8f, 0.8f, 0.5f));
 
 	ImGui::Begin("Toolbar");
 

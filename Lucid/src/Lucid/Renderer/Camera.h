@@ -21,5 +21,5 @@ protected:
 
 	glm::mat4 m_ProjectionMatrix = glm::mat4(1.0f);
 
-	float m_Exposure = 0.8f;
+	float m_Exposure = 1.0f;
 };

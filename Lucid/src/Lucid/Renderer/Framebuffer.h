@@ -16,6 +16,8 @@ struct FramebufferSpecification
 
 	glm::vec4 ClearColour;
 
+	int BufferCount;
+
 	FramebufferFormat Format;
 
 	// Multisampling

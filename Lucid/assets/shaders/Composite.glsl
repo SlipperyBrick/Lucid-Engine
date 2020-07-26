@@ -22,11 +22,28 @@ layout(location = 0) out vec4 o_Colour;
 
 in vec2 v_TexCoord;
 
-uniform sampler2DMS u_Texture;
+uniform sampler2DMS u_TextureMS;
+uniform sampler2D u_Texture;
+
+uniform float u_Exposure;
 
 uniform int u_TextureSamples;
 
 vec4 MultiSampleTexture(sampler2DMS tex, ivec2 texCoord, int samples)
+{
+    vec4 result = vec4(0.0);
+
+    for (int i = 0; i < samples; i++)
+	{
+        result += texelFetch(tex, texCoord, i);
+	}
+
+    result /= float(samples);
+
+    return result;
+}
+
+vec4 SampleTexture(sampler2D tex, ivec2 texCoord, int samples)
 {
     vec4 result = vec4(0.0);
 
@@ -45,20 +62,43 @@ void main()
 	const float gamma = 2.2;
 	const float pureWhite = 1.0;
 
-	ivec2 texSize = textureSize(u_Texture);
-	ivec2 texCoord = ivec2(v_TexCoord * texSize);
+	if (u_TextureSamples > 1)
+	{
+		ivec2 texSize = textureSize(u_TextureMS);
+		ivec2 texCoord = ivec2(v_TexCoord * texSize);
 
-	vec4 msColour = MultiSampleTexture(u_Texture, texCoord, u_TextureSamples);
+		vec4 msColour = MultiSampleTexture(u_TextureMS, texCoord, u_TextureSamples);
 
-	vec3 colour = msColour.rgb;
+		vec3 colour = msColour.rgb * u_Exposure;
 
-	// Reinhard tonemapping operator
-	float luminance = dot(colour, vec3(0.2126, 0.7152, 0.0722));
-	float mappedLuminance = (luminance * (1.0 + luminance / (pureWhite * pureWhite))) / (1.0 + luminance);
+		// Reinhard tonemapping operator
+		float luminance = dot(colour, vec3(0.2126, 0.7152, 0.0722));
+		float mappedLuminance = (luminance * (1.0 + luminance / (pureWhite * pureWhite))) / (1.0 + luminance);
 
-	// Scale colour by ratio of average luminances
-	vec3 mappedColour = (mappedLuminance / luminance) * colour;
+		// Scale colour by ratio of average luminances
+		vec3 mappedColour = (mappedLuminance / luminance) * colour;
 
-	// Gamma correction to final output
-	o_Colour = vec4(pow(mappedColour, vec3(1.0 / gamma)), 1.0);
+		// Gamma correction to final output
+		o_Colour = vec4(pow(mappedColour, vec3(1.0 / gamma)), 1.0);
+	}
+
+	if (u_TextureSamples == 1)
+	{
+		ivec2 texSize = textureSize(u_Texture, 0);
+		ivec2 texCoord = ivec2(v_TexCoord * texSize);
+
+		vec4 sColour = SampleTexture(u_Texture, texCoord, u_TextureSamples);
+
+		vec3 colour = sColour.rgb * u_Exposure;
+
+		// Reinhard tonemapping operator
+		float luminance = dot(colour, vec3(0.2126, 0.7152, 0.0722));
+		float mappedLuminance = (luminance * (1.0 + luminance / (pureWhite * pureWhite))) / (1.0 + luminance);
+
+		// Scale colour by ratio of average luminances
+		vec3 mappedColour = (mappedLuminance / luminance) * colour;
+
+		// Gamma correction to final output
+		o_Colour = vec4(pow(mappedColour, vec3(1.0 / gamma)), 1.0);
+	}
 }

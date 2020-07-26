@@ -1,7 +1,7 @@
 Scene: Scene Name
 Directional Light:
-  Direction: [0, -1, 1]
-  Brightness: 0.25
+  Direction: [0, -1, -1]
+  Brightness: 0.100000001
   Diffuse: [1, 0.999989986, 0.999989986]
   Ambient: [9.99999997e-07, 9.99989993e-07, 9.99989993e-07]
   Specular: [0.100000001, 0.100000001, 0.100000001]

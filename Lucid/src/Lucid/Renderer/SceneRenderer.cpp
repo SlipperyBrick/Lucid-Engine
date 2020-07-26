@@ -57,6 +57,7 @@ void SceneRenderer::Init()
 	geoFramebufferSpec.Height = 720;
 	geoFramebufferSpec.Format = FramebufferFormat::RGBA16F;
 	geoFramebufferSpec.Samples = 8;
+	geoFramebufferSpec.BufferCount = 3;
 	geoFramebufferSpec.ClearColour = { 0.1f, 0.1f, 0.1f, 1.0f };
 
 	RenderPassSpecification geoRenderPassSpec;
@@ -325,6 +326,7 @@ void SceneRenderer::CompositePass()
 	Renderer::BeginRenderPass(s_Data.CompositePass);
 
 	s_Data.CompositeShader->Bind();
+	s_Data.CompositeShader->SetFloat("u_Exposure", s_Data.SceneData.SceneCamera.Camera.GetExposure());
 	s_Data.CompositeShader->SetInt("u_TextureSamples", s_Data.GeometryPass->GetSpecification().TargetFramebuffer->GetSpecification().Samples);
 	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindTexture();
 
