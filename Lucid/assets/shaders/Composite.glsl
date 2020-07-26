@@ -67,7 +67,8 @@ void main()
 		// Gamma correction to final output
 		o_Colour = vec4(pow(mappedColour, vec3(1.0 / gamma)), 1.0);
 	}
-	else
+
+	if(u_TextureSamples == 1)
 	{
 		vec3 colour = texture(u_Texture, v_TexCoord).rgb * u_Exposure;
 

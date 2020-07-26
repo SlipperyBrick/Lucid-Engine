@@ -564,7 +564,6 @@ void EditorLayer::OnImGuiRender()
 	ImGui::SameLine();
 
 	// Duplicate
-
 	if (ImGui::ImageButton((ImTextureID)(m_DuplicateTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
 	{
 		if (m_SelectionContext.size())
@@ -575,7 +574,6 @@ void EditorLayer::OnImGuiRender()
 		}
 	}
 	
-
 	ImGui::End();
 
 	ImGui::PopStyleColor();

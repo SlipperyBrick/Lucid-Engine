@@ -75,12 +75,12 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 			{
 				for (int i = 0; i < m_Specification.BufferCount; i++)
 				{
-					glDeleteTextures(1, &m_ColourAttachments.at(i));
+					glDeleteTextures(1, &m_ColourAttachments[i]);
 				}
 			}
 			else
 			{
-				glDeleteTextures(1, &m_ColourAttachments.at(0));
+				glDeleteTextures(1, &m_ColourAttachments[0]);
 			}
 
 			glDeleteTextures(1, &m_DepthAttachment);
@@ -93,8 +93,8 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 
 		if (multisample)
 		{
-			glCreateTextures(GL_TEXTURE_2D_MULTISAMPLE, 1, &m_ColourAttachments.at(0));
-			glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_ColourAttachments.at(0));
+			glCreateTextures(GL_TEXTURE_2D_MULTISAMPLE, 1, &m_ColourAttachments[0]);
+			glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_ColourAttachments[0]);
 
 			if (m_Specification.Format == FramebufferFormat::RGBA16F)
 			{
@@ -111,8 +111,8 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 		{
 			for (int i = 0; i < m_Specification.BufferCount; i++)
 			{
-				glCreateTextures(GL_TEXTURE_2D, 1, &m_ColourAttachments.at(i));
-				glBindTexture(GL_TEXTURE_2D, m_ColourAttachments.at(i));
+				glCreateTextures(GL_TEXTURE_2D, 1, &m_ColourAttachments[i]);
+				glBindTexture(GL_TEXTURE_2D, m_ColourAttachments[i]);
 
 				if (m_Specification.Format == FramebufferFormat::RGBA16F)
 				{
@@ -126,7 +126,7 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_ColourAttachments.at(i), 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_ColourAttachments[i], 0);
 			}
 		}
 
@@ -151,11 +151,11 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 
 		if (multisample)
 		{
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_ColourAttachments.at(0), 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_ColourAttachments[0], 0);
 		}
 		else
 		{
-			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_ColourAttachments.at(0), 0);
+			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_ColourAttachments[0], 0);
 		}
 
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, m_DepthAttachment, 0);
@@ -188,6 +188,6 @@ void Framebuffer::BindTexture(uint32_t slot) const
 {
 	Renderer::Submit([=]()
 	{
-		glBindTextureUnit(slot, m_ColourAttachments.at(slot));
+		glBindTextureUnit(slot, m_ColourAttachments[slot]);
 	});
 }
