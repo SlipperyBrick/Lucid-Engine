@@ -56,8 +56,7 @@ void SceneRenderer::Init()
 	geoFramebufferSpec.Width = 1280;
 	geoFramebufferSpec.Height = 720;
 	geoFramebufferSpec.Format = FramebufferFormat::RGBA16F;
-	geoFramebufferSpec.Samples = 8;
-	geoFramebufferSpec.BufferCount = 3;
+	geoFramebufferSpec.Samples = 1;
 	geoFramebufferSpec.ClearColour = { 0.1f, 0.1f, 0.1f, 1.0f };
 
 	RenderPassSpecification geoRenderPassSpec;
@@ -68,6 +67,7 @@ void SceneRenderer::Init()
 	compFramebufferSpec.Width = 1280;
 	compFramebufferSpec.Height = 720;
 	compFramebufferSpec.Format = FramebufferFormat::RGBA8;
+	compFramebufferSpec.Samples = 1;
 	compFramebufferSpec.ClearColour = { 0.1f, 0.1f, 0.1f, 1.0f };
 
 	RenderPassSpecification compRenderPassSpec;
