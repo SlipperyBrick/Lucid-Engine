@@ -601,6 +601,13 @@ void EditorLayer::OnImGuiRender()
 	ImGui::Begin("Viewport", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
 	m_ViewportPanelMouseOver = ImGui::IsWindowHovered();
+
+	// Set viewport window as focused on mouse hover
+	if (m_ViewportPanelMouseOver)
+	{
+		ImGui::SetWindowFocus();
+	}
+
 	m_ViewportPanelFocused = ImGui::IsWindowFocused();
 
 	// Offset includes the tab-bar
