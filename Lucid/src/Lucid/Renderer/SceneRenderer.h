@@ -42,6 +42,8 @@ public:
 private:
 
 	static void FlushDrawList();
+
 	static void GeometryPass();
+	static void LightingPass();
 	static void CompositePass();
 };

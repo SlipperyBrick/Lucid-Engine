@@ -1099,6 +1099,14 @@ void Shader::SetInt(const std::string& name, int value)
 	});
 }
 
+void Shader::SetVec2(const std::string& name, const glm::vec2& value)
+{
+	Renderer::Submit([=]()
+	{
+		UploadUniformFloat2(name, value);
+	});
+}
+
 void Shader::SetVec3(const std::string& name, const glm::vec3& value)
 {
 	Renderer::Submit([=]()

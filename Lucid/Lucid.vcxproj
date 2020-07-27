@@ -385,8 +385,10 @@
     <ClInclude Include="vendor\yaml-cpp\src\token.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\shaders\Buffer.glsl" />
     <None Include="assets\shaders\Composite.glsl" />
     <None Include="assets\shaders\Grid.glsl" />
+    <None Include="assets\shaders\Lighting.glsl" />
     <None Include="assets\shaders\Line.glsl" />
     <None Include="assets\shaders\Outline.glsl" />
     <None Include="assets\shaders\Quad.glsl" />

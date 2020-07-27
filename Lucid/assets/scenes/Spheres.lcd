@@ -6,153 +6,18 @@ Directional Light:
   Ambient: [9.99999997e-07, 9.99989993e-07, 9.99989993e-07]
   Specular: [0.100000001, 0.100000001, 0.100000001]
 Entities:
-  - Entity: 2284422222
+  - Entity: 2567653564
     TagComponent:
-      Tag: Sphere 01
+      Tag: Point Light 03
     TransformComponent:
-      Position: [10, 0, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [0.200000003, 0.200000003, 0.200000003]
-    MeshComponent:
-      AssetPath: D:\GitHub\Lucid\Lucid\assets\models\sphere.fbx
-  - Entity: 2326966638
-    TagComponent:
-      Tag: Sphere 02
-    TransformComponent:
-      Position: [5, 0, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [0.200000003, 0.200000003, 0.200000003]
-    MeshComponent:
-      AssetPath: D:\GitHub\Lucid\Lucid\assets\models\sphere.fbx
-  - Entity: 3190643055
-    TagComponent:
-      Tag: Sphere 03
-    TransformComponent:
-      Position: [0, 0, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [0.200000003, 0.200000003, 0.200000003]
-    MeshComponent:
-      AssetPath: D:\GitHub\Lucid\Lucid\assets\models\sphere.fbx
-  - Entity: 1616834936
-    TagComponent:
-      Tag: Sphere 04
-    TransformComponent:
-      Position: [-5, 0, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [0.200000003, 0.200000003, 0.200000003]
-    MeshComponent:
-      AssetPath: D:\GitHub\Lucid\Lucid\assets\models\sphere.fbx
-  - Entity: 2034557646
-    TagComponent:
-      Tag: Sphere 05
-    TransformComponent:
-      Position: [-10, 0, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [0.200000003, 0.200000003, 0.200000003]
-    MeshComponent:
-      AssetPath: D:\GitHub\Lucid\Lucid\assets\models\sphere.fbx
-  - Entity: 3993295467
-    TagComponent:
-      Tag: Sphere 06
-    TransformComponent:
-      Position: [10, 5, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [0.200000003, 0.200000003, 0.200000003]
-    MeshComponent:
-      AssetPath: D:\GitHub\Lucid\Lucid\assets\models\sphere.fbx
-  - Entity: 1766809981
-    TagComponent:
-      Tag: Sphere 07
-    TransformComponent:
-      Position: [5, 5, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [0.200000003, 0.200000003, 0.200000003]
-    MeshComponent:
-      AssetPath: D:\GitHub\Lucid\Lucid\assets\models\sphere.fbx
-  - Entity: 2342209703
-    TagComponent:
-      Tag: Sphere 08
-    TransformComponent:
-      Position: [0, 5, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [0.200000003, 0.200000003, 0.200000003]
-    MeshComponent:
-      AssetPath: D:\GitHub\Lucid\Lucid\assets\models\sphere.fbx
-  - Entity: 2556167080
-    TagComponent:
-      Tag: Sphere 09
-    TransformComponent:
-      Position: [-5, 5, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [0.200000003, 0.200000003, 0.200000003]
-    MeshComponent:
-      AssetPath: D:\GitHub\Lucid\Lucid\assets\models\sphere.fbx
-  - Entity: 1877677183
-    TagComponent:
-      Tag: Sphere 10
-    TransformComponent:
-      Position: [-10, 5, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [0.200000003, 0.200000003, 0.200000003]
-    MeshComponent:
-      AssetPath: D:\GitHub\Lucid\Lucid\assets\models\sphere.fbx
-  - Entity: 1655615589
-    TagComponent:
-      Tag: Sphere 11
-    TransformComponent:
-      Position: [10, 10, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [0.200000003, 0.200000003, 0.200000003]
-    MeshComponent:
-      AssetPath: D:\GitHub\Lucid\Lucid\assets\models\sphere.fbx
-  - Entity: 1324063796
-    TagComponent:
-      Tag: Sphere 12
-    TransformComponent:
-      Position: [5, 10, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [0.200000003, 0.200000003, 0.200000003]
-    MeshComponent:
-      AssetPath: D:\GitHub\Lucid\Lucid\assets\models\sphere.fbx
-  - Entity: 1246125903
-    TagComponent:
-      Tag: Sphere 13
-    TransformComponent:
-      Position: [0, 10, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [0.200000003, 0.200000003, 0.200000003]
-    MeshComponent:
-      AssetPath: D:\GitHub\Lucid\Lucid\assets\models\sphere.fbx
-  - Entity: 1069118769
-    TagComponent:
-      Tag: Sphere 14
-    TransformComponent:
-      Position: [-5, 10, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [0.200000003, 0.200000003, 0.200000003]
-    MeshComponent:
-      AssetPath: D:\GitHub\Lucid\Lucid\assets\models\sphere.fbx
-  - Entity: 253351899
-    TagComponent:
-      Tag: Sphere 15
-    TransformComponent:
-      Position: [-10, 10, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [0.200000003, 0.200000003, 0.200000003]
-    MeshComponent:
-      AssetPath: D:\GitHub\Lucid\Lucid\assets\models\sphere.fbx
-  - Entity: 1394858857
-    TagComponent:
-      Tag: Point Light 01
-    TransformComponent:
-      Position: [10, 10, -5]
+      Position: [-10, 10, -5]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
     LightComponent:
       Brightness: 25
       Falloff: 1
-      Slope: 2
-      Diffuse: [0.841698647, 0, 1]
+      Slope: 1
+      Diffuse: [0, 0.68725872, 1]
       Ambient: [0, 0, 0]
       Specular: [0.100000001, 0.100000001, 0.100000001]
   - Entity: 3899431626
@@ -169,17 +34,152 @@ Entities:
       Diffuse: [0.422618985, 1, 0]
       Ambient: [0, 0, 0]
       Specular: [0.100000001, 0.100000001, 0.100000001]
-  - Entity: 2567653564
+  - Entity: 1394858857
     TagComponent:
-      Tag: Point Light 03
+      Tag: Point Light 01
     TransformComponent:
-      Position: [-10, 10, -5]
+      Position: [10, 10, -5]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
     LightComponent:
       Brightness: 25
       Falloff: 1
-      Slope: 1
-      Diffuse: [0, 0.68725872, 1]
+      Slope: 2
+      Diffuse: [0.841698647, 0, 1]
       Ambient: [0, 0, 0]
       Specular: [0.100000001, 0.100000001, 0.100000001]
+  - Entity: 253351899
+    TagComponent:
+      Tag: Sphere 15
+    TransformComponent:
+      Position: [-10, 10, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [0.200000003, 0.200000003, 0.200000003]
+    MeshComponent:
+      AssetPath: assets\models\sphere.fbx
+  - Entity: 1069118769
+    TagComponent:
+      Tag: Sphere 14
+    TransformComponent:
+      Position: [-5, 10, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [0.200000003, 0.200000003, 0.200000003]
+    MeshComponent:
+      AssetPath: assets\models\sphere.fbx
+  - Entity: 1246125903
+    TagComponent:
+      Tag: Sphere 13
+    TransformComponent:
+      Position: [0, 10, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [0.200000003, 0.200000003, 0.200000003]
+    MeshComponent:
+      AssetPath: assets\models\sphere.fbx
+  - Entity: 1324063796
+    TagComponent:
+      Tag: Sphere 12
+    TransformComponent:
+      Position: [5, 10, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [0.200000003, 0.200000003, 0.200000003]
+    MeshComponent:
+      AssetPath: assets\models\sphere.fbx
+  - Entity: 1655615589
+    TagComponent:
+      Tag: Sphere 11
+    TransformComponent:
+      Position: [10, 10, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [0.200000003, 0.200000003, 0.200000003]
+    MeshComponent:
+      AssetPath: assets\models\sphere.fbx
+  - Entity: 1877677183
+    TagComponent:
+      Tag: Sphere 10
+    TransformComponent:
+      Position: [-10, 5, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [0.200000003, 0.200000003, 0.200000003]
+    MeshComponent:
+      AssetPath: assets\models\sphere.fbx
+  - Entity: 2556167080
+    TagComponent:
+      Tag: Sphere 09
+    TransformComponent:
+      Position: [-5, 5, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [0.200000003, 0.200000003, 0.200000003]
+    MeshComponent:
+      AssetPath: assets\models\sphere.fbx
+  - Entity: 2342209703
+    TagComponent:
+      Tag: Sphere 08
+    TransformComponent:
+      Position: [0, 5, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [0.200000003, 0.200000003, 0.200000003]
+    MeshComponent:
+      AssetPath: assets\models\sphere.fbx
+  - Entity: 1766809981
+    TagComponent:
+      Tag: Sphere 07
+    TransformComponent:
+      Position: [5, 5, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [0.200000003, 0.200000003, 0.200000003]
+    MeshComponent:
+      AssetPath: assets\models\sphere.fbx
+  - Entity: 3993295467
+    TagComponent:
+      Tag: Sphere 06
+    TransformComponent:
+      Position: [10, 5, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [0.200000003, 0.200000003, 0.200000003]
+    MeshComponent:
+      AssetPath: assets\models\sphere.fbx
+  - Entity: 2034557646
+    TagComponent:
+      Tag: Sphere 05
+    TransformComponent:
+      Position: [-10, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [0.200000003, 0.200000003, 0.200000003]
+    MeshComponent:
+      AssetPath: assets\models\sphere.fbx
+  - Entity: 1616834936
+    TagComponent:
+      Tag: Sphere 04
+    TransformComponent:
+      Position: [-5, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [0.200000003, 0.200000003, 0.200000003]
+    MeshComponent:
+      AssetPath: assets\models\sphere.fbx
+  - Entity: 3190643055
+    TagComponent:
+      Tag: Sphere 03
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [0.200000003, 0.200000003, 0.200000003]
+    MeshComponent:
+      AssetPath: assets\models\sphere.fbx
+  - Entity: 2326966638
+    TagComponent:
+      Tag: Sphere 02
+    TransformComponent:
+      Position: [5, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [0.200000003, 0.200000003, 0.200000003]
+    MeshComponent:
+      AssetPath: assets\models\sphere.fbx
+  - Entity: 2284422222
+    TagComponent:
+      Tag: Sphere 01
+    TransformComponent:
+      Position: [10, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [0.200000003, 0.200000003, 0.200000003]
+    MeshComponent:
+      AssetPath: assets\models\sphere.fbx

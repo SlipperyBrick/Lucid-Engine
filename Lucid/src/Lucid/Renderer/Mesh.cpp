@@ -88,7 +88,7 @@ Mesh::Mesh(const std::string& filename)
 
 	m_Scene = scene;
 
-	m_MeshShader = Renderer::GetShaderLibrary()->Get("Scene");
+	m_MeshShader = Renderer::GetShaderLibrary()->Get("Buffer");
 	m_BaseMaterial = Ref<Material>::Create(m_MeshShader);
 
 	m_InverseTransform = glm::inverse(Mat4FromAssimpMat4(scene->mRootNode->mTransformation));

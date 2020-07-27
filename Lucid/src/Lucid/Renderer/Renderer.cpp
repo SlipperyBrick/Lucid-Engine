@@ -114,7 +114,8 @@ void Renderer::Init()
 	// Submit OpenGL initialization to renderer command queue
 	Renderer::Submit([]() { InitOpenGL(); });
 
-	Renderer::GetShaderLibrary()->Load("assets/shaders/Scene.glsl");
+	Renderer::GetShaderLibrary()->Load("assets/shaders/Buffer.glsl");
+	Renderer::GetShaderLibrary()->Load("assets/shaders/Lighting.glsl");
 
 	SceneRenderer::Init();
 

@@ -16,7 +16,7 @@ struct FramebufferSpecification
 
 	glm::vec4 ClearColour;
 
-	int BufferCount;
+	int BufferCount = 0;
 
 	FramebufferFormat Format;
 
@@ -38,6 +38,8 @@ public:
 	void Unbind() const;
 
 	void Resize(uint32_t width, uint32_t height, bool forceRecreate = false);
+
+	void BindColourAttachment(uint32_t colourAttachmentIndex = 0, uint32_t textureUnit = 0) const;
 
 	void BindTexture(uint32_t slot = 0) const;
 

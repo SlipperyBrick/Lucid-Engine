@@ -34,8 +34,8 @@ void Material::AllocateStorage()
 
 	if (m_Shader->HasFSMaterialUniformBuffer())
 	{
-		const auto& psBuffer = m_Shader->GetFSMaterialUniformBuffer();
-		m_FSUniformStorageBuffer.Allocate(psBuffer.GetSize());
+		const auto& fsBuffer = m_Shader->GetFSMaterialUniformBuffer();
+		m_FSUniformStorageBuffer.Allocate(fsBuffer.GetSize());
 		m_FSUniformStorageBuffer.ZeroInitialize();
 	}
 }
