@@ -99,39 +99,6 @@ private:
 
 	#pragma endregion
 
-	#pragma region Textures
-
-	struct DiffuseInput
-	{
-		glm::vec3 Colour = { 0.5f, 0.5f, 0.5f };
-		Ref<Texture2D> TextureMap;
-		bool SRGB = true;
-		bool UseTexture = false;
-	};
-
-	DiffuseInput m_DiffuseInput;
-
-	struct NormalInput
-	{
-		Ref<Texture2D> TextureMap;
-		bool UseTexture = false;
-	};
-
-	NormalInput m_NormalInput;
-
-	struct SpecularInput
-	{
-		float Value = 0.2f;
-		Ref<Texture2D> TextureMap;
-		bool UseTexture = false;
-	};
-
-	SpecularInput m_SpecularInput;
-
-	Ref<Material> m_MeshMaterial;
-
-	#pragma endregion
-
 	#pragma region Editor
 
 	Ref<Texture2D> m_CheckerboardTex;
