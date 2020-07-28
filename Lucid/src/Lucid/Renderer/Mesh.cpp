@@ -205,10 +205,12 @@ Mesh::Mesh(const std::string& filename)
 			aiMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, aiColour);
 
 			float shininess;
+			float specular = 1.0f;
 
-			aiMaterial->Get(AI_MATKEY_SHININESS, shininess);
-
-			float specular = 1.0f - glm::sqrt(shininess / 100.0f);
+			if (aiMaterial->Get(AI_MATKEY_SHININESS, shininess) == AI_SUCCESS)
+			{
+				specular = 1.0f - glm::sqrt(shininess / 100.0f);
+			}
 
 			LD_MESH_LOG("    COLOR = {0}, {1}, {2}", aiColour.r, aiColour.g, aiColour.b);
 			LD_MESH_LOG("    SPECULARITY = {0}", specular);

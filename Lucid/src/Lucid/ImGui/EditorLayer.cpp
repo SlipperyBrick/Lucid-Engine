@@ -86,7 +86,7 @@ bool EditorLayer::Property(const std::string& name, glm::vec2& value, float min,
 
 bool EditorLayer::Property(const std::string& name, glm::vec3& value, EditorLayer::PropertyFlag flags)
 {
-	return Property(name, value, -1.0f, 1.0f, flags);
+	return Property(name, value, -10.0f, 10.0f, flags);
 }
 
 bool EditorLayer::Property(const std::string& name, glm::vec3& value, float min, float max, EditorLayer::PropertyFlag flags)
@@ -151,7 +151,6 @@ bool EditorLayer::Property(const std::string& name, glm::vec4& value, float min,
 }
 
 #pragma endregion
-
 
 EditorLayer::EditorLayer()
 	: m_EditorCamera(glm::perspectiveFov(glm::radians(45.0f), 1280.0f, 720.0f, 0.1f, 10000.0f))
@@ -222,6 +221,10 @@ void EditorLayer::OnAttach()
 	m_ScaleTex = Texture2D::Create("assets/textures/Scale.tga");
 	m_GridToggleTex = Texture2D::Create("assets/textures/GridToggle.tga");
 	m_DuplicateTex = Texture2D::Create("assets/textures/Duplicate.tga");
+	m_PositionsTex = Texture2D::Create("assets/textures/Positions.tga");
+	m_NormalsTex = Texture2D::Create("assets/textures/Normals.tga");
+	m_AlbedoTex = Texture2D::Create("assets/textures/Albedo.tga");
+	m_SpecularTex = Texture2D::Create("assets/textures/Specular.tga");
 	m_PointLightTex = Texture2D::Create("assets/textures/PointLight.tga");
 	m_DirLightTex = Texture2D::Create("assets/textures/DirectionalLight.tga");
 
@@ -321,8 +324,6 @@ void EditorLayer::OnImGuiRender()
 
 	#pragma region Editor Panel
 
-	ImGui::Begin("Model");
-
 	ImGui::Begin("Environment");
 
 	ImGui::Columns(2);
@@ -337,154 +338,6 @@ void EditorLayer::OnImGuiRender()
 
 	Property("Exposure", m_EditorCamera.GetExposure(), 0.1f, 2.0f, PropertyFlag::SliderProperty);
 
-	ImGui::Columns(2);
-	ImGui::AlignTextToFramePadding();
-
-	ImGui::Columns(1);
-
-	ImGui::End();
-
-	ImGui::Text("Mesh Texture Slots");
-
-	#pragma region Texture Slots
-
-	{
-		// Diffuse
-		if (ImGui::CollapsingHeader("Diffuse", nullptr, ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
-
-			ImGui::Image(m_DiffuseInput.TextureMap ? (void*)m_DiffuseInput.TextureMap->GetRendererID() : (void*)m_CheckerboardTex->GetRendererID(), ImVec2(64, 64));
-
-			ImGui::PopStyleVar();
-
-			if (ImGui::IsItemHovered())
-			{
-				if (m_DiffuseInput.TextureMap)
-				{
-					ImGui::BeginTooltip();
-					ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-					ImGui::TextUnformatted(m_DiffuseInput.TextureMap->GetPath().c_str());
-					ImGui::PopTextWrapPos();
-					ImGui::Image((void*)m_DiffuseInput.TextureMap->GetRendererID(), ImVec2(384, 384));
-					ImGui::EndTooltip();
-				}
-
-				if (ImGui::IsItemClicked())
-				{
-					std::string filename = Application::Get().OpenFile("");
-
-					if (filename != "")
-					{
-						m_DiffuseInput.TextureMap = Texture2D::Create(filename, m_DiffuseInput.SRGB);
-					}
-				}
-			}
-
-			ImGui::SameLine();
-
-			ImGui::BeginGroup();
-
-			ImGui::Checkbox("Use##DiffuseMap", &m_DiffuseInput.UseTexture);
-
-			if (ImGui::Checkbox("sRGB##DiffuseMap", &m_DiffuseInput.SRGB))
-			{
-				if (m_DiffuseInput.TextureMap)
-				{
-					m_DiffuseInput.TextureMap = Texture2D::Create(m_DiffuseInput.TextureMap->GetPath(), m_DiffuseInput.SRGB);
-				}
-			}
-
-			ImGui::EndGroup();
-
-			ImGui::SameLine();
-
-			ImGui::ColorEdit3("Colour##Diffuse", glm::value_ptr(m_DiffuseInput.Colour), ImGuiColorEditFlags_NoInputs);
-		}
-	}
-	{
-		// Normals
-		if (ImGui::CollapsingHeader("Normals", nullptr, ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
-
-			ImGui::Image(m_NormalInput.TextureMap ? (void*)m_NormalInput.TextureMap->GetRendererID() : (void*)m_CheckerboardTex->GetRendererID(), ImVec2(64, 64));
-
-			ImGui::PopStyleVar();
-
-			if (ImGui::IsItemHovered())
-			{
-				if (m_NormalInput.TextureMap)
-				{
-					ImGui::BeginTooltip();
-					ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-					ImGui::TextUnformatted(m_NormalInput.TextureMap->GetPath().c_str());
-					ImGui::PopTextWrapPos();
-					ImGui::Image((void*)m_NormalInput.TextureMap->GetRendererID(), ImVec2(384, 384));
-					ImGui::EndTooltip();
-				}
-
-				if (ImGui::IsItemClicked())
-				{
-					std::string filename = Application::Get().OpenFile("");
-
-					if (filename != "")
-					{
-						m_NormalInput.TextureMap = Texture2D::Create(filename);
-					}
-				}
-			}
-
-			ImGui::SameLine();
-
-			ImGui::Checkbox("Use##NormalMap", &m_NormalInput.UseTexture);
-		}
-	}
-	{
-		// Specular
-		if (ImGui::CollapsingHeader("Specular", nullptr, ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
-
-			ImGui::Image(m_SpecularInput.TextureMap ? (void*)m_SpecularInput.TextureMap->GetRendererID() : (void*)m_CheckerboardTex->GetRendererID(), ImVec2(64, 64));
-
-			ImGui::PopStyleVar();
-
-			if (ImGui::IsItemHovered())
-			{
-				if (m_SpecularInput.TextureMap)
-				{
-					ImGui::BeginTooltip();
-					ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-					ImGui::TextUnformatted(m_SpecularInput.TextureMap->GetPath().c_str());
-					ImGui::PopTextWrapPos();
-					ImGui::Image((void*)m_SpecularInput.TextureMap->GetRendererID(), ImVec2(384, 384));
-					ImGui::EndTooltip();
-				}
-
-				if (ImGui::IsItemClicked())
-				{
-					std::string filename = Application::Get().OpenFile("");
-
-					if (filename != "")
-					{
-						m_SpecularInput.TextureMap = Texture2D::Create(filename);
-					}
-				}
-			}
-
-			ImGui::SameLine();
-
-			ImGui::Checkbox("Use##SpecularMap", &m_SpecularInput.UseTexture);
-
-			ImGui::SameLine();
-
-			ImGui::SliderFloat("Value##SpecularInput", &m_SpecularInput.Value, 0.0f, 1.0f);
-		}
-	}
-
-	#pragma endregion
-
 	ImGui::End();
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12, 0));
@@ -495,12 +348,12 @@ void EditorLayer::OnImGuiRender()
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.8f, 0.8f, 0.2f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.8f, 0.8f, 0.8f, 0.5f));
 
-	ImGui::Begin("Toolbar", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+	ImGui::Begin("Toolbar", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiDockNodeFlags_NoTabBar);
 
 	// Bounding boxes
 	if (!m_UIShowBoundingBoxes)
 	{
-		if (ImGui::ImageButton((ImTextureID)(m_BoundingBoxesTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.5f)))
+		if (ImGui::ImageButton((ImTextureID)(m_BoundingBoxesTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.25f)))
 		{
 			m_UIShowBoundingBoxes = true;
 
@@ -555,7 +408,7 @@ void EditorLayer::OnImGuiRender()
 
 	if (!SceneRenderer::GetOptions().ShowGrid)
 	{
-		if (ImGui::ImageButton((ImTextureID)(m_GridToggleTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.5f)))
+		if (ImGui::ImageButton((ImTextureID)(m_GridToggleTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.25f)))
 		{
 			SceneRenderer::GetOptions().ShowGrid = true;
 		}
@@ -573,7 +426,83 @@ void EditorLayer::OnImGuiRender()
 			m_ActiveScene->DuplicateEntity(selectedEntity);
 		}
 	}
+
+	ImGui::SameLine();
 	
+	// Show position
+	if (SceneRenderer::GetOptions().ShowPosition)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_PositionsTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+		{
+			SceneRenderer::GetOptions().ShowPosition = false;
+		}
+	}
+
+	if (!SceneRenderer::GetOptions().ShowPosition)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_PositionsTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.25f)))
+		{
+			SceneRenderer::GetOptions().ShowPosition = true;
+		}
+	}
+
+	ImGui::SameLine();
+
+	// Show normals
+	if (SceneRenderer::GetOptions().ShowNormal)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_NormalsTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+		{
+			SceneRenderer::GetOptions().ShowNormal = false;
+		}
+	}
+
+	if (!SceneRenderer::GetOptions().ShowNormal)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_NormalsTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.25f)))
+		{
+			SceneRenderer::GetOptions().ShowNormal = true;
+		}
+	}
+
+	ImGui::SameLine();
+
+	// Show albedo
+	if (SceneRenderer::GetOptions().ShowAlbedo)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_AlbedoTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+		{
+			SceneRenderer::GetOptions().ShowAlbedo = false;
+		}
+	}
+
+	if (!SceneRenderer::GetOptions().ShowAlbedo)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_AlbedoTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.25f)))
+		{
+			SceneRenderer::GetOptions().ShowAlbedo = true;
+		}
+	}
+
+	ImGui::SameLine();
+	
+	// Show specular
+	if (SceneRenderer::GetOptions().ShowSpecular)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_SpecularTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+		{
+			SceneRenderer::GetOptions().ShowSpecular = false;
+		}
+	}
+
+	if (!SceneRenderer::GetOptions().ShowSpecular)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_SpecularTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.25f)))
+		{
+			SceneRenderer::GetOptions().ShowSpecular = true;
+		}
+	}
+
 	ImGui::End();
 
 	ImGui::PopStyleColor();
@@ -590,7 +519,7 @@ void EditorLayer::OnImGuiRender()
 
 	#pragma region Viewport
 
-	ImGui::Begin("Viewport", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+	ImGui::Begin("Viewport", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiDockNodeFlags_NoTabBar);
 
 	m_ViewportPanelMouseOver = ImGui::IsWindowHovered();
 

@@ -20,16 +20,14 @@ out VertexOutput
 
 void main()
 {
-	vec4 worldPosition = mat4(u_Transform) * vec4(a_Position, 1.0);
-
 	vs_Output.Normal = mat3(u_Transform) * a_Normal;
 
 	// Flip texture coordinates
 	vs_Output.TexCoord = vec2(a_TexCoord.x, 1.0 - a_TexCoord.y);
 
-	vs_Output.FragPos = worldPosition.xyz;
+	vs_Output.FragPos = vec3(u_Transform * vec4(a_Position, 1.0));
 
-	gl_Position = u_ViewProjectionMatrix * worldPosition;
+	gl_Position = u_ViewProjectionMatrix * u_Transform * vec4(a_Position, 1.0);
 }
 
 #type fragment
@@ -37,13 +35,15 @@ void main()
 
 layout(location = 0) out vec4 o_Position;
 layout(location = 1) out vec4 o_Normal;
-layout(location = 2) out vec4 o_AlbedoSpec;
+layout(location = 2) out vec4 o_Albedo;
+layout(location = 3) out vec4 o_Specular;
 
 struct MaterialParameters
 {
 	vec3 Diffuse;
-	float Specular;
 	vec3 Normal;
+
+	float Specular;
 };
 
 MaterialParameters m_Params;
@@ -51,6 +51,7 @@ MaterialParameters m_Params;
 in VertexOutput
 {
 	vec2 TexCoord;
+
 	vec3 Normal;
 	vec3 FragPos;
 
@@ -92,6 +93,9 @@ void main()
 	o_Normal.rgb = normalize(m_Params.Normal);
 	o_Normal.a = 1.0;
 
-	o_AlbedoSpec.rgb = texture(u_DiffuseTexture, vs_Input.TexCoord).rgb;
-	o_AlbedoSpec.a = texture(u_SpecularTexture, vs_Input.TexCoord).r;
+	o_Albedo.rgb = m_Params.Diffuse;
+	o_Albedo.a = 1.0;
+
+	o_Specular.r = m_Params.Specular;
+	o_Specular.a = 1.0;
 }

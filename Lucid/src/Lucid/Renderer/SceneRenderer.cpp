@@ -61,7 +61,7 @@ void SceneRenderer::Init()
 	geoFramebufferSpec.Width = 1280;
 	geoFramebufferSpec.Height = 720;
 	geoFramebufferSpec.Format = FramebufferFormat::RGBA16F;
-	geoFramebufferSpec.BufferCount = 3;
+	geoFramebufferSpec.BufferCount = 4;
 	geoFramebufferSpec.Samples = 1;
 	geoFramebufferSpec.ClearColour = { 0.1f, 0.1f, 0.1f, 1.0f };
 
@@ -288,12 +288,12 @@ void SceneRenderer::LightingPass()
 	s_Data.LightingShader->Bind();
 
 	// Bind colour attachments
-	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(0, 0);
-	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(1, 1);
-	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(2, 2);
+	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(0, 0); // Position
+	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(1, 1); // Normals
+	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(2, 2); // Albedo
+	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(3, 3); // Specular
 
-	//s_Data.LightingShader->SetVec2("u_ViewportSize", s_Data.ViewportSize);
-	s_Data.LightingShader->SetVec3("r_CameraPosition", cameraPosition);
+	s_Data.LightingShader->SetVec3("u_CameraPosition", cameraPosition);
 
 	// Directional light
 	s_Data.LightingShader->SetFloat("r_DirectionalLight.Brightness", s_Data.SceneData.DirLight.Brightness);
@@ -302,34 +302,31 @@ void SceneRenderer::LightingPass()
 	s_Data.LightingShader->SetVec3("r_DirectionalLight.Ambient", s_Data.SceneData.DirLight.Ambient);
 	s_Data.LightingShader->SetVec3("r_DirectionalLight.Specular", s_Data.SceneData.DirLight.Specular);
 
-	if (s_Data.SceneData.LightEnv.PointLights->Brightness != 0.0f)
+	// Point lights
+	int it = 0;
+
+	// Iterate over all point lights
+	for (it; it < 4; it++)
 	{
-		// Point lights
-		int it = 0;
+		auto& pointLight = s_Data.SceneData.LightEnv.PointLights[it];
 
-		// Iterate over all point lights
-		for (it; it < 4; it++)
+		if (pointLight.Brightness == 0.0f)
 		{
-			auto& pointLight = s_Data.SceneData.LightEnv.PointLights[it];
-
-			if (pointLight.Brightness == 0.0f)
-			{
-				break;
-			}
-
-			s_Data.LightingShader->SetVec3("r_PointLights[" + std::to_string(it) + "].Position", pointLight.Position);
-			s_Data.LightingShader->SetVec3("r_PointLights[" + std::to_string(it) + "].Ambient", s_Data.SceneData.DirLight.Ambient);
-			s_Data.LightingShader->SetVec3("r_PointLights[" + std::to_string(it) + "].Diffuse", pointLight.Colour);
-			s_Data.LightingShader->SetFloat("r_PointLights[" + std::to_string(it) + "].Brightness", pointLight.Brightness);
-			s_Data.LightingShader->SetFloat("r_PointLights[" + std::to_string(it) + "].Falloff", pointLight.Falloff);
-			s_Data.LightingShader->SetFloat("r_PointLights[" + std::to_string(it) + "].Slope", pointLight.Slope);
-			s_Data.LightingShader->SetVec3("r_PointLights[" + std::to_string(it) + "].Specular", pointLight.Specular);
+			break;
 		}
 
-		s_Data.LightingShader->SetInt("r_PointLightCount", it);
+		s_Data.LightingShader->SetVec3("r_PointLights[" + std::to_string(it) + "].Position", pointLight.Position);
+		s_Data.LightingShader->SetVec3("r_PointLights[" + std::to_string(it) + "].Ambient", s_Data.SceneData.DirLight.Ambient);
+		s_Data.LightingShader->SetVec3("r_PointLights[" + std::to_string(it) + "].Diffuse", pointLight.Colour);
+		s_Data.LightingShader->SetFloat("r_PointLights[" + std::to_string(it) + "].Brightness", pointLight.Brightness);
+		s_Data.LightingShader->SetFloat("r_PointLights[" + std::to_string(it) + "].Falloff", pointLight.Falloff);
+		s_Data.LightingShader->SetFloat("r_PointLights[" + std::to_string(it) + "].Slope", pointLight.Slope);
+		s_Data.LightingShader->SetVec3("r_PointLights[" + std::to_string(it) + "].Specular", pointLight.Specular);
 	}
 
-	//Renderer::SubmitFullscreenQuad(nullptr);
+	s_Data.LightingShader->SetInt("r_PointLightCount", it);
+
+	Renderer::SubmitFullscreenQuad(nullptr);
 
 	Renderer::EndRenderPass();
 }
@@ -341,7 +338,28 @@ void SceneRenderer::CompositePass()
 	s_Data.CompositeShader->Bind();
 	s_Data.CompositeShader->SetFloat("u_Exposure", s_Data.SceneData.SceneCamera.Camera.GetExposure());
 	s_Data.CompositeShader->SetInt("u_TextureSamples", s_Data.LightingPass->GetSpecification().TargetFramebuffer->GetSpecification().Samples);
-	s_Data.LightingPass->GetSpecification().TargetFramebuffer->BindTexture();
+	s_Data.LightingPass->GetSpecification().TargetFramebuffer->BindColourAttachment();
+
+	// Check SceneRenderer options for showing buffers individually
+	if (GetOptions().ShowPosition)
+	{
+		s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(0, 0);
+	}
+	
+	if (GetOptions().ShowNormal)
+	{
+		s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(1, 1);
+	}
+	
+	if (GetOptions().ShowAlbedo)
+	{
+		s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(2, 2);
+	}
+	
+	if (GetOptions().ShowSpecular)
+	{
+		s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(3, 3);
+	}
 
 	Renderer::SubmitFullscreenQuad(nullptr);
 

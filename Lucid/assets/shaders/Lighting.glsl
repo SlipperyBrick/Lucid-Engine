@@ -26,6 +26,7 @@ struct DirectionalLight
 	vec3 Diffuse;
     vec3 Ambient;
     vec3 Specular;
+
 	float Brightness;
 };
 
@@ -35,6 +36,7 @@ struct PointLight
 	vec3 Ambient;
     vec3 Diffuse;
     vec3 Specular;
+
 	float Brightness;
 	float Falloff;
 	float Slope;
@@ -51,43 +53,42 @@ uniform int r_PointLightCount;
 // Colour attachment inputs
 uniform sampler2D u_PositionTexture;
 uniform sampler2D u_NormalTexture;
-uniform sampler2D u_AlbedoSpecularTexture;
-
-//uniform vec2 u_ViewportSize;
+uniform sampler2D u_AlbedoTexture;
+uniform sampler2D u_SpecularTexture;
 
 // Camera position
-uniform vec3 r_CameraPosition;
+uniform vec3 u_CameraPosition;
 
 void main()
 {
-    vec3 FragPos = texture(u_PositionTexture, v_TexCoord).rgb;
-    vec3 Normal = texture(u_NormalTexture, v_TexCoord).rgb;
-    vec3 Diffuse = texture(u_AlbedoSpecularTexture, v_TexCoord).rgb;
-    float Specular = texture(u_AlbedoSpecularTexture, v_TexCoord).a;
+    vec4 FragPos = texture(u_PositionTexture, v_TexCoord);
+    vec4 Normal = texture(u_NormalTexture, v_TexCoord);
+    vec4 Diffuse = texture(u_AlbedoTexture, v_TexCoord);
+    float Specular = texture(u_SpecularTexture, v_TexCoord).r;
 
-	// Light attributes
+	// Directional light attributes
 	vec3 dirDiffuse = vec3(0.0);
 	vec3 dirSpecular = vec3(0.0);
 	vec3 dirAmbient = vec3(0.0);
 
 	// Ambient constant
-	dirAmbient += r_DirectionalLight.Ambient * Diffuse;
+	dirAmbient = r_DirectionalLight.Ambient * Diffuse.rgb;
 
 	// Diffuse component
-	vec3 lightDir = normalize(-r_DirectionalLight.Direction - FragPos);
-	float diff = max(dot(Normal, lightDir), 0.0);
-	dirDiffuse += r_DirectionalLight.Diffuse * diff * Diffuse * r_DirectionalLight.Brightness;
+	vec3 lightDir = normalize(-r_DirectionalLight.Direction - FragPos.xyz);
+	float diff = max(dot(Normal.xyz, lightDir), 0.0);
+	dirDiffuse = r_DirectionalLight.Diffuse * diff * Diffuse.rgb * r_DirectionalLight.Brightness;
 
 	// Specular component
-	float shininess = 16.0;
-	vec3 viewDir = normalize(r_CameraPosition - FragPos);
+	float shininess = 32.0;
+	vec3 viewDir = normalize(u_CameraPosition - FragPos.xyz);
 
 	// Specular factor
 	vec3 halfwayDir = normalize(lightDir + viewDir);  
-    float spec = pow(max(dot(Normal, halfwayDir), 0.0), shininess);
-	dirSpecular += r_DirectionalLight.Specular * spec;
+    float spec = pow(max(dot(Normal.xyz, halfwayDir), 0.0), shininess);
+	dirSpecular = r_DirectionalLight.Diffuse * spec * Specular.r * r_DirectionalLight.Brightness;
 
-	// Light attributes
+	// Point light attributes
 	vec3 pointDiffuse = vec3(0.0);
 	vec3 pointSpecular = vec3(0.0);
 	vec3 pointAmbient = vec3(0.0);
@@ -96,24 +97,24 @@ void main()
 	for (int i = 0; i < r_PointLightCount; i++)
 	{
 		// Ambient constant
-		dirAmbient += r_PointLights[i].Ambient * Diffuse;
+		pointAmbient += r_PointLights[i].Ambient * Diffuse.rgb;
 
 		// Diffuse component
-		vec3 lightDir = normalize(r_PointLights[i].Position - FragPos);
-		float diff = max(dot(Normal, lightDir), 0.0);
-		dirDiffuse += r_PointLights[i].Diffuse * diff * Diffuse * r_DirectionalLight.Brightness;
+		vec3 lightDir = normalize(r_PointLights[i].Position - FragPos.xyz);
+		float diff = max(dot(Normal.xyz, lightDir), 0.0);
+		pointDiffuse += r_PointLights[i].Diffuse * diff * Diffuse.rgb * r_PointLights[i].Brightness;
 
 		// Specular component
-		float shininess = 16.0;
-		vec3 viewDir = normalize(r_CameraPosition - FragPos);
+		float shininess = 32.0;
+		vec3 viewDir = normalize(u_CameraPosition - FragPos.xyz);
 
 		// Specular factor
 		vec3 halfwayDir = normalize(lightDir + viewDir);  
-		float spec = pow(max(dot(Normal, halfwayDir), 0.0), shininess);
-		dirSpecular += r_PointLights[i].Specular * spec;
+		float spec = pow(max(dot(Normal.xyz, halfwayDir), 0.0), shininess);
+		pointSpecular += r_PointLights[i].Diffuse * spec * Specular.r * r_PointLights[i].Brightness;
 	
 		// Attenuation
-		float distance = length(r_PointLights[i].Position - FragPos);
+		float distance = length(r_PointLights[i].Position - FragPos.xyz);
 		float attenuation = 1.0 / (r_PointLights[i].Brightness + (-r_PointLights[i].Falloff * distance + r_PointLights[i].Slope * (distance * distance)));    
 		pointAmbient  *= attenuation; 
 		pointDiffuse   *= attenuation;
@@ -126,11 +127,4 @@ void main()
 	}
 
 	o_Colour = vec4(dirDiffuse + dirSpecular + dirAmbient, 1.0);
-
-	vec3 position = texture(u_PositionTexture, v_TexCoord).rgb;
-	o_Colour = vec4(position, 1.0);
-	
-	vec3 normal = texture(u_NormalTexture, v_TexCoord).rgb;
-	o_Colour = vec4(normal, 1.0);
-
 }

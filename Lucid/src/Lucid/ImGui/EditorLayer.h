@@ -141,6 +141,10 @@ private:
 	Ref<Texture2D> m_BoundingBoxesTex;
 	Ref<Texture2D> m_GridToggleTex;
 	Ref<Texture2D> m_DuplicateTex;
+	Ref<Texture2D> m_PositionsTex;
+	Ref<Texture2D> m_NormalsTex;
+	Ref<Texture2D> m_AlbedoTex;
+	Ref<Texture2D> m_SpecularTex;
 	Ref<Texture2D> m_PointLightTex;
 	Ref<Texture2D> m_DirLightTex;
 

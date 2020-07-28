@@ -141,8 +141,8 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 		if (multisample)
 		{
 			glCreateTextures(GL_TEXTURE_2D_MULTISAMPLE, 1, &instance->m_DepthAttachment);
-
 			glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, instance->m_DepthAttachment);
+
 			glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, instance->m_Specification.Samples, GL_DEPTH24_STENCIL8, instance->m_Specification.Width, instance->m_Specification.Height, GL_FALSE);
 
 			glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
@@ -153,6 +153,9 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 			glBindTexture(GL_TEXTURE_2D, instance->m_DepthAttachment);
 
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, instance->m_Specification.Width, instance->m_Specification.Height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 			glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, instance->m_DepthAttachment, 0);
 		}

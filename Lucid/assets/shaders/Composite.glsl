@@ -22,8 +22,8 @@ layout(location = 0) out vec4 o_Colour;
 
 in vec2 v_TexCoord;
 
-uniform sampler2DMS u_TextureMS;
 uniform sampler2D u_Texture;
+uniform sampler2DMS u_TextureMS;
 
 uniform float u_Exposure;
 

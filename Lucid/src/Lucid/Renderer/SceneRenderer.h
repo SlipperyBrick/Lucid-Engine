@@ -7,6 +7,10 @@
 
 struct SceneRendererOptions
 {
+	bool ShowPosition = false;
+	bool ShowNormal = false;
+	bool ShowAlbedo = false;
+	bool ShowSpecular = false;
 	bool ShowGrid = true;
 	bool ShowBoundingBoxes = false;
 };
