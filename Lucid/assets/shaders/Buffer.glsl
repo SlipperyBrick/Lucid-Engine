@@ -97,5 +97,7 @@ void main()
 	o_Albedo.a = 1.0;
 
 	o_Specular.r = m_Params.Specular;
+	o_Specular.g = m_Params.Specular;
+	o_Specular.b = m_Params.Specular;
 	o_Specular.a = 1.0;
 }
