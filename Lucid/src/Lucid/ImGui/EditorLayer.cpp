@@ -216,6 +216,7 @@ void EditorLayer::OnAttach()
 	// Editor resources
 	m_CheckerboardTex = Texture2D::Create("assets/textures/Checkerboard.tga");
 	m_BoundingBoxesTex = Texture2D::Create("assets/textures/BoundingBoxes.tga");
+	m_PointerTex = Texture2D::Create("assets/textures/Pointer.tga");
 	m_TranslateTex = Texture2D::Create("assets/textures/Translate.tga");
 	m_RotateTex = Texture2D::Create("assets/textures/Rotate.tga");
 	m_ScaleTex = Texture2D::Create("assets/textures/Scale.tga");
@@ -369,6 +370,14 @@ void EditorLayer::OnImGuiRender()
 
 			ShowBoundingBoxes(m_UIShowBoundingBoxes);
 		}
+	}
+
+	ImGui::SameLine();
+
+	// Pointer
+	if (ImGui::ImageButton((ImTextureID)(m_PointerTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+	{
+		m_GizmoType = -1;
 	}
 
 	ImGui::SameLine();

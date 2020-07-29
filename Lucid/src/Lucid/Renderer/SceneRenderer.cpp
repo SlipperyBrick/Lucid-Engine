@@ -348,17 +348,17 @@ void SceneRenderer::CompositePass()
 	
 	if (GetOptions().ShowNormal)
 	{
-		s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(1, 1);
+		s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(1, 0);
 	}
 	
 	if (GetOptions().ShowAlbedo)
 	{
-		s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(2, 2);
+		s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(2, 0);
 	}
 	
 	if (GetOptions().ShowSpecular)
 	{
-		s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(3, 3);
+		s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(3, 0);
 	}
 
 	Renderer::SubmitFullscreenQuad(nullptr);
