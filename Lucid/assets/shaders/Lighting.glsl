@@ -86,7 +86,7 @@ void main()
 	// Specular factor
 	vec3 halfwayDir = normalize(lightDir + viewDir);  
     float spec = pow(max(dot(Normal.xyz, halfwayDir), 0.0), shininess);
-	dirSpecular = r_DirectionalLight.Diffuse * spec * Specular * r_DirectionalLight.Brightness;
+	dirSpecular = r_DirectionalLight.Specular * spec * Specular.r * r_DirectionalLight.Brightness;
 
 	// Point light attributes
 	vec3 pointDiffuse = vec3(0.0);
@@ -102,7 +102,7 @@ void main()
 		// Diffuse component
 		vec3 lightDir = normalize(r_PointLights[i].Position - FragPos.xyz);
 		float diff = max(dot(Normal.xyz, lightDir), 0.0);
-		pointDiffuse += r_PointLights[i].Diffuse * diff * Diffuse.rgb * r_PointLights[i].Brightness;
+		pointDiffuse += r_PointLights[i].Specular * diff * Diffuse.rgb * r_PointLights[i].Brightness;
 
 		// Specular component
 		float shininess = 32.0;
@@ -111,7 +111,7 @@ void main()
 		// Specular factor
 		vec3 halfwayDir = normalize(lightDir + viewDir);  
 		float spec = pow(max(dot(Normal.xyz, halfwayDir), 0.0), shininess);
-		pointSpecular += r_PointLights[i].Diffuse * spec * Specular * r_PointLights[i].Brightness;
+		pointSpecular += r_PointLights[i].Diffuse * spec * Specular.r * r_PointLights[i].Brightness;
 	
 		// Attenuation
 		float distance = length(r_PointLights[i].Position - FragPos.xyz);

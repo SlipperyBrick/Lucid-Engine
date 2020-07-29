@@ -1,0 +1,45 @@
+Scene: Scene Name
+Directional Light:
+  Direction: [-5, 5, -10]
+  Brightness: 0.5
+  Diffuse: [1, 0.936881602, 0.776061773]
+  Ambient: [9.99999997e-07, 9.99989993e-07, 9.99989993e-07]
+  Specular: [1, 1, 1]
+Entities:
+  - Entity: 3194410093
+    TagComponent:
+      Tag: Point Light 02
+    TransformComponent:
+      Position: [-5, 5, -2]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    LightComponent:
+      Brightness: 500
+      Falloff: 1
+      Slope: 1
+      Diffuse: [1, 0.784313738, 0.333333343]
+      Ambient: [0, 0, 0]
+      Specular: [0.100000001, 0.100000001, 0.100000001]
+  - Entity: 3497643996
+    TagComponent:
+      Tag: Point Light 01
+    TransformComponent:
+      Position: [5, -5, 2]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    LightComponent:
+      Brightness: 500
+      Falloff: 1
+      Slope: 1
+      Diffuse: [0.333333343, 0.843137264, 1]
+      Ambient: [0, 0, 0]
+      Specular: [0.100000001, 0.100000001, 0.100000001]
+  - Entity: 3685429885
+    TagComponent:
+      Tag: Gun
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [32, 32, 32]
+    MeshComponent:
+      AssetPath: D:\GitHub\Lucid\Lucid\assets\models\flintlock\pistol.obj
