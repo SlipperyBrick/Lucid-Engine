@@ -13,14 +13,18 @@ uniform mat4 u_Transform;
 out VertexOutput
 {
 	vec2 TexCoord;
+
 	vec3 Normal;
 	vec3 FragPos;
+
+	mat3 WorldNormals;
 
 } vs_Output;
 
 void main()
 {
 	vs_Output.Normal = mat3(u_Transform) * a_Normal;
+	vs_Output.WorldNormals = mat3(u_Transform) * mat3(a_Tangent, a_Bitangent, a_Normal);
 
 	// Flip texture coordinates
 	vs_Output.TexCoord = vec2(a_TexCoord.x, 1.0 - a_TexCoord.y);
@@ -55,6 +59,8 @@ in VertexOutput
 	vec3 Normal;
 	vec3 FragPos;
 
+	mat3 WorldNormals;
+
 } vs_Input;
 
 // Material texture inputs
@@ -80,6 +86,8 @@ void main()
 	{
 		// Use texture maps normals
 		m_Params.Normal = normalize(2.0 * texture(u_NormalTexture, vs_Input.TexCoord).rgb - 1.0);
+
+		m_Params.Normal = normalize(vs_Input.WorldNormals * m_Params.Normal);
 	}
 	else
 	{
