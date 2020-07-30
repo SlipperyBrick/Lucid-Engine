@@ -47,9 +47,11 @@ Framebuffer::Framebuffer(const FramebufferSpecification& spec)
 
 Framebuffer::~Framebuffer()
 {
-	Renderer::Submit([this]()
+	Ref<Framebuffer> instance = this;
+
+	Renderer::Submit([instance]()
 	{
-		glDeleteFramebuffers(1, &m_RendererID);
+		glDeleteFramebuffers(1, &instance->m_RendererID);
 	});
 }
 

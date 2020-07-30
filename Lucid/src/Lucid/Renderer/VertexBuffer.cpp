@@ -77,11 +77,6 @@ VertexBuffer::~VertexBuffer()
 	{
 		glDeleteBuffers(1, &rendererID);
 	});
-
-	/*Renderer::Submit([this]()
-	{
-		glDeleteBuffers(1, &m_RendererID);
-	});*/
 }
 
 void VertexBuffer::SetData(void* data, uint32_t size, uint32_t offset)
@@ -108,8 +103,6 @@ void VertexBuffer::Bind() const
 IndexBuffer::IndexBuffer(uint32_t size)
 	: m_Size(size)
 {
-	// m_LocalData = Buffer(size);
-
 	Ref<IndexBuffer> instance = this;
 
 	Renderer::Submit([instance]() mutable 
@@ -135,9 +128,11 @@ IndexBuffer::IndexBuffer(void* data, uint32_t size)
 
 IndexBuffer::~IndexBuffer()
 {
-	Renderer::Submit([this]()
+	Ref<IndexBuffer> instance = this;
+
+	Renderer::Submit([instance]()
 	{
-		glDeleteBuffers(1, &m_RendererID);
+		glDeleteBuffers(1, &instance->m_RendererID);
 	});
 }
 
