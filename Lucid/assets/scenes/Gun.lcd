@@ -42,4 +42,4 @@ Entities:
       Rotation: [1, 0, 0, 0]
       Scale: [32, 32, 32]
     MeshComponent:
-      AssetPath: D:\GitHub\Lucid\Lucid\assets\models\flintlock\pistol.obj
+      AssetPath: assets\models\flintlock\pistol.obj
