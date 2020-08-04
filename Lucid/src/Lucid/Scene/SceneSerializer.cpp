@@ -247,11 +247,9 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity)
 
 		// Point lights data
 		out << YAML::Key << "Brightness" << YAML::Value << pointLights.Brightness;
-		out << YAML::Key << "Falloff" << YAML::Value << pointLights.Falloff;
-		out << YAML::Key << "Slope" << YAML::Value << pointLights.Slope;
 		out << YAML::Key << "Diffuse" << YAML::Value << pointLights.Diffuse;
-		out << YAML::Key << "Ambient" << YAML::Value << pointLights.Ambient;
 		out << YAML::Key << "Specular" << YAML::Value << pointLights.Specular;
+		out << YAML::Key << "Quadratic" << YAML::Value << pointLights.Quadratic;
 
 		out << YAML::EndMap;
 	}
@@ -270,7 +268,7 @@ static void SerializeEnvironment(YAML::Emitter& out, const Ref<Scene>& scene)
 	// Directional lights data
 	out << YAML::Key << "Direction" << YAML::Value << dirLight.Direction;
 	out << YAML::Key << "Brightness" << YAML::Value << dirLight.Brightness;
-	out << YAML::Key << "Diffuse" << YAML::Value << dirLight.Colour;
+	out << YAML::Key << "Diffuse" << YAML::Value << dirLight.Diffuse;
 	out << YAML::Key << "Ambient" << YAML::Value << dirLight.Ambient;
 	out << YAML::Key << "Specular" << YAML::Value << dirLight.Specular;
 
@@ -333,7 +331,7 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 
 	dirLight.Brightness = directionalLight["Brightness"].as<float>();
 	dirLight.Direction = directionalLight["Direction"].as<glm::vec3>();
-	dirLight.Colour = directionalLight["Diffuse"].as<glm::vec3>();
+	dirLight.Diffuse = directionalLight["Diffuse"].as<glm::vec3>();
 	dirLight.Ambient = directionalLight["Ambient"].as<glm::vec3>();
 	dirLight.Specular = directionalLight["Specular"].as<glm::vec3>();
 
@@ -416,13 +414,9 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 					
 					pntLight.Brightness = lightComponent["Brightness"].as<float>();
 					pntLight.Diffuse = lightComponent["Diffuse"].as<glm::vec3>();
-					pntLight.Ambient = lightComponent["Ambient"].as<glm::vec3>();
 					pntLight.Specular = lightComponent["Specular"].as<glm::vec3>();
-					pntLight.Falloff = lightComponent["Falloff"].as<float>();
-					pntLight.Slope = lightComponent["Slope"].as<float>();
+					pntLight.Quadratic = lightComponent["Quadratic"].as<float>();
 				}
-
-				// Could output data to console here about each light
 			}
 		}
 	}

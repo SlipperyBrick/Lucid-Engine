@@ -1,4 +1,4 @@
-#pragma once
+#include "ldpch.h"
 
 #include "Log.h"
 

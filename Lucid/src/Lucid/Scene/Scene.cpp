@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ldpch.h"
 
 #include "Scene.h"
@@ -87,11 +85,9 @@ void Scene::OnUpdate(Timestep ts, const EditorCamera& editorCamera)
 
 					light.Position = translation;
 					light.Brightness = lightComponent.Brightness;
-					light.Colour = lightComponent.Diffuse;
-					light.Falloff = lightComponent.Falloff;
-					light.Slope = lightComponent.Slope;
-					light.Ambient = lightComponent.Ambient;
+					light.Diffuse = lightComponent.Diffuse;
 					light.Specular = lightComponent.Specular;
+					light.Quadratic = lightComponent.Quadratic;
 
 					break;
 				}

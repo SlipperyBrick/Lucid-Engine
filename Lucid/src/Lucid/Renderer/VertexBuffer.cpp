@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ldpch.h"
 
 #include <glad/glad.h>
@@ -151,8 +149,10 @@ void IndexBuffer::SetData(void* data, uint32_t size, uint32_t offset)
 
 void IndexBuffer::Bind() const
 {
-	Renderer::Submit([this]()
+	Ref<const IndexBuffer> instance = this;
+
+	Renderer::Submit([instance]()
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, instance->m_RendererID);
 	});
 }

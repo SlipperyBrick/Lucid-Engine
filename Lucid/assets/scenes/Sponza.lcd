@@ -1,0 +1,65 @@
+Scene: Scene Name
+Directional Light:
+  Direction: [-1, 0, 1]
+  Brightness: 0.0500000007
+  Diffuse: [1, 1, 1]
+  Ambient: [9.99999997e-07, 9.92277933e-07, 9.92277933e-07]
+  Specular: [1, 1, 1]
+Entities:
+  - Entity: 435316565
+    TagComponent:
+      Tag: Point Light 04
+    TransformComponent:
+      Position: [-2.95000005, -0.899999976, 0.800000012]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    LightComponent:
+      Brightness: 2
+      Diffuse: [0.84642452, 0.606177628, 1]
+      Specular: [1, 1, 1]
+      Quadratic: 1
+  - Entity: 3830813413
+    TagComponent:
+      Tag: Point Light 03
+    TransformComponent:
+      Position: [2.25, -0.899999976, 0.800000012]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    LightComponent:
+      Brightness: 2
+      Diffuse: [0.606177628, 0.940698564, 1]
+      Specular: [1, 1, 1]
+      Quadratic: 1
+  - Entity: 3099698068
+    TagComponent:
+      Tag: Point Light 02
+    TransformComponent:
+      Position: [2.25, -0.899999976, -0.850000024]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    LightComponent:
+      Brightness: 2
+      Diffuse: [1, 0.899201572, 0.606177628]
+      Specular: [1, 1, 1]
+      Quadratic: 1
+  - Entity: 477345920
+    TagComponent:
+      Tag: Point Light 01
+    TransformComponent:
+      Position: [-2.95000005, -0.899999976, -0.850000024]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    LightComponent:
+      Brightness: 2
+      Diffuse: [0.606177628, 1, 0.749109268]
+      Specular: [1, 1, 1]
+      Quadratic: 1
+  - Entity: 1849432608
+    TagComponent:
+      Tag: Sponza
+    TransformComponent:
+      Position: [0, -1.58000004, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [10, 10, 10]
+    MeshComponent:
+      AssetPath: C:\Users\SlipperyBrick\Desktop\sponza\sponza.obj

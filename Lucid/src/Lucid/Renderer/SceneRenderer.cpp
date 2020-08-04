@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ldpch.h"
 
 #include "SceneRenderer.h"
@@ -298,7 +296,7 @@ void SceneRenderer::LightingPass()
 	// Directional light
 	s_Data.LightingShader->SetFloat("r_DirectionalLight.Brightness", s_Data.SceneData.DirLight.Brightness);
 	s_Data.LightingShader->SetVec3("r_DirectionalLight.Direction", s_Data.SceneData.DirLight.Direction);
-	s_Data.LightingShader->SetVec3("r_DirectionalLight.Diffuse", s_Data.SceneData.DirLight.Colour);
+	s_Data.LightingShader->SetVec3("r_DirectionalLight.Diffuse", s_Data.SceneData.DirLight.Diffuse);
 	s_Data.LightingShader->SetVec3("r_DirectionalLight.Ambient", s_Data.SceneData.DirLight.Ambient);
 	s_Data.LightingShader->SetVec3("r_DirectionalLight.Specular", s_Data.SceneData.DirLight.Specular);
 
@@ -316,11 +314,9 @@ void SceneRenderer::LightingPass()
 		}
 
 		s_Data.LightingShader->SetVec3("r_PointLights[" + std::to_string(it) + "].Position", pointLight.Position);
-		s_Data.LightingShader->SetVec3("r_PointLights[" + std::to_string(it) + "].Ambient", s_Data.SceneData.DirLight.Ambient);
-		s_Data.LightingShader->SetVec3("r_PointLights[" + std::to_string(it) + "].Diffuse", pointLight.Colour);
+		s_Data.LightingShader->SetVec3("r_PointLights[" + std::to_string(it) + "].Diffuse", pointLight.Diffuse);
 		s_Data.LightingShader->SetFloat("r_PointLights[" + std::to_string(it) + "].Brightness", pointLight.Brightness);
-		s_Data.LightingShader->SetFloat("r_PointLights[" + std::to_string(it) + "].Falloff", pointLight.Falloff);
-		s_Data.LightingShader->SetFloat("r_PointLights[" + std::to_string(it) + "].Slope", pointLight.Slope);
+		s_Data.LightingShader->SetFloat("r_PointLights[" + std::to_string(it) + "].Quadratic", pointLight.Quadratic);
 		s_Data.LightingShader->SetVec3("r_PointLights[" + std::to_string(it) + "].Specular", pointLight.Specular);
 	}
 

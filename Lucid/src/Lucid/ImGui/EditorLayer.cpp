@@ -86,7 +86,7 @@ bool EditorLayer::Property(const std::string& name, glm::vec2& value, float min,
 
 bool EditorLayer::Property(const std::string& name, glm::vec3& value, EditorLayer::PropertyFlag flags)
 {
-	return Property(name, value, -10.0f, 10.0f, flags);
+	return Property(name, value, -1.0f, 1.0f, flags);
 }
 
 bool EditorLayer::Property(const std::string& name, glm::vec3& value, float min, float max, EditorLayer::PropertyFlag flags)
@@ -221,6 +221,7 @@ void EditorLayer::OnAttach()
 	m_RotateTex = Texture2D::Create("assets/textures/Rotate.tga");
 	m_ScaleTex = Texture2D::Create("assets/textures/Scale.tga");
 	m_GridToggleTex = Texture2D::Create("assets/textures/GridToggle.tga");
+	m_CameraSpeed = Texture2D::Create("assets/textures/CameraSpeed.tga");
 	m_DuplicateTex = Texture2D::Create("assets/textures/Duplicate.tga");
 	m_PositionsTex = Texture2D::Create("assets/textures/Positions.tga");
 	m_NormalsTex = Texture2D::Create("assets/textures/Normals.tga");
@@ -334,7 +335,7 @@ void EditorLayer::OnImGuiRender()
 
 	Property("Light Direction", light.Direction, PropertyFlag::SliderProperty);
 	Property("Light Brightness", light.Brightness, 0.0f, 0.5f, PropertyFlag::SliderProperty);
-	Property("Light Diffuse", light.Colour, PropertyFlag::ColourProperty);
+	Property("Light Diffuse", light.Diffuse, PropertyFlag::ColourProperty);
 	Property("Light Ambient", light.Ambient, PropertyFlag::ColourProperty);
 
 	Property("Exposure", m_EditorCamera.GetExposure(), 0.1f, 2.0f, PropertyFlag::SliderProperty);
@@ -512,6 +513,11 @@ void EditorLayer::OnImGuiRender()
 		}
 	}
 
+	ImGui::SameLine();
+
+	// Camera speed
+	//Property("Camera Speed", m_EditorCamera.GetSpeed(), 1.0f, 10.0f, PropertyFlag::SliderProperty);
+
 	ImGui::End();
 
 	ImGui::PopStyleColor();
@@ -683,25 +689,25 @@ bool EditorLayer::OnKeyPressedEvent(KeyPressedEvent& e)
 	{
 		switch (e.GetKeyCode())
 		{
-			case LD_KEY_Q:
+			case LD_KEY_V:
 			{
 				m_GizmoType = -1;
 
 				break;
 			}
-			case LD_KEY_W:
+			case LD_KEY_G:
 			{
 				m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 
 				break;
 			}
-			case LD_KEY_E:
+			case LD_KEY_R:
 			{
 				m_GizmoType = ImGuizmo::OPERATION::ROTATE;
 
 				break;
 			}
-			case LD_KEY_R:
+			case LD_KEY_S:
 			{
 				m_GizmoType = ImGuizmo::OPERATION::SCALE;
 

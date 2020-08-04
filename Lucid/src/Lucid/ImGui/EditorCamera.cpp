@@ -25,6 +25,8 @@ EditorCamera::EditorCamera(const glm::mat4& projectionMatrix)
 	m_Yaw = 3.0f * (float)M_PI / 4.0f;
 	m_Pitch = M_PI / 4.0f;
 
+	m_Speed = 10.0f;
+
 	UpdateCameraView();
 }
 
@@ -102,6 +104,54 @@ void EditorCamera::OnUpdate(Timestep ts)
 			MouseZoom(delta.y);
 		}
 	}
+
+	// Store initial mouse position before clicking RMB
+	/*const glm::vec2& mouse{ window.GetMouseX(), window.GetMouseY() };
+
+	glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
+
+	m_InitialMousePosition = mouse;*/
+
+	//if (window.IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
+	//{
+	//	// Set the cursor to be invisible and locked to center of window
+	//	glfwSetInputMode(window.GetNativeWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	//	MouseRotate(delta);
+
+	//	if (window.IsKeyPressed(LD_KEY_W))
+	//	{
+	//		float velocity = m_Speed * ts;
+	//		m_FocalPoint += GetForwardDirection() * velocity;
+	//	} 
+	//	else if (window.IsKeyPressed(LD_KEY_S))
+	//	{
+	//		float velocity = m_Speed * ts;
+	//		m_FocalPoint += -GetForwardDirection() * velocity;
+	//	}
+	//	else if (window.IsKeyPressed(LD_KEY_A))
+	//	{
+	//		float velocity = m_Speed * ts;
+	//		m_FocalPoint += -GetRightDirection() * velocity;
+	//	}
+	//	else if (window.IsKeyPressed(LD_KEY_D))
+	//	{
+	//		float velocity = m_Speed * ts;
+	//		m_FocalPoint += GetRightDirection() * velocity;
+	//	}
+	//	else if (window.IsKeyPressed(LD_KEY_E))
+	//	{
+	//		float velocity = m_Speed * ts;
+	//		m_FocalPoint += GetUpDirection() * velocity;
+	//	}
+	//	else if (window.IsKeyPressed(LD_KEY_Q))
+	//	{
+	//		MouseRotate(delta);
+
+	//		float velocity = m_Speed * ts;
+	//		m_FocalPoint += -GetUpDirection() * velocity;
+	//	}
+	//}
 
 	UpdateCameraView();
 }

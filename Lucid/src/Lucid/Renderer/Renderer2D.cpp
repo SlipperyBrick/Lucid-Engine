@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ldpch.h"
 
 #include "Renderer2D.h"

@@ -48,6 +48,7 @@ struct MaterialParameters
 	vec3 Normal;
 
 	float Specular;
+	float Gloss;
 };
 
 MaterialParameters m_Params;
@@ -67,20 +68,24 @@ in VertexOutput
 uniform sampler2D u_DiffuseTexture;
 uniform sampler2D u_NormalTexture;
 uniform sampler2D u_SpecularTexture;
+uniform sampler2D u_GlossTexture;
 
 // Material inputs
-uniform vec3 u_DiffuseColour;
+uniform vec3 u_Diffuse;
 uniform float u_Specular;
+uniform float u_Gloss;
 
 // ImGui texture toggles
 uniform float u_DiffuseTexToggle;
 uniform float u_NormalTexToggle;
 uniform float u_SpecularTexToggle;
+uniform float u_GlossTexToggle;
 
 void main()
 {	
-	m_Params.Diffuse = u_DiffuseTexToggle > 0.5 ? texture(u_DiffuseTexture, vs_Input.TexCoord).rgb : u_DiffuseColour;
+	m_Params.Diffuse = u_DiffuseTexToggle > 0.5 ? texture(u_DiffuseTexture, vs_Input.TexCoord).rgb : u_Diffuse;
 	m_Params.Specular = u_SpecularTexToggle > 0.5 ? texture(u_SpecularTexture, vs_Input.TexCoord).r : u_Specular;
+	m_Params.Gloss = u_GlossTexToggle > 0.5 ? texture(u_GlossTexture, vs_Input.TexCoord).g : u_Gloss;
 
 	if (u_NormalTexToggle > 0.5)
 	{
@@ -105,7 +110,7 @@ void main()
 	o_Albedo.a = 1.0;
 
 	o_Specular.r = m_Params.Specular;
-	o_Specular.g = m_Params.Specular;
-	o_Specular.b = m_Params.Specular;
+	o_Specular.g = m_Params.Gloss;
+	o_Specular.b = 1.0;
 	o_Specular.a = 1.0;
 }

@@ -38,6 +38,9 @@ public:
 	float GetPitch() const { return m_Pitch; }
 	float GetYaw() const { return m_Yaw; }
 
+	float GetSpeed() const { return m_Speed; }
+	float& GetSpeed() { return m_Speed; }
+
 private:
 
 	void UpdateCameraView();
@@ -69,7 +72,9 @@ private:
 	glm::vec3 m_InitialRotation;
 
 	float m_Distance;
-	float m_Pitch, m_Yaw;
+	float m_Pitch;
+	float m_Yaw;
+	float m_Speed;
 
 	uint32_t m_ViewportWidth = 1280;
 	uint32_t m_ViewportHeight = 720;

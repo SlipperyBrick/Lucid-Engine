@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ldpch.h"
 
 #include "Mesh.h"
@@ -322,6 +320,37 @@ Mesh::Mesh(const std::string& filename)
 				LD_MESH_LOG("    No specular map");
 
 				mi->Set("u_Specular", specular);
+			}
+
+			// Gloss map
+			if (aiMaterial->GetTexture(aiTextureType_SHININESS, 0, &aiTexPath) == AI_SUCCESS)
+			{
+				std::filesystem::path path = filename;
+
+				auto parentPath = path.parent_path();
+				parentPath /= std::string(aiTexPath.data);
+
+				std::string texturePath = parentPath.string();
+
+				LD_MESH_LOG("    Gloss map path = {0}", texturePath);
+
+				auto texture = Texture2D::Create(texturePath);
+
+				if (texture->Loaded())
+				{
+					mi->Set("u_GlossTexture", texture);
+					mi->Set("u_GlossTexToggle", 1.0f);
+				}
+				else
+				{
+					LD_CORE_ERROR("    Could not load texture: {0}", texturePath);
+				}
+			}
+			else
+			{
+				LD_MESH_LOG("    No Gloss map");
+
+				mi->Set("u_Gloss", specular);
 			}
 		}
 

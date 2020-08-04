@@ -68,11 +68,9 @@ struct LightComponent
 
 	Type LightType = Type::Point;
 	glm::vec3 Diffuse = { 1.0f, 1.0f, 1.0f };
-	glm::vec3 Ambient = { 0.1f, 0.1f, 0.1f };
 	glm::vec3 Specular = { 1.0f, 1.0f, 1.0f };
 	float Brightness = 0.0f;
-	float Falloff = 1.0f;
-	float Slope = 1.0f;
+	float Quadratic = 1.0f;
 
 	LightComponent() = default;
 	LightComponent(const LightComponent& other) = default;

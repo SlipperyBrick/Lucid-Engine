@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ldpch.h"
 
 #include "SceneHierarchy.h"
@@ -95,6 +93,30 @@ static void Property(const char* label, const char* value)
 
 	ImGui::PopItemWidth();
 	ImGui::NextColumn();
+}
+
+static bool Property(const char* label, bool& value)
+{
+	bool modified = false;
+
+	ImGui::Text(label);
+	ImGui::NextColumn();
+	ImGui::PushItemWidth(-1);
+
+	s_IDBuffer[0] = '#';
+	s_IDBuffer[1] = '#';
+	memset(s_IDBuffer + 2, 0, 14);
+	itoa(s_Counter++, s_IDBuffer + 2, 16);
+
+	if (ImGui::Checkbox(s_IDBuffer, &value))
+	{
+		modified = true;
+	}
+
+	ImGui::PopItemWidth();
+	ImGui::NextColumn();
+
+	return modified;
 }
 
 static bool Property(const char* label, int& value, float min = 0.0f, float max = 1.0f)
@@ -652,8 +674,6 @@ void SceneHierarchy::DrawComponents(Entity entity)
 
 				Property("Brightness", lc.Brightness, 0.0f, 100.0f);
 				PropertyColour("Diffuse", lc.Diffuse);
-				Property("Slope", lc.Slope, 1.0f, 10.0f);
-				Property("Falloff", lc.Falloff, 1.0f, 10.0f);
 
 				EndPropertyGrid();
 

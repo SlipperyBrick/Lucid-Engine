@@ -45,6 +45,7 @@ public:
 	bool IsVSync() const;
 
 	inline void* GetWindowPointer() const { return m_Window; }
+	inline GLFWwindow* GetNativeWindow() const { return m_Window; }
 
 	bool IsKeyPressed(int keycode);
 	bool IsMouseButtonPressed(int button);

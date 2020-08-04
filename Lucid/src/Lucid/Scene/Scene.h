@@ -8,8 +8,8 @@
 
 struct DirectionalLight
 {
-	glm::vec3 Direction = { 0.0f, 0.0f, -10.0f };
-	glm::vec3 Colour = { 1.0f, 1.0f, 1.0f };
+	glm::vec3 Direction = { 0.0f, 0.0f, -1.0f };
+	glm::vec3 Diffuse = { 1.0f, 1.0f, 1.0f };
 	glm::vec3 Ambient = { 0.1f, 0.1f, 0.1f };
 	glm::vec3 Specular = { 1.0f, 1.0f, 1.0f };
 
@@ -19,13 +19,11 @@ struct DirectionalLight
 struct PointLight
 {
 	glm::vec3 Position = { 0.0f, 0.0f, 0.0f };
-	glm::vec3 Colour = { 1.0f, 1.0f, 1.0f };
-	glm::vec3 Ambient = { 0.1f, 0.1f, 0.1f };
+	glm::vec3 Diffuse = { 1.0f, 1.0f, 1.0f };
 	glm::vec3 Specular = { 1.0f, 1.0f, 1.0f };
 
 	float Brightness = 0.0f;
-	float Falloff = 1.0f;
-	float Slope = 1.0f;
+	float Quadratic = 1.0f;
 };
 
 struct LightEnvironment
