@@ -105,7 +105,7 @@ private:
 	Ref<Texture2D> m_BoundingBoxesTex;
 	Ref<Texture2D> m_PointerTex;
 	Ref<Texture2D> m_GridToggleTex;
-	Ref<Texture2D> m_CameraSpeed;
+	Ref<Texture2D> m_CameraSpeedTex;
 	Ref<Texture2D> m_DuplicateTex;
 	Ref<Texture2D> m_PositionsTex;
 	Ref<Texture2D> m_NormalsTex;

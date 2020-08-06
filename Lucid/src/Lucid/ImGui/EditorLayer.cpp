@@ -152,8 +152,10 @@ bool EditorLayer::Property(const std::string& name, glm::vec4& value, float min,
 
 bool EditorLayer::Property(const Ref<Texture2D>& texture, float& value, float min, float max, float sliderWidth, PropertyFlag flags)
 {
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (ImGui::GetTextLineHeight() - (texture->GetHeight() / 6)) / 2);
 	ImGui::Image((ImTextureID)(texture->GetRendererID()), ImVec2(16, 16), ImVec2(0, 0), ImVec2(1, 1));
 	ImGui::SameLine();
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (ImGui::GetTextLineHeight() - 24) / 2);
 	ImGui::PushItemWidth(sliderWidth);
 
 	std::string id = "##" + texture->GetPath();
@@ -245,7 +247,7 @@ void EditorLayer::OnAttach()
 	m_RotateTex = Texture2D::Create("assets/textures/Rotate.tga");
 	m_ScaleTex = Texture2D::Create("assets/textures/Scale.tga");
 	m_GridToggleTex = Texture2D::Create("assets/textures/GridToggle.tga");
-	m_CameraSpeed = Texture2D::Create("assets/textures/CameraSpeed.tga");
+	m_CameraSpeedTex = Texture2D::Create("assets/textures/CameraSpeed.tga");
 	m_DuplicateTex = Texture2D::Create("assets/textures/Duplicate.tga");
 	m_PositionsTex = Texture2D::Create("assets/textures/Positions.tga");
 	m_NormalsTex = Texture2D::Create("assets/textures/Normals.tga");
@@ -399,6 +401,10 @@ void EditorLayer::OnImGuiRender()
 
 	ImGui::SameLine();
 
+	ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+
+	ImGui::SameLine();
+
 	// Pointer
 	if (ImGui::ImageButton((ImTextureID)(m_PointerTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
 	{
@@ -431,6 +437,10 @@ void EditorLayer::OnImGuiRender()
 
 	ImGui::SameLine();
 
+	ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+
+	ImGui::SameLine();
+
 	// Grid toggle
 	if (SceneRenderer::GetOptions().ShowGrid)
 	{
@@ -460,6 +470,10 @@ void EditorLayer::OnImGuiRender()
 			m_ActiveScene->DuplicateEntity(selectedEntity);
 		}
 	}
+
+	ImGui::SameLine();
+
+	ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 
 	ImGui::SameLine();
 	
@@ -539,8 +553,12 @@ void EditorLayer::OnImGuiRender()
 
 	ImGui::SameLine();
 
+	ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+
+	ImGui::SameLine();
+
 	// Camera speed
-	Property(m_CameraSpeed, m_EditorCamera.GetSpeed(), 1.0f, 10.0f, 100.0f, PropertyFlag::SliderProperty);
+	Property(m_CameraSpeedTex, m_EditorCamera.GetSpeed(), 1.0f, 10.0f, 100.0f, PropertyFlag::SliderProperty);
 
 	ImGui::End();
 
