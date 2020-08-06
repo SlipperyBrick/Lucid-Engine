@@ -66,10 +66,10 @@ private:
 
 	bool m_Panning;
 	bool m_Rotating;
+	bool m_Orbit;
 
 	glm::vec2 m_InitialMousePosition;
-	glm::vec3 m_InitialFocalPoint;
-	glm::vec3 m_InitialRotation;
+	glm::vec3 m_InitialPosition;
 
 	float m_Distance;
 	float m_Pitch;

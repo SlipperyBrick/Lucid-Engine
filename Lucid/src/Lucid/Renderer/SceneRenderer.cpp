@@ -30,6 +30,7 @@ struct SceneRendererData
 	Ref<RenderPass> GeometryPass;
 	Ref<RenderPass> LightingPass;
 	Ref<RenderPass> CompositePass;
+	Ref<RenderPass> EditorPass;
 
 	struct DrawCommand
 	{
@@ -39,7 +40,7 @@ struct SceneRendererData
 		glm::mat4 Transform;
 	};
 
-	std::vector<DrawCommand> DrawList;
+	std::vector<DrawCommand> MeshDrawList;
 	std::vector<DrawCommand> SelectedMeshDrawList;
 
 	Ref<MaterialInstance> GridMaterial;
@@ -89,7 +90,7 @@ void SceneRenderer::Init()
 	compFramebufferSpec.Format = FramebufferFormat::RGBA8;
 	compFramebufferSpec.BufferCount = 1;
 	compFramebufferSpec.Samples = 1;
-	compFramebufferSpec.ClearColour = { 0.1f, 0.1f, 0.1f, 1.0f };
+	compFramebufferSpec.ClearColour = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 	RenderPassSpecification compRenderPassSpec;
 	compRenderPassSpec.TargetFramebuffer = Framebuffer::Create(compFramebufferSpec);
@@ -97,9 +98,21 @@ void SceneRenderer::Init()
 
 	s_Data.CompositeShader = Shader::Create("assets/shaders/Composite.glsl");
 
+	// Editor pass
+	FramebufferSpecification editorFramebufferSpec;
+	editorFramebufferSpec.Width = 1280;
+	editorFramebufferSpec.Height = 720;
+	editorFramebufferSpec.Format = FramebufferFormat::RGBA8;
+	editorFramebufferSpec.BufferCount = 1;
+	editorFramebufferSpec.Samples = 1;
+	editorFramebufferSpec.ClearColour = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+	RenderPassSpecification editorRenderPassSpec;
+	editorRenderPassSpec.TargetFramebuffer = Framebuffer::Create(editorFramebufferSpec);
+	s_Data.EditorPass = RenderPass::Create(editorRenderPassSpec);
+
 	// Grid
 	auto gridShader = Shader::Create("assets/shaders/Grid.glsl");
-
 	s_Data.GridMaterial = MaterialInstance::Create(Material::Create(gridShader));
 
 	float gridScale = 16.025f;
@@ -110,7 +123,6 @@ void SceneRenderer::Init()
 
 	// Outline
 	auto outlineShader = Shader::Create("assets/shaders/Outline.glsl");
-
 	s_Data.OutlineMaterial = MaterialInstance::Create(Material::Create(outlineShader));
 	s_Data.OutlineMaterial->SetFlag(MaterialFlag::DepthTest, false);
 }
@@ -120,6 +132,7 @@ void SceneRenderer::SetViewportSize(uint32_t width, uint32_t height)
 	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->Resize(width, height);
 	s_Data.LightingPass->GetSpecification().TargetFramebuffer->Resize(width, height);
 	s_Data.CompositePass->GetSpecification().TargetFramebuffer->Resize(width, height);
+	s_Data.EditorPass->GetSpecification().TargetFramebuffer->Resize(width, height);
 
 	s_Data.ViewportSize = { width, height };
 }
@@ -148,7 +161,7 @@ void SceneRenderer::SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform, Ref<M
 {
 	// Culling, sorting, can be done here
 
-	s_Data.DrawList.push_back({ mesh, overrideMaterial, transform });
+	s_Data.MeshDrawList.push_back({ mesh, overrideMaterial, transform });
 }
 
 void SceneRenderer::SubmitSelectedMesh(Ref<Mesh> mesh, const glm::mat4& transform)
@@ -158,48 +171,20 @@ void SceneRenderer::SubmitSelectedMesh(Ref<Mesh> mesh, const glm::mat4& transfor
 
 void SceneRenderer::GeometryPass()
 {
-	bool outline = s_Data.SelectedMeshDrawList.size() > 0;
-
-	if (outline)
-	{
-		Renderer::Submit([]()
-		{
-			glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
-		});
-	}
-
 	Renderer::BeginRenderPass(s_Data.GeometryPass);
-
-	if (outline)
-	{
-		Renderer::Submit([]()
-		{
-			glStencilMask(0);
-		});
-	}
 
 	auto viewProjection = s_Data.SceneData.SceneCamera.Camera.GetProjectionMatrix() * s_Data.SceneData.SceneCamera.ViewMatrix;
 	glm::vec3 cameraPosition = glm::inverse(s_Data.SceneData.SceneCamera.ViewMatrix)[3];
 
 	// Render meshes
-	for (auto& dc : s_Data.DrawList)
+	for (auto& dc : s_Data.MeshDrawList)
 	{
 		auto baseMaterial = dc.Mesh->GetMaterial();
 		auto shader = baseMaterial->GetShader();
 
 		baseMaterial->Set("u_ViewProjectionMatrix", viewProjection);
 
-		auto overrideMaterial = nullptr;
-		Renderer::SubmitMesh(dc.Mesh, dc.Transform, overrideMaterial);
-	}
-
-	if (outline)
-	{
-		Renderer::Submit([]()
-		{
-			glStencilFunc(GL_ALWAYS, 1, 0xff);
-			glStencilMask(0xff);
-		});
+		Renderer::SubmitMesh(dc.Mesh, dc.Transform);
 	}
 
 	for (auto& dc : s_Data.SelectedMeshDrawList)
@@ -209,69 +194,7 @@ void SceneRenderer::GeometryPass()
 
 		baseMaterial->Set("u_ViewProjectionMatrix", viewProjection);
 
-		auto overrideMaterial = nullptr;
-		Renderer::SubmitMesh(dc.Mesh, dc.Transform, overrideMaterial);
-	}
-
-	if (outline)
-	{
-		Renderer::Submit([]()
-		{
-			glStencilFunc(GL_NOTEQUAL, 1, 0xff);
-			glStencilMask(0);
-
-			glLineWidth(10);
-			glEnable(GL_LINE_SMOOTH);
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			glDisable(GL_DEPTH_TEST);
-		});
-
-		// Draw outline
-		s_Data.OutlineMaterial->Set("u_ViewProjection", viewProjection);
-
-		for (auto& dc : s_Data.SelectedMeshDrawList)
-		{
-			Renderer::SubmitMesh(dc.Mesh, dc.Transform, s_Data.OutlineMaterial);
-		}
-
-		Renderer::Submit([]()
-		{
-			glPointSize(10);
-			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-		});
-
-		for (auto& dc : s_Data.SelectedMeshDrawList)
-		{
-			Renderer::SubmitMesh(dc.Mesh, dc.Transform, s_Data.OutlineMaterial);
-		}
-
-		Renderer::Submit([]()
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			glStencilMask(0xff);
-			glStencilFunc(GL_ALWAYS, 1, 0xff);
-			glEnable(GL_DEPTH_TEST);
-		});
-	}
-
-	// Grid
-	if (GetOptions().ShowGrid)
-	{
-		s_Data.GridMaterial->Set("u_ViewProjection", viewProjection);
-
-		Renderer::SubmitQuad(s_Data.GridMaterial, glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(16.0f)));
-	}
-
-	if (GetOptions().ShowBoundingBoxes)
-	{
-		Renderer2D::BeginScene(viewProjection);
-
-		for (auto& dc : s_Data.DrawList)
-		{
-			Renderer::DrawAABB(dc.Mesh, dc.Transform);
-		}
-
-		Renderer2D::EndScene();
+		Renderer::SubmitMesh(dc.Mesh, dc.Transform);
 	}
 
 	Renderer::EndRenderPass();
@@ -341,23 +264,132 @@ void SceneRenderer::CompositePass()
 	{
 		s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(0, 0);
 	}
-	
+
 	if (GetOptions().ShowNormal)
 	{
 		s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(1, 0);
 	}
-	
+
 	if (GetOptions().ShowAlbedo)
 	{
 		s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(2, 0);
 	}
-	
+
 	if (GetOptions().ShowSpecular)
 	{
 		s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(3, 0);
 	}
 
 	Renderer::SubmitFullscreenQuad(nullptr);
+
+	Renderer::EndRenderPass();
+}
+
+void SceneRenderer::EditorPass()
+{
+	Renderer::BeginRenderPass(s_Data.EditorPass);
+
+	bool outline = s_Data.SelectedMeshDrawList.size() > 0;
+
+	if (outline)
+	{
+		Renderer::Submit([]()
+		{
+			glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
+		});
+	}
+
+	if (outline)
+	{
+		Renderer::Submit([]()
+		{
+			glStencilMask(0);
+		});
+	}
+
+	auto viewProjection = s_Data.SceneData.SceneCamera.Camera.GetProjectionMatrix() * s_Data.SceneData.SceneCamera.ViewMatrix;
+
+	// Render meshes
+	for (auto& dc : s_Data.MeshDrawList)
+	{
+		Renderer::SubmitMesh(dc.Mesh, dc.Transform);
+	}
+
+	if (outline)
+	{
+		Renderer::Submit([]()
+		{
+			glStencilFunc(GL_ALWAYS, 1, 0xff);
+			glStencilMask(0xff);
+		});
+	}
+
+	for (auto& dc : s_Data.SelectedMeshDrawList)
+	{
+		Renderer::SubmitMesh(dc.Mesh, dc.Transform);
+	}
+
+	if (outline)
+	{
+		Renderer::Submit([]()
+		{
+			glStencilFunc(GL_NOTEQUAL, 1, 0xff);
+			glStencilMask(0);
+
+			glLineWidth(10);
+			glEnable(GL_LINE_SMOOTH);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glDisable(GL_DEPTH_TEST);
+		});
+
+		// Draw outline
+		s_Data.OutlineMaterial->Set("u_ViewProjection", viewProjection);
+
+		for (auto& dc : s_Data.SelectedMeshDrawList)
+		{
+			Renderer::SubmitMesh(dc.Mesh, dc.Transform, s_Data.OutlineMaterial);
+		}
+
+		Renderer::Submit([]()
+		{
+			glPointSize(10);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+		});
+
+		for (auto& dc : s_Data.SelectedMeshDrawList)
+		{
+			Renderer::SubmitMesh(dc.Mesh, dc.Transform, s_Data.OutlineMaterial);
+		}
+
+		Renderer::Submit([]()
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			glStencilMask(0xff);
+			glStencilFunc(GL_ALWAYS, 1, 0xff);
+			glEnable(GL_DEPTH_TEST);
+		});
+	}
+
+	// Grid
+	if (GetOptions().ShowGrid)
+	{
+		s_Data.GridMaterial->Set("u_ViewProjection", viewProjection);
+
+		Renderer::SubmitQuad(s_Data.GridMaterial, glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(16.0f)));
+	}
+
+	// Bounding boxes
+	if (GetOptions().ShowBoundingBoxes)
+	{
+		Renderer2D::BeginScene(viewProjection);
+
+		for (auto& dc : s_Data.MeshDrawList)
+		{
+			Renderer::DrawAABB(dc.Mesh, dc.Transform);
+		}
+
+		Renderer2D::EndScene();
+	}
 
 	Renderer::EndRenderPass();
 }
@@ -369,8 +401,9 @@ void SceneRenderer::FlushDrawList()
 	GeometryPass();
 	LightingPass();
 	CompositePass();
+	EditorPass();
 
-	s_Data.DrawList.clear();
+	s_Data.MeshDrawList.clear();
 	s_Data.SelectedMeshDrawList.clear();
 	s_Data.SceneData = {};
 }
@@ -384,12 +417,12 @@ Ref<Texture2D> SceneRenderer::GetFinalColourBuffer()
 
 Ref<RenderPass> SceneRenderer::GetFinalRenderPass()
 {
-	return s_Data.CompositePass;
+	return s_Data.EditorPass;
 }
 
 uint32_t SceneRenderer::GetFinalColourBufferRendererID()
 {
-	return s_Data.CompositePass->GetSpecification().TargetFramebuffer->GetColourAttachmentRendererID();
+	return s_Data.EditorPass->GetSpecification().TargetFramebuffer->GetColourAttachmentRendererID();
 }
 
 SceneRendererOptions& SceneRenderer::GetOptions()

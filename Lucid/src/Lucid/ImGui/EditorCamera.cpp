@@ -14,33 +14,49 @@
 #define M_PI 3.14159f
 
 EditorCamera::EditorCamera(const glm::mat4& projectionMatrix)
-	: Camera(projectionMatrix)
+	: Camera(projectionMatrix), m_Orbit(true)
 {
 	m_Rotation = glm::vec3(90.0f, 0.0f, 0.0f);
 	m_FocalPoint = glm::vec3(0.0f);
 
-	glm::vec3 position = { -5, 5, 5 };
-	m_Distance = glm::distance(position, m_FocalPoint);
+	m_Distance = 8.0f;
 
 	m_Yaw = 3.0f * (float)M_PI / 4.0f;
 	m_Pitch = M_PI / 4.0f;
 
-	m_Speed = 10.0f;
+	m_Speed = 1.0f;
 
 	UpdateCameraView();
 }
 
 void EditorCamera::UpdateCameraView()
 {
-	m_Position = CalculatePosition();
+	if (m_Orbit)
+	{
+		m_Position = CalculatePosition();
 
-	glm::quat orientation = GetOrientation();
+		glm::quat orientation = GetOrientation();
 
-	m_Rotation = glm::eulerAngles(orientation) * (180.0f / (float)M_PI);
+		m_Rotation = glm::eulerAngles(orientation) * (180.0f / (float)M_PI);
 
-	m_ViewMatrix = glm::translate(glm::mat4(1.0f), m_Position) * glm::toMat4(orientation);
+		m_ViewMatrix = glm::translate(glm::mat4(1.0f), m_Position) * glm::toMat4(orientation);
 
-	m_ViewMatrix = glm::inverse(m_ViewMatrix);
+		m_ViewMatrix = glm::inverse(m_ViewMatrix);
+
+		m_InitialPosition = m_Position - m_FocalPoint;
+	}
+	else
+	{
+		glm::quat orientation = GetOrientation();
+
+		m_Rotation = glm::eulerAngles(orientation) * (180.0f / (float)M_PI);
+
+		m_ViewMatrix = glm::translate(glm::mat4(1.0f), m_Position) * glm::toMat4(orientation);
+
+		m_ViewMatrix = glm::inverse(m_ViewMatrix);
+
+		m_FocalPoint -= CalculatePosition() - m_Position;
+	}
 }
 
 void EditorCamera::Focus()
@@ -83,13 +99,15 @@ void EditorCamera::OnUpdate(Timestep ts)
 {
 	Window& window = Application::Get().GetWindow();
 
+	const glm::vec2& mouse{ window.GetMouseX(), window.GetMouseY() };
+
+	glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
+
+	m_InitialMousePosition = mouse;
+
 	if (window.IsKeyPressed(LD_KEY_LEFT_ALT))
 	{
-		const glm::vec2& mouse{ window.GetMouseX(), window.GetMouseY() };
-
-		glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
-
-		m_InitialMousePosition = mouse;
+		m_Orbit = true;
 
 		if (window.IsMouseButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE))
 		{
@@ -105,53 +123,59 @@ void EditorCamera::OnUpdate(Timestep ts)
 		}
 	}
 
-	// Store initial mouse position before clicking RMB
-	/*const glm::vec2& mouse{ window.GetMouseX(), window.GetMouseY() };
+	// Need to check if mouse position is within the viewport
+	if (window.IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT) && !window.IsKeyPressed(LD_KEY_LEFT_ALT))
+	{
+		m_Orbit = false;
 
-	glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
+		// Set mouse cursor to virtual cursor
+		glfwSetInputMode(window.GetNativeWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	m_InitialMousePosition = mouse;*/
+		MouseRotate(delta);
 
-	//if (window.IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
-	//{
-	//	// Set the cursor to be invisible and locked to center of window
-	//	glfwSetInputMode(window.GetNativeWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		if (window.IsKeyPressed(LD_KEY_W))
+		{
+			float velocity = m_Speed * ts;
+			m_Position += GetForwardDirection() * velocity;
+		}
 
-	//	MouseRotate(delta);
+		if (window.IsKeyPressed(LD_KEY_S))
+		{
+			float velocity = m_Speed * ts;
+			m_Position += -GetForwardDirection() * velocity;
+		}
 
-	//	if (window.IsKeyPressed(LD_KEY_W))
-	//	{
-	//		float velocity = m_Speed * ts;
-	//		m_FocalPoint += GetForwardDirection() * velocity;
-	//	} 
-	//	else if (window.IsKeyPressed(LD_KEY_S))
-	//	{
-	//		float velocity = m_Speed * ts;
-	//		m_FocalPoint += -GetForwardDirection() * velocity;
-	//	}
-	//	else if (window.IsKeyPressed(LD_KEY_A))
-	//	{
-	//		float velocity = m_Speed * ts;
-	//		m_FocalPoint += -GetRightDirection() * velocity;
-	//	}
-	//	else if (window.IsKeyPressed(LD_KEY_D))
-	//	{
-	//		float velocity = m_Speed * ts;
-	//		m_FocalPoint += GetRightDirection() * velocity;
-	//	}
-	//	else if (window.IsKeyPressed(LD_KEY_E))
-	//	{
-	//		float velocity = m_Speed * ts;
-	//		m_FocalPoint += GetUpDirection() * velocity;
-	//	}
-	//	else if (window.IsKeyPressed(LD_KEY_Q))
-	//	{
-	//		MouseRotate(delta);
+		if (window.IsKeyPressed(LD_KEY_A))
+		{
+			float velocity = m_Speed * ts;
+			m_Position += -GetRightDirection() * velocity;
+		}
 
-	//		float velocity = m_Speed * ts;
-	//		m_FocalPoint += -GetUpDirection() * velocity;
-	//	}
-	//}
+		if (window.IsKeyPressed(LD_KEY_D))
+		{
+			float velocity = m_Speed * ts;
+			m_Position += GetRightDirection() * velocity;
+		}
+
+		if (window.IsKeyPressed(LD_KEY_E))
+		{
+			float velocity = m_Speed * ts;
+			m_Position += GetUpDirection() * velocity;
+		}
+
+		if (window.IsKeyPressed(LD_KEY_Q))
+		{
+			float velocity = m_Speed * ts;
+			m_Position += -GetUpDirection() * velocity;
+		}
+	}
+	else
+	{
+		// Set mouse cursor to visible cursor
+		glfwSetInputMode(window.GetNativeWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+		m_Orbit = true;
+	}
 
 	UpdateCameraView();
 }

@@ -150,6 +150,30 @@ bool EditorLayer::Property(const std::string& name, glm::vec4& value, float min,
 	return changed;
 }
 
+bool EditorLayer::Property(const Ref<Texture2D>& texture, float& value, float min, float max, float sliderWidth, PropertyFlag flags)
+{
+	ImGui::Image((ImTextureID)(texture->GetRendererID()), ImVec2(16, 16), ImVec2(0, 0), ImVec2(1, 1));
+	ImGui::SameLine();
+	ImGui::PushItemWidth(sliderWidth);
+
+	std::string id = "##" + texture->GetPath();
+	bool changed = false;
+
+	if (flags == PropertyFlag::SliderProperty)
+	{
+		changed = ImGui::SliderFloat(id.c_str(), &value, min, max);
+	}
+	else
+	{
+		changed = ImGui::DragFloat(id.c_str(), &value, 1.0f, min, max);
+	}
+
+	ImGui::PopItemWidth();
+	ImGui::NextColumn();
+
+	return changed;
+}
+
 #pragma endregion
 
 EditorLayer::EditorLayer()
@@ -516,7 +540,7 @@ void EditorLayer::OnImGuiRender()
 	ImGui::SameLine();
 
 	// Camera speed
-	//Property("Camera Speed", m_EditorCamera.GetSpeed(), 1.0f, 10.0f, PropertyFlag::SliderProperty);
+	Property(m_CameraSpeed, m_EditorCamera.GetSpeed(), 1.0f, 10.0f, 100.0f, PropertyFlag::SliderProperty);
 
 	ImGui::End();
 
@@ -695,7 +719,7 @@ bool EditorLayer::OnKeyPressedEvent(KeyPressedEvent& e)
 
 				break;
 			}
-			case LD_KEY_G:
+			/*case LD_KEY_G:
 			{
 				m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 
@@ -712,7 +736,7 @@ bool EditorLayer::OnKeyPressedEvent(KeyPressedEvent& e)
 				m_GizmoType = ImGuizmo::OPERATION::SCALE;
 
 				break;
-			}
+			}*/
 			case LD_KEY_DELETE:
 			{
 				if (m_SelectionContext.size())

@@ -13,6 +13,7 @@ struct SceneRendererOptions
 	bool ShowSpecular = false;
 	bool ShowGrid = true;
 	bool ShowBoundingBoxes = false;
+	bool SetCameraMode = false;
 };
 
 struct SceneRendererCamera
@@ -47,6 +48,7 @@ private:
 
 	static void FlushDrawList();
 
+	static void EditorPass();
 	static void GeometryPass();
 	static void LightingPass();
 	static void CompositePass();
