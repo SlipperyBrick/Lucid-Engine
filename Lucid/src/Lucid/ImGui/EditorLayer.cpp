@@ -393,6 +393,8 @@ void EditorLayer::OnImGuiRender()
 		}
 	}
 
+	ImGui::SameLine();
+
 	if (m_UIShowBoundingBoxes)
 	{
 		if (ImGui::ImageButton((ImTextureID)(m_BoundingBoxesTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
@@ -400,6 +402,23 @@ void EditorLayer::OnImGuiRender()
 			m_UIShowBoundingBoxes = false;
 
 			ShowBoundingBoxes(m_UIShowBoundingBoxes);
+		}
+	}
+
+	// Grid toggle
+	if (SceneRenderer::GetOptions().ShowGrid)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_GridToggleTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+		{
+			SceneRenderer::GetOptions().ShowGrid = false;
+		}
+	}
+
+	if (!SceneRenderer::GetOptions().ShowGrid)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_GridToggleTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.25f)))
+		{
+			SceneRenderer::GetOptions().ShowGrid = true;
 		}
 	}
 
@@ -442,25 +461,6 @@ void EditorLayer::OnImGuiRender()
 	ImGui::SameLine();
 
 	ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-
-	ImGui::SameLine();
-
-	// Grid toggle
-	if (SceneRenderer::GetOptions().ShowGrid)
-	{
-		if (ImGui::ImageButton((ImTextureID)(m_GridToggleTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
-		{
-			SceneRenderer::GetOptions().ShowGrid = false;
-		}
-	}
-
-	if (!SceneRenderer::GetOptions().ShowGrid)
-	{
-		if (ImGui::ImageButton((ImTextureID)(m_GridToggleTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.25f)))
-		{
-			SceneRenderer::GetOptions().ShowGrid = true;
-		}
-	}
 
 	ImGui::SameLine();
 
