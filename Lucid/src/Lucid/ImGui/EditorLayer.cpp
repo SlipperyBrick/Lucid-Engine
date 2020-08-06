@@ -152,10 +152,14 @@ bool EditorLayer::Property(const std::string& name, glm::vec4& value, float min,
 
 bool EditorLayer::Property(const Ref<Texture2D>& texture, float& value, float min, float max, float sliderWidth, PropertyFlag flags)
 {
-	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (ImGui::GetTextLineHeight() - (texture->GetHeight() / 6)) / 2);
-	ImGui::Image((ImTextureID)(texture->GetRendererID()), ImVec2(16, 16), ImVec2(0, 0), ImVec2(1, 1));
+	// Offset the y position
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (ImGui::GetTextLineHeight() - texture->GetHeight() / 2));
+	ImGui::Image((ImTextureID)(texture->GetRendererID()), ImVec2(texture->GetWidth(), texture->GetHeight()), ImVec2(0, 0), ImVec2(1, 1));
+
 	ImGui::SameLine();
-	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (ImGui::GetTextLineHeight() - 24) / 2);
+
+	// Offset the x position
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 4);
 	ImGui::PushItemWidth(sliderWidth);
 
 	std::string id = "##" + texture->GetPath();
