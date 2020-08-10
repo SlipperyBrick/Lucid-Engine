@@ -196,5 +196,6 @@
     <None Include="assets\shaders\Buffer.glsl" />
     <None Include="assets\shaders\Lighting.glsl" />
     <None Include="vendor\assimp\assimp.dll" />
+    <None Include="assets\shaders\Editor.glsl" />
   </ItemGroup>
 </Project>

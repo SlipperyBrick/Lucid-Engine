@@ -98,6 +98,8 @@ private:
 
 	#pragma region Editor
 
+	Ref<Texture2D> m_DepthPeelingTex;
+	Ref<Texture2D> m_StochasticTransparencyTex;
 	Ref<Texture2D> m_CheckerboardTex;
 	Ref<Texture2D> m_TranslateTex;
 	Ref<Texture2D> m_RotateTex;
@@ -106,6 +108,7 @@ private:
 	Ref<Texture2D> m_PointerTex;
 	Ref<Texture2D> m_GridToggleTex;
 	Ref<Texture2D> m_CameraSpeedTex;
+	Ref<Texture2D> m_GridSnapTex;
 	Ref<Texture2D> m_DuplicateTex;
 	Ref<Texture2D> m_PositionsTex;
 	Ref<Texture2D> m_NormalsTex;
@@ -122,6 +125,8 @@ private:
 	// A value of -1 indicates no gizmo
 	int m_GizmoType = -1;
 	float m_SnapValue = 0.5f;
+
+	bool m_Snap = false;
 
 	bool m_AllowViewportCameraEvents = false;
 	bool m_DrawOnTopBoundingBoxes = false;

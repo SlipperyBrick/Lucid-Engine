@@ -69,7 +69,6 @@ private:
 	bool m_Orbit;
 
 	glm::vec2 m_InitialMousePosition;
-	glm::vec3 m_InitialPosition;
 
 	float m_Distance;
 	float m_Pitch;

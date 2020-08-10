@@ -53,7 +53,7 @@ public:
 
 	static Ref<ShaderLibrary> GetShaderLibrary();
 
-	// Allocates memory in the render command queue for each submitted command to the renderer
+	// Allocates memory in the render command queue for each submitted command by the renderer
 	template<typename FuncT>
 	static void Submit(FuncT&& func)
 	{

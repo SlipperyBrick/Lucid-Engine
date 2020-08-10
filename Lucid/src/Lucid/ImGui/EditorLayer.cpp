@@ -152,6 +152,9 @@ bool EditorLayer::Property(const std::string& name, glm::vec4& value, float min,
 
 bool EditorLayer::Property(const Ref<Texture2D>& texture, float& value, float min, float max, float sliderWidth, PropertyFlag flags)
 {
+	// Offset the x position
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX() - (-8));
+
 	// Offset the y position
 	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (ImGui::GetTextLineHeight() - texture->GetHeight() / 2));
 	ImGui::Image((ImTextureID)(texture->GetRendererID()), ImVec2(texture->GetWidth(), texture->GetHeight()), ImVec2(0, 0), ImVec2(1, 1));
@@ -244,6 +247,8 @@ void EditorLayer::OnAttach()
 	colours[ImGuiCol_TabUnfocusedActive] = ImVec4(0.5f, 0.5f, 0.5f, 0.5f);
 
 	// Editor resources
+	m_DepthPeelingTex = Texture2D::Create("assets/textures/DepthPeeling.tga");
+	m_StochasticTransparencyTex = Texture2D::Create("assets/textures/StochasticTransparency.tga");
 	m_CheckerboardTex = Texture2D::Create("assets/textures/Checkerboard.tga");
 	m_BoundingBoxesTex = Texture2D::Create("assets/textures/BoundingBoxes.tga");
 	m_PointerTex = Texture2D::Create("assets/textures/Pointer.tga");
@@ -251,6 +256,7 @@ void EditorLayer::OnAttach()
 	m_RotateTex = Texture2D::Create("assets/textures/Rotate.tga");
 	m_ScaleTex = Texture2D::Create("assets/textures/Scale.tga");
 	m_GridToggleTex = Texture2D::Create("assets/textures/GridToggle.tga");
+	m_GridSnapTex = Texture2D::Create("assets/textures/GridSnap.tga");
 	m_CameraSpeedTex = Texture2D::Create("assets/textures/CameraSpeed.tga");
 	m_DuplicateTex = Texture2D::Create("assets/textures/Duplicate.tga");
 	m_PositionsTex = Texture2D::Create("assets/textures/Positions.tga");
@@ -393,8 +399,6 @@ void EditorLayer::OnImGuiRender()
 		}
 	}
 
-	ImGui::SameLine();
-
 	if (m_UIShowBoundingBoxes)
 	{
 		if (ImGui::ImageButton((ImTextureID)(m_BoundingBoxesTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
@@ -404,6 +408,8 @@ void EditorLayer::OnImGuiRender()
 			ShowBoundingBoxes(m_UIShowBoundingBoxes);
 		}
 	}
+
+	ImGui::SameLine();
 
 	// Grid toggle
 	if (SceneRenderer::GetOptions().ShowGrid)
@@ -472,6 +478,25 @@ void EditorLayer::OnImGuiRender()
 			Entity selectedEntity = m_SelectionContext[0].Entity;
 
 			m_ActiveScene->DuplicateEntity(selectedEntity);
+		}
+	}
+
+	ImGui::SameLine();
+
+	// Grid snapping toggle
+	if (m_Snap)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_GridSnapTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+		{
+			m_Snap = false;
+		}
+	}
+
+	if (!m_Snap)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_GridSnapTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.25f)))
+		{
+			m_Snap = true;
 		}
 	}
 
@@ -561,6 +586,48 @@ void EditorLayer::OnImGuiRender()
 
 	ImGui::SameLine();
 
+	// Show stochastic transparency
+	if (SceneRenderer::GetOptions().ShowStochastic)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_StochasticTransparencyTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+		{
+			SceneRenderer::GetOptions().ShowStochastic = false;
+		}
+	}
+
+	if (!SceneRenderer::GetOptions().ShowStochastic)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_StochasticTransparencyTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.25f)))
+		{
+			SceneRenderer::GetOptions().ShowStochastic = true;
+		}
+	}
+
+	ImGui::SameLine();
+
+	// Show depth-peeling
+	if (SceneRenderer::GetOptions().ShowDepthPeeling)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_DepthPeelingTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+		{
+			SceneRenderer::GetOptions().ShowDepthPeeling = false;
+		}
+	}
+
+	if (!SceneRenderer::GetOptions().ShowDepthPeeling)
+	{
+		if (ImGui::ImageButton((ImTextureID)(m_DepthPeelingTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.25f)))
+		{
+			SceneRenderer::GetOptions().ShowDepthPeeling = true;
+		}
+	}
+
+	ImGui::SameLine();
+
+	ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+
+	ImGui::SameLine();
+
 	// Camera speed
 	Property(m_CameraSpeedTex, m_EditorCamera.GetSpeed(), 1.0f, 10.0f, 100.0f, PropertyFlag::SliderProperty);
 
@@ -582,15 +649,17 @@ void EditorLayer::OnImGuiRender()
 
 	ImGui::Begin("Viewport", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiDockNodeFlags_NoTabBar);
 
-	m_ViewportPanelMouseOver = ImGui::IsWindowHovered();
-
-	// Set viewport window as focused on mouse hover
-	if (m_ViewportPanelMouseOver)
+	// If the mouse hovers over the viewport
+	if (ImGui::IsWindowHovered())
 	{
+		m_ViewportPanelFocused = ImGui::IsWindowFocused();
+
 		ImGui::SetWindowFocus();
 	}
-
-	m_ViewportPanelFocused = ImGui::IsWindowFocused();
+	//else if (m_ViewportPanelFocused)
+	//{
+	//	m_ViewportPanelFocused = false;
+	//}
 
 	// Offset includes the tab-bar
 	auto viewportOffset = ImGui::GetCursorPos();
@@ -632,21 +701,19 @@ void EditorLayer::OnImGuiRender()
 		ImGuizmo::SetDrawlist();
 		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, rw, rh);
 
-		bool snap = window.IsKeyPressed(LD_KEY_LEFT_CONTROL);
-
 		auto& entityTransform = selection.Entity.Transform();
 
 		float snapValue[3] = { m_SnapValue, m_SnapValue, m_SnapValue };
 
 		if (m_SelectionMode == SelectionMode::Entity)
 		{
-			ImGuizmo::Manipulate(glm::value_ptr(m_EditorCamera.GetViewMatrix()), glm::value_ptr(m_EditorCamera.GetProjectionMatrix()), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(entityTransform), nullptr,	snap ? snapValue : nullptr);
+			ImGuizmo::Manipulate(glm::value_ptr(m_EditorCamera.GetViewMatrix()), glm::value_ptr(m_EditorCamera.GetProjectionMatrix()), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(entityTransform), nullptr,	m_Snap ? snapValue : nullptr);
 		}
 		else
 		{
 			glm::mat4 transformBase = entityTransform * selection.Mesh->Transform;
 
-			ImGuizmo::Manipulate(glm::value_ptr(m_EditorCamera.GetViewMatrix()), glm::value_ptr(m_EditorCamera.GetProjectionMatrix()), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transformBase), nullptr, snap ? snapValue : nullptr);
+			ImGuizmo::Manipulate(glm::value_ptr(m_EditorCamera.GetViewMatrix()), glm::value_ptr(m_EditorCamera.GetProjectionMatrix()), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transformBase), nullptr, m_Snap ? snapValue : nullptr);
 
 			selection.Mesh->Transform = glm::inverse(entityTransform) * transformBase;
 		}

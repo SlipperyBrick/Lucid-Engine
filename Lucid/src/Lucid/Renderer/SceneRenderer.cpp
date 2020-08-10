@@ -27,6 +27,7 @@ struct SceneRendererData
 	Ref<Shader> CompositeShader;
 	Ref<Shader> LightingShader;
 
+	Ref<RenderPass> TransparencyPass;
 	Ref<RenderPass> GeometryPass;
 	Ref<RenderPass> LightingPass;
 	Ref<RenderPass> CompositePass;
@@ -55,6 +56,32 @@ static SceneRendererData s_Data;
 
 void SceneRenderer::Init()
 {
+	// Editor pass
+	FramebufferSpecification editorFramebufferSpec;
+	editorFramebufferSpec.Width = 1280;
+	editorFramebufferSpec.Height = 720;
+	editorFramebufferSpec.Format = FramebufferFormat::RGBA16F;
+	editorFramebufferSpec.BufferCount = 4;
+	editorFramebufferSpec.Samples = 1;
+	editorFramebufferSpec.ClearColour = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+	RenderPassSpecification editorRenderPassSpec;
+	editorRenderPassSpec.TargetFramebuffer = Framebuffer::Create(editorFramebufferSpec);
+	s_Data.EditorPass = RenderPass::Create(editorRenderPassSpec);
+
+	// Transparency pass
+	FramebufferSpecification transparencyFramebufferSpec;
+	transparencyFramebufferSpec.Width = 1280;
+	transparencyFramebufferSpec.Height = 720;
+	transparencyFramebufferSpec.Format = FramebufferFormat::RGBA16F;
+	transparencyFramebufferSpec.BufferCount = 4;
+	transparencyFramebufferSpec.Samples = 1;
+	transparencyFramebufferSpec.ClearColour = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+	RenderPassSpecification transparencyRenderPassSpec;
+	transparencyRenderPassSpec.TargetFramebuffer = Framebuffer::Create(transparencyFramebufferSpec);
+	s_Data.GeometryPass = RenderPass::Create(transparencyRenderPassSpec);
+
 	// Geometry pass
 	FramebufferSpecification geoFramebufferSpec;
 	geoFramebufferSpec.Width = 1280;
@@ -97,19 +124,6 @@ void SceneRenderer::Init()
 	s_Data.CompositePass = RenderPass::Create(compRenderPassSpec);
 
 	s_Data.CompositeShader = Shader::Create("assets/shaders/Composite.glsl");
-
-	// Editor pass
-	FramebufferSpecification editorFramebufferSpec;
-	editorFramebufferSpec.Width = 1280;
-	editorFramebufferSpec.Height = 720;
-	editorFramebufferSpec.Format = FramebufferFormat::RGBA8;
-	editorFramebufferSpec.BufferCount = 1;
-	editorFramebufferSpec.Samples = 1;
-	editorFramebufferSpec.ClearColour = { 0.0f, 0.0f, 0.0f, 1.0f };
-
-	RenderPassSpecification editorRenderPassSpec;
-	editorRenderPassSpec.TargetFramebuffer = Framebuffer::Create(editorFramebufferSpec);
-	s_Data.EditorPass = RenderPass::Create(editorRenderPassSpec);
 
 	// Grid
 	auto gridShader = Shader::Create("assets/shaders/Grid.glsl");
@@ -169,6 +183,146 @@ void SceneRenderer::SubmitSelectedMesh(Ref<Mesh> mesh, const glm::mat4& transfor
 	s_Data.SelectedMeshDrawList.push_back({ mesh, nullptr, transform });
 }
 
+void SceneRenderer::EditorPass()
+{
+	Renderer::BeginRenderPass(s_Data.EditorPass);
+
+	auto viewProjection = s_Data.SceneData.SceneCamera.Camera.GetProjectionMatrix() * s_Data.SceneData.SceneCamera.ViewMatrix;
+
+	// Cheap object outlining solution
+
+	// 1. Enable stencil writing.
+	// 2. Set the stencil op to GL_ALWAYS before drawing the (to be outlined) objects, updating the stencil buffer with 1s wherever the objects' fragments are rendered.
+	// 3. Render the objects.
+	// 4. Disable stencil writing and depth testing.
+	// 5. Scale each of the objects by a small amount.
+	// 6. Use a different fragment shader that outputs a single (border) color.
+	// 7. Draw the objects again, but only if their fragments' stencil values are not equal to 1.
+	// 8. Enable depth testing again and restore stencil func to GL_KEEP
+	
+	//bool outline = s_Data.SelectedMeshDrawList.size() > 0;
+
+	//if (outline)
+	//{
+	//	Renderer::Submit([]()
+	//		{
+	//			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	//		});
+	//}
+
+	//if (outline)
+	//{
+	//	Renderer::Submit([]()
+	//		{
+	//			glStencilMask(0);
+	//		});
+	//}
+
+	//if (outline)
+	//{
+	//	Renderer::Submit([]()
+	//		{
+	//			glStencilFunc(GL_ALWAYS, 1, 0xff);
+	//			glStencilMask(0xff);
+	//		});
+	//}
+
+	//if (outline)
+	//{
+	//	Renderer::Submit([]()
+	//		{
+	//			glStencilFunc(GL_NOTEQUAL, 1, 0xff);
+	//			glStencilMask(0);
+
+	//			glLineWidth(10);
+	//			glEnable(GL_LINE_SMOOTH);
+	//			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//			glDisable(GL_DEPTH_TEST);
+	//		});
+
+	//	// Draw outline
+	//	s_Data.OutlineMaterial->Set("u_ViewProjection", viewProjection);
+
+	//	for (auto& dc : s_Data.SelectedMeshDrawList)
+	//	{
+	//		Renderer::SubmitMesh(dc.Mesh, dc.Transform, s_Data.OutlineMaterial);
+	//	}
+
+	//	Renderer::Submit([]()
+	//		{
+	//			glPointSize(10);
+	//			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+	//		});
+
+	//	for (auto& dc : s_Data.SelectedMeshDrawList)
+	//	{
+	//		Renderer::SubmitMesh(dc.Mesh, dc.Transform, s_Data.OutlineMaterial);
+	//	}
+
+	//	Renderer::Submit([]()
+	//		{
+	//			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//			glStencilMask(0xff);
+	//			glStencilFunc(GL_ALWAYS, 1, 0xff);
+	//			glEnable(GL_DEPTH_TEST);
+	//		});
+	//}
+
+	//// Grid
+	//if (GetOptions().ShowGrid)
+	//{
+	//	s_Data.GridMaterial->Set("u_ViewProjection", viewProjection);
+
+	//	Renderer::SubmitQuad(s_Data.GridMaterial, glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(16.0f)));
+	//}
+
+	//// Bounding boxes
+	//if (GetOptions().ShowBoundingBoxes)
+	//{
+	//	Renderer2D::BeginScene(viewProjection);
+
+	//	for (auto& dc : s_Data.MeshDrawList)
+	//	{
+	//		Renderer::DrawAABB(dc.Mesh, dc.Transform);
+	//	}
+
+	//	Renderer2D::EndScene();
+	//}
+
+	Renderer::EndRenderPass();
+}
+
+void SceneRenderer::TransparencyPass()
+{
+	Renderer::BeginRenderPass(s_Data.TransparencyPass);
+
+	auto viewProjection = s_Data.SceneData.SceneCamera.Camera.GetProjectionMatrix() * s_Data.SceneData.SceneCamera.ViewMatrix;
+	glm::vec3 cameraPosition = glm::inverse(s_Data.SceneData.SceneCamera.ViewMatrix)[3];
+
+	// Render meshes
+	for (auto& dc : s_Data.MeshDrawList)
+	{
+		auto baseMaterial = dc.Mesh->GetMaterial();
+		auto shader = baseMaterial->GetShader();
+
+		baseMaterial->Set("u_ViewProjectionMatrix", viewProjection);
+
+		Renderer::SubmitMesh(dc.Mesh, dc.Transform);
+	}
+
+	for (auto& dc : s_Data.SelectedMeshDrawList)
+	{
+		auto baseMaterial = dc.Mesh->GetMaterial();
+		auto shader = baseMaterial->GetShader();
+
+		baseMaterial->Set("u_ViewProjectionMatrix", viewProjection);
+
+		Renderer::SubmitMesh(dc.Mesh, dc.Transform);
+	}
+
+	Renderer::EndRenderPass();
+}
+
 void SceneRenderer::GeometryPass()
 {
 	Renderer::BeginRenderPass(s_Data.GeometryPass);
@@ -195,6 +349,27 @@ void SceneRenderer::GeometryPass()
 		baseMaterial->Set("u_ViewProjectionMatrix", viewProjection);
 
 		Renderer::SubmitMesh(dc.Mesh, dc.Transform);
+	}
+
+	// Grid
+	if (GetOptions().ShowGrid)
+	{
+		s_Data.GridMaterial->Set("u_ViewProjection", viewProjection);
+
+		Renderer::SubmitQuad(s_Data.GridMaterial, glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(16.0f)));
+	}
+
+	// Bounding boxes
+	if (GetOptions().ShowBoundingBoxes)
+	{
+		Renderer2D::BeginScene(viewProjection);
+
+		for (auto& dc : s_Data.MeshDrawList)
+		{
+			Renderer::DrawAABB(dc.Mesh, dc.Transform);
+		}
+
+		Renderer2D::EndScene();
 	}
 
 	Renderer::EndRenderPass();
@@ -285,123 +460,14 @@ void SceneRenderer::CompositePass()
 	Renderer::EndRenderPass();
 }
 
-void SceneRenderer::EditorPass()
-{
-	Renderer::BeginRenderPass(s_Data.EditorPass);
-
-	bool outline = s_Data.SelectedMeshDrawList.size() > 0;
-
-	if (outline)
-	{
-		Renderer::Submit([]()
-		{
-			glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
-		});
-	}
-
-	if (outline)
-	{
-		Renderer::Submit([]()
-		{
-			glStencilMask(0);
-		});
-	}
-
-	auto viewProjection = s_Data.SceneData.SceneCamera.Camera.GetProjectionMatrix() * s_Data.SceneData.SceneCamera.ViewMatrix;
-
-	// Render meshes
-	for (auto& dc : s_Data.MeshDrawList)
-	{
-		Renderer::SubmitMesh(dc.Mesh, dc.Transform);
-	}
-
-	if (outline)
-	{
-		Renderer::Submit([]()
-		{
-			glStencilFunc(GL_ALWAYS, 1, 0xff);
-			glStencilMask(0xff);
-		});
-	}
-
-	for (auto& dc : s_Data.SelectedMeshDrawList)
-	{
-		Renderer::SubmitMesh(dc.Mesh, dc.Transform);
-	}
-
-	if (outline)
-	{
-		Renderer::Submit([]()
-		{
-			glStencilFunc(GL_NOTEQUAL, 1, 0xff);
-			glStencilMask(0);
-
-			glLineWidth(10);
-			glEnable(GL_LINE_SMOOTH);
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			glDisable(GL_DEPTH_TEST);
-		});
-
-		// Draw outline
-		s_Data.OutlineMaterial->Set("u_ViewProjection", viewProjection);
-
-		for (auto& dc : s_Data.SelectedMeshDrawList)
-		{
-			Renderer::SubmitMesh(dc.Mesh, dc.Transform, s_Data.OutlineMaterial);
-		}
-
-		Renderer::Submit([]()
-		{
-			glPointSize(10);
-			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-		});
-
-		for (auto& dc : s_Data.SelectedMeshDrawList)
-		{
-			Renderer::SubmitMesh(dc.Mesh, dc.Transform, s_Data.OutlineMaterial);
-		}
-
-		Renderer::Submit([]()
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			glStencilMask(0xff);
-			glStencilFunc(GL_ALWAYS, 1, 0xff);
-			glEnable(GL_DEPTH_TEST);
-		});
-	}
-
-	// Grid
-	if (GetOptions().ShowGrid)
-	{
-		s_Data.GridMaterial->Set("u_ViewProjection", viewProjection);
-
-		Renderer::SubmitQuad(s_Data.GridMaterial, glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(16.0f)));
-	}
-
-	// Bounding boxes
-	if (GetOptions().ShowBoundingBoxes)
-	{
-		Renderer2D::BeginScene(viewProjection);
-
-		for (auto& dc : s_Data.MeshDrawList)
-		{
-			Renderer::DrawAABB(dc.Mesh, dc.Transform);
-		}
-
-		Renderer2D::EndScene();
-	}
-
-	Renderer::EndRenderPass();
-}
-
 void SceneRenderer::FlushDrawList()
 {
 	LD_CORE_ASSERT(!s_Data.ActiveScene, "");
 
 	GeometryPass();
+	//EditorPass();
 	LightingPass();
 	CompositePass();
-	EditorPass();
 
 	s_Data.MeshDrawList.clear();
 	s_Data.SelectedMeshDrawList.clear();
@@ -417,12 +483,12 @@ Ref<Texture2D> SceneRenderer::GetFinalColourBuffer()
 
 Ref<RenderPass> SceneRenderer::GetFinalRenderPass()
 {
-	return s_Data.EditorPass;
+	return s_Data.CompositePass;
 }
 
 uint32_t SceneRenderer::GetFinalColourBufferRendererID()
 {
-	return s_Data.EditorPass->GetSpecification().TargetFramebuffer->GetColourAttachmentRendererID();
+	return s_Data.CompositePass->GetSpecification().TargetFramebuffer->GetColourAttachmentRendererID();
 }
 
 SceneRendererOptions& SceneRenderer::GetOptions()

@@ -70,6 +70,7 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 		instance->m_ColourAttachments.clear();
 		instance->m_ColourAttachments.resize(instance->m_Specification.BufferCount);
 
+		// Delete attachments and framebuffer
 		if (instance->m_RendererID)
 		{
 			glDeleteFramebuffers(1, &instance->m_RendererID);
@@ -89,11 +90,13 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 			glDeleteTextures(1, &instance->m_DepthAttachment);
 		}
 
+		// Create and bind framebuffer
 		glGenFramebuffers(1, &instance->m_RendererID);
 		glBindFramebuffer(GL_FRAMEBUFFER, instance->m_RendererID);
 
 		bool multisample = instance->m_Specification.Samples > 1;
 
+		// Multisample texture
 		if (multisample)
 		{
 			for (int i = 0; i < instance->m_Specification.BufferCount; i++)
@@ -109,12 +112,16 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 				{
 					glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, instance->m_Specification.Samples, GL_RGBA8, instance->m_Specification.Width, instance->m_Specification.Height, GL_FALSE);
 				}
+				else if (instance->m_Specification.Format == FramebufferFormat::RED8)
+				{
+					glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, instance->m_Specification.Samples, GL_RED, instance->m_Specification.Width, instance->m_Specification.Height, GL_FALSE);
+				}
 
 				glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, instance->m_ColourAttachments[i], 0);
 			}
-
-			glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 		}
+
+		// Standard texture
 		else
 		{
 			for (int i = 0; i < instance->m_Specification.BufferCount; i++)
@@ -130,6 +137,10 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 				{
 					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, instance->m_Specification.Width, instance->m_Specification.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 				}
+				else if (instance->m_Specification.Format == FramebufferFormat::RED8)
+				{
+					glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, instance->m_Specification.Width, instance->m_Specification.Height, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
+				}
 
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -138,6 +149,7 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 			}
 		}
 
+		// Multisample depth/stencil texture
 		if (multisample)
 		{
 			glCreateTextures(GL_TEXTURE_2D_MULTISAMPLE, 1, &instance->m_DepthAttachment);
@@ -145,8 +157,10 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 
 			glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, instance->m_Specification.Samples, GL_DEPTH24_STENCIL8, instance->m_Specification.Width, instance->m_Specification.Height, GL_FALSE);
 
-			glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+			glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, instance->m_DepthAttachment, 0);
 		}
+
+		// Standard depth/stencil texture
 		else
 		{
 			glCreateTextures(GL_TEXTURE_2D, 1, &instance->m_DepthAttachment);
@@ -160,6 +174,7 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 			glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, instance->m_DepthAttachment, 0);
 		}
 
+		// Set draw buffers to framebuffers multiple texture attachments
 		if (instance->m_Specification.BufferCount > 1)
 		{
 			std::vector<GLenum> attachments(instance->m_Specification.BufferCount);

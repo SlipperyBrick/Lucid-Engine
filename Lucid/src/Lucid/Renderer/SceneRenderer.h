@@ -7,6 +7,8 @@
 
 struct SceneRendererOptions
 {
+	bool ShowDepthPeeling = false;
+	bool ShowStochastic = false;
 	bool ShowPosition = false;
 	bool ShowNormal = false;
 	bool ShowAlbedo = false;
@@ -49,6 +51,7 @@ private:
 	static void FlushDrawList();
 
 	static void EditorPass();
+	static void TransparencyPass();
 	static void GeometryPass();
 	static void LightingPass();
 	static void CompositePass();

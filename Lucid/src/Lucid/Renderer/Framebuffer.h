@@ -6,7 +6,8 @@ enum class FramebufferFormat
 {
 	None = 0,
 	RGBA8 = 1,
-	RGBA16F = 2
+	RGBA16F = 2,
+	RED8 = 3
 };
 
 struct FramebufferSpecification
@@ -16,8 +17,10 @@ struct FramebufferSpecification
 
 	glm::vec4 ClearColour;
 
+	// Multiple render targets
 	int BufferCount = 0;
 
+	// Render target texture format
 	FramebufferFormat Format;
 
 	// Multisampling

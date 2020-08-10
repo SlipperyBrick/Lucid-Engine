@@ -1,65 +1,44 @@
 Scene: Scene Name
 Directional Light:
-  Direction: [-1, 0, 1]
-  Brightness: 0.0500000007
+  Direction: [0, 0, -1]
+  Brightness: 0.5
   Diffuse: [1, 1, 1]
-  Ambient: [9.99999997e-07, 9.92277933e-07, 9.92277933e-07]
+  Ambient: [0.100000001, 0.100000001, 0.100000001]
   Specular: [1, 1, 1]
 Entities:
-  - Entity: 435316565
+  - Entity: 2508818778
     TagComponent:
-      Tag: Point Light 04
+      Tag: Sphere 03
     TransformComponent:
-      Position: [-2.95000005, -0.899999976, 0.800000012]
+      Position: [0, 0, 0]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
-    LightComponent:
-      Brightness: 2
-      Diffuse: [0.84642452, 0.606177628, 1]
-      Specular: [1, 1, 1]
-      Quadratic: 1
-  - Entity: 3830813413
+    MeshComponent:
+      AssetPath: D:\Dropbox\Documents\3D\projects\sponza\sphere.obj
+  - Entity: 384042869
     TagComponent:
-      Tag: Point Light 03
+      Tag: Sphere 02
     TransformComponent:
-      Position: [2.25, -0.899999976, 0.800000012]
+      Position: [-2.5, 0, 0]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
-    LightComponent:
-      Brightness: 2
-      Diffuse: [0.606177628, 0.940698564, 1]
-      Specular: [1, 1, 1]
-      Quadratic: 1
-  - Entity: 3099698068
+    MeshComponent:
+      AssetPath: D:\Dropbox\Documents\3D\projects\sponza\sphere.obj
+  - Entity: 2022443951
     TagComponent:
-      Tag: Point Light 02
+      Tag: Sphere 01
     TransformComponent:
-      Position: [2.25, -0.899999976, -0.850000024]
+      Position: [2.5, 0, 0]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
-    LightComponent:
-      Brightness: 2
-      Diffuse: [1, 0.899201572, 0.606177628]
-      Specular: [1, 1, 1]
-      Quadratic: 1
-  - Entity: 477345920
-    TagComponent:
-      Tag: Point Light 01
-    TransformComponent:
-      Position: [-2.95000005, -0.899999976, -0.850000024]
-      Rotation: [1, 0, 0, 0]
-      Scale: [1, 1, 1]
-    LightComponent:
-      Brightness: 2
-      Diffuse: [0.606177628, 1, 0.749109268]
-      Specular: [1, 1, 1]
-      Quadratic: 1
-  - Entity: 1849432608
+    MeshComponent:
+      AssetPath: D:\Dropbox\Documents\3D\projects\sponza\sphere.obj
+  - Entity: 3587948670
     TagComponent:
       Tag: Sponza
     TransformComponent:
-      Position: [0, -1.58000004, 0]
+      Position: [0, -1.64999998, 0]
       Rotation: [1, 0, 0, 0]
-      Scale: [10, 10, 10]
+      Scale: [1, 1, 1]
     MeshComponent:
-      AssetPath: C:\Users\SlipperyBrick\Desktop\sponza\sponza.obj
+      AssetPath: D:\Dropbox\Documents\3D\projects\sponza\sponza.obj

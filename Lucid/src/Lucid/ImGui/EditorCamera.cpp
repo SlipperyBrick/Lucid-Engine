@@ -42,8 +42,6 @@ void EditorCamera::UpdateCameraView()
 		m_ViewMatrix = glm::translate(glm::mat4(1.0f), m_Position) * glm::toMat4(orientation);
 
 		m_ViewMatrix = glm::inverse(m_ViewMatrix);
-
-		m_InitialPosition = m_Position - m_FocalPoint;
 	}
 	else
 	{

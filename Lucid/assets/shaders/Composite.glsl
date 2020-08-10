@@ -23,7 +23,6 @@ layout(location = 0) out vec4 o_Colour;
 in vec2 v_TexCoord;
 
 uniform sampler2D u_Texture;
-uniform sampler2DMS u_TextureMS;
 
 uniform float u_Exposure;
 
@@ -48,25 +47,28 @@ void main()
 	const float gamma = 2.2;
 	const float pureWhite = 1.0;
 
-	if (u_TextureSamples > 1)
-	{
-		ivec2 texSize = textureSize(u_TextureMS);
-		ivec2 texCoord = ivec2(v_TexCoord * texSize);
+	vec4 lightingPass;
 
-		vec4 msColour = MultiSampleTexture(u_TextureMS, texCoord, u_TextureSamples);
-
-		vec3 colour = msColour.rgb * u_Exposure;
-
-		// Reinhard tonemapping operator
-		float luminance = dot(colour, vec3(0.2126, 0.7152, 0.0722));
-		float mappedLuminance = (luminance * (1.0 + luminance / (pureWhite * pureWhite))) / (1.0 + luminance);
-
-		// Scale colour by ratio of average luminances
-		vec3 mappedColour = (mappedLuminance / luminance) * colour;
-
-		// Gamma correction to final output
-		o_Colour = vec4(pow(mappedColour, vec3(1.0 / gamma)), 1.0);
-	}
+//	if (u_TextureSamples > 1)
+//	{
+//		// Remove second parameter if u_Texture is multisample
+//		ivec2 texSize = textureSize(u_Texture, 0);
+//		ivec2 texCoord = ivec2(v_TexCoord * texSize);
+//
+//		vec4 msColour = MultiSampleTexture(u_Texture, texCoord, u_TextureSamples);
+//
+//		vec3 colour = msColour.rgb * u_Exposure;
+//
+//		// Reinhard tonemapping operator
+//		float luminance = dot(colour, vec3(0.2126, 0.7152, 0.0722));
+//		float mappedLuminance = (luminance * (1.0 + luminance / (pureWhite * pureWhite))) / (1.0 + luminance);
+//
+//		// Scale colour by ratio of average luminances
+//		vec3 mappedColour = (mappedLuminance / luminance) * colour;
+//
+//		// Gamma correction to final output
+//		lightingPass = vec4(pow(mappedColour, vec3(1.0 / gamma)), 1.0);
+//	}
 
 	if(u_TextureSamples == 1)
 	{
@@ -80,6 +82,8 @@ void main()
 		vec3 mappedColour = (mappedLuminance / luminance) * colour;
 
 		// Gamma correction to final output
-		o_Colour = vec4(pow(mappedColour, vec3(1.0 / gamma)), 1.0);
+		lightingPass = vec4(pow(mappedColour, vec3(1.0 / gamma)), 1.0);
 	}
+
+	o_Colour = lightingPass;
 }
