@@ -8,10 +8,9 @@
 struct SceneRendererOptions
 {
 	bool ShowDepthPeeling = false;
-	bool ShowStochastic = false;
 	bool ShowPosition = false;
 	bool ShowNormal = false;
-	bool ShowAlbedo = false;
+	bool ShowDiffuse = false;
 	bool ShowSpecular = false;
 	bool ShowGrid = true;
 	bool ShowBoundingBoxes = false;
@@ -36,8 +35,8 @@ public:
 	static void BeginScene(const Scene* scene, const SceneRendererCamera& camera);
 	static void EndScene();
 
-	static void SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform = glm::mat4(1.0f), Ref<MaterialInstance> overrideMaterial = nullptr);
-	static void SubmitSelectedMesh(Ref<Mesh> mesh, const glm::mat4& transform = glm::mat4(1.0f));
+	static void SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform = glm::mat4(1.0f), Ref<MaterialInstance> overrideMaterial = nullptr, bool transparency = false);
+	static void SubmitSelectedMesh(Ref<Mesh> mesh, const glm::mat4& transform = glm::mat4(1.0f), bool transparency = false);
 
 	static Ref<RenderPass> GetFinalRenderPass();
 	static Ref<Texture2D> GetFinalColourBuffer();
@@ -50,8 +49,6 @@ private:
 
 	static void FlushDrawList();
 
-	static void EditorPass();
-	static void TransparencyPass();
 	static void GeometryPass();
 	static void LightingPass();
 	static void CompositePass();

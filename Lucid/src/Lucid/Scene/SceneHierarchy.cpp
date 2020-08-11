@@ -625,6 +625,9 @@ void SceneHierarchy::DrawComponents(Entity entity)
 			}
 
 			ImGui::NextColumn();
+
+			Property("Transparent", mc.Transparent);
+
 			ImGui::Columns(1);
 			ImGui::TreePop();
 		}

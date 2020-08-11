@@ -27,11 +27,11 @@ struct SceneRendererData
 	Ref<Shader> CompositeShader;
 	Ref<Shader> LightingShader;
 
-	Ref<RenderPass> TransparencyPass;
 	Ref<RenderPass> GeometryPass;
 	Ref<RenderPass> LightingPass;
 	Ref<RenderPass> CompositePass;
-	Ref<RenderPass> EditorPass;
+
+	Ref<RenderPass> TestPass;
 
 	struct DrawCommand
 	{
@@ -43,6 +43,8 @@ struct SceneRendererData
 
 	std::vector<DrawCommand> MeshDrawList;
 	std::vector<DrawCommand> SelectedMeshDrawList;
+	std::vector<DrawCommand> TransparentMeshDrawList;
+	std::vector<DrawCommand> SelectedTransparentMeshDrawList;
 
 	Ref<MaterialInstance> GridMaterial;
 	Ref<MaterialInstance> OutlineMaterial;
@@ -56,74 +58,105 @@ static SceneRendererData s_Data;
 
 void SceneRenderer::Init()
 {
-	// Editor pass
-	FramebufferSpecification editorFramebufferSpec;
-	editorFramebufferSpec.Width = 1280;
-	editorFramebufferSpec.Height = 720;
-	editorFramebufferSpec.Format = FramebufferFormat::RGBA16F;
-	editorFramebufferSpec.BufferCount = 4;
-	editorFramebufferSpec.Samples = 1;
-	editorFramebufferSpec.ClearColour = { 0.0f, 0.0f, 0.0f, 1.0f };
-
-	RenderPassSpecification editorRenderPassSpec;
-	editorRenderPassSpec.TargetFramebuffer = Framebuffer::Create(editorFramebufferSpec);
-	s_Data.EditorPass = RenderPass::Create(editorRenderPassSpec);
-
-	// Transparency pass
-	FramebufferSpecification transparencyFramebufferSpec;
-	transparencyFramebufferSpec.Width = 1280;
-	transparencyFramebufferSpec.Height = 720;
-	transparencyFramebufferSpec.Format = FramebufferFormat::RGBA16F;
-	transparencyFramebufferSpec.BufferCount = 4;
-	transparencyFramebufferSpec.Samples = 1;
-	transparencyFramebufferSpec.ClearColour = { 0.0f, 0.0f, 0.0f, 1.0f };
-
-	RenderPassSpecification transparencyRenderPassSpec;
-	transparencyRenderPassSpec.TargetFramebuffer = Framebuffer::Create(transparencyFramebufferSpec);
-	s_Data.GeometryPass = RenderPass::Create(transparencyRenderPassSpec);
+	#pragma region Geometry Pass
 
 	// Geometry pass
+	RenderPassSpecification geoRenderPassSpec;
 	FramebufferSpecification geoFramebufferSpec;
 	geoFramebufferSpec.Width = 1280;
 	geoFramebufferSpec.Height = 720;
-	geoFramebufferSpec.Format = FramebufferFormat::RGBA16F;
-	geoFramebufferSpec.BufferCount = 4;
-	geoFramebufferSpec.Samples = 1;
-	geoFramebufferSpec.ClearColour = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-	RenderPassSpecification geoRenderPassSpec;
+	// Position texture
+	FramebufferTextureSpecification positionTexture;
+	positionTexture.TextureType = FramebufferTextureType::COLOUR;
+	positionTexture.Format = FramebufferTextureFormat::RGBA16F;
+
+	// Normal texture
+	FramebufferTextureSpecification normalTexture;
+	normalTexture.TextureType = FramebufferTextureType::COLOUR;
+	normalTexture.Format = FramebufferTextureFormat::RGBA16F;
+
+	// Diffuse texture
+	FramebufferTextureSpecification diffuseTexture;
+	diffuseTexture.TextureType = FramebufferTextureType::COLOUR;
+	diffuseTexture.Format = FramebufferTextureFormat::RGBA16F;
+
+	// Specular/Gloss texture
+	FramebufferTextureSpecification specularGlossTexture;
+	specularGlossTexture.TextureType = FramebufferTextureType::COLOUR;
+	specularGlossTexture.Format = FramebufferTextureFormat::RGBA16F;
+
+	// Depth texture
+	FramebufferTextureSpecification geoDepthTexture;
+	geoDepthTexture.TextureType = FramebufferTextureType::DEPTH;
+	geoDepthTexture.Format = FramebufferTextureFormat::DEPTH24STENCIL8;
+
+	geoFramebufferSpec.Attach(positionTexture, 0);
+	geoFramebufferSpec.Attach(normalTexture, 1);
+	geoFramebufferSpec.Attach(diffuseTexture, 2);
+	geoFramebufferSpec.Attach(specularGlossTexture, 3);
+	geoFramebufferSpec.Attach(geoDepthTexture, 4);
+
 	geoRenderPassSpec.TargetFramebuffer = Framebuffer::Create(geoFramebufferSpec);
 	s_Data.GeometryPass = RenderPass::Create(geoRenderPassSpec);
 
-	// Lighting Pass
+	#pragma endregion
+
+	#pragma region Lighting Pass
+
+	// Lighting pass
+	RenderPassSpecification lightingRenderPassSpec;
 	FramebufferSpecification lightingFramebufferSpec;
 	lightingFramebufferSpec.Width = 1280;
 	lightingFramebufferSpec.Height = 720;
-	lightingFramebufferSpec.Format = FramebufferFormat::RGBA16F;
-	lightingFramebufferSpec.BufferCount = 1;
-	lightingFramebufferSpec.Samples = 1;
-	lightingFramebufferSpec.ClearColour = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-	RenderPassSpecification lightingRenderPassSpec;
+	// Light accumulation texture
+	FramebufferTextureSpecification lightAccumulationTexture;
+	lightAccumulationTexture.TextureType = FramebufferTextureType::COLOUR;
+	lightAccumulationTexture.Format = FramebufferTextureFormat::RGBA16F;
+
+	// Depth texture
+	FramebufferTextureSpecification lightDepthTexture;
+	lightDepthTexture.TextureType = FramebufferTextureType::DEPTH;
+	lightDepthTexture.Format = FramebufferTextureFormat::DEPTH24STENCIL8;
+
+	lightingFramebufferSpec.Attach(lightAccumulationTexture, 0);
+	lightingFramebufferSpec.Attach(lightDepthTexture, 1);
+
 	lightingRenderPassSpec.TargetFramebuffer = Framebuffer::Create(lightingFramebufferSpec);
 	s_Data.LightingPass = RenderPass::Create(lightingRenderPassSpec);
 
 	s_Data.LightingShader = Shader::Create("assets/shaders/Lighting.glsl");
 
+	#pragma endregion
+
+	#pragma region Composite Pass
+
 	// Composite pass
+	RenderPassSpecification compRenderPassSpec;
 	FramebufferSpecification compFramebufferSpec;
 	compFramebufferSpec.Width = 1280;
 	compFramebufferSpec.Height = 720;
-	compFramebufferSpec.Format = FramebufferFormat::RGBA8;
-	compFramebufferSpec.BufferCount = 1;
-	compFramebufferSpec.Samples = 1;
-	compFramebufferSpec.ClearColour = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-	RenderPassSpecification compRenderPassSpec;
+	// Composite texture
+	FramebufferTextureSpecification compositeTexture;
+	compositeTexture.TextureType = FramebufferTextureType::COLOUR;
+	compositeTexture.Format = FramebufferTextureFormat::RGBA16F;
+
+	// Depth texture
+	FramebufferTextureSpecification compDepthTexture;
+	compDepthTexture.TextureType = FramebufferTextureType::DEPTH;
+	compDepthTexture.Format = FramebufferTextureFormat::DEPTH24STENCIL8;
+
+	compFramebufferSpec.Attach(compositeTexture, 0);
+	compFramebufferSpec.Attach(compDepthTexture, 1);
+
 	compRenderPassSpec.TargetFramebuffer = Framebuffer::Create(compFramebufferSpec);
 	s_Data.CompositePass = RenderPass::Create(compRenderPassSpec);
 
 	s_Data.CompositeShader = Shader::Create("assets/shaders/Composite.glsl");
+
+	#pragma endregion
 
 	// Grid
 	auto gridShader = Shader::Create("assets/shaders/Grid.glsl");
@@ -146,7 +179,6 @@ void SceneRenderer::SetViewportSize(uint32_t width, uint32_t height)
 	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->Resize(width, height);
 	s_Data.LightingPass->GetSpecification().TargetFramebuffer->Resize(width, height);
 	s_Data.CompositePass->GetSpecification().TargetFramebuffer->Resize(width, height);
-	s_Data.EditorPass->GetSpecification().TargetFramebuffer->Resize(width, height);
 
 	s_Data.ViewportSize = { width, height };
 }
@@ -171,156 +203,30 @@ void SceneRenderer::EndScene()
 	FlushDrawList();
 }
 
-void SceneRenderer::SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform, Ref<MaterialInstance> overrideMaterial)
+void SceneRenderer::SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform, Ref<MaterialInstance> overrideMaterial, bool transparency)
 {
 	// Culling, sorting, can be done here
-
-	s_Data.MeshDrawList.push_back({ mesh, overrideMaterial, transform });
-}
-
-void SceneRenderer::SubmitSelectedMesh(Ref<Mesh> mesh, const glm::mat4& transform)
-{
-	s_Data.SelectedMeshDrawList.push_back({ mesh, nullptr, transform });
-}
-
-void SceneRenderer::EditorPass()
-{
-	Renderer::BeginRenderPass(s_Data.EditorPass);
-
-	auto viewProjection = s_Data.SceneData.SceneCamera.Camera.GetProjectionMatrix() * s_Data.SceneData.SceneCamera.ViewMatrix;
-
-	// Cheap object outlining solution
-
-	// 1. Enable stencil writing.
-	// 2. Set the stencil op to GL_ALWAYS before drawing the (to be outlined) objects, updating the stencil buffer with 1s wherever the objects' fragments are rendered.
-	// 3. Render the objects.
-	// 4. Disable stencil writing and depth testing.
-	// 5. Scale each of the objects by a small amount.
-	// 6. Use a different fragment shader that outputs a single (border) color.
-	// 7. Draw the objects again, but only if their fragments' stencil values are not equal to 1.
-	// 8. Enable depth testing again and restore stencil func to GL_KEEP
 	
-	//bool outline = s_Data.SelectedMeshDrawList.size() > 0;
-
-	//if (outline)
-	//{
-	//	Renderer::Submit([]()
-	//		{
-	//			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-	//		});
-	//}
-
-	//if (outline)
-	//{
-	//	Renderer::Submit([]()
-	//		{
-	//			glStencilMask(0);
-	//		});
-	//}
-
-	//if (outline)
-	//{
-	//	Renderer::Submit([]()
-	//		{
-	//			glStencilFunc(GL_ALWAYS, 1, 0xff);
-	//			glStencilMask(0xff);
-	//		});
-	//}
-
-	//if (outline)
-	//{
-	//	Renderer::Submit([]()
-	//		{
-	//			glStencilFunc(GL_NOTEQUAL, 1, 0xff);
-	//			glStencilMask(0);
-
-	//			glLineWidth(10);
-	//			glEnable(GL_LINE_SMOOTH);
-	//			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//			glDisable(GL_DEPTH_TEST);
-	//		});
-
-	//	// Draw outline
-	//	s_Data.OutlineMaterial->Set("u_ViewProjection", viewProjection);
-
-	//	for (auto& dc : s_Data.SelectedMeshDrawList)
-	//	{
-	//		Renderer::SubmitMesh(dc.Mesh, dc.Transform, s_Data.OutlineMaterial);
-	//	}
-
-	//	Renderer::Submit([]()
-	//		{
-	//			glPointSize(10);
-	//			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-	//		});
-
-	//	for (auto& dc : s_Data.SelectedMeshDrawList)
-	//	{
-	//		Renderer::SubmitMesh(dc.Mesh, dc.Transform, s_Data.OutlineMaterial);
-	//	}
-
-	//	Renderer::Submit([]()
-	//		{
-	//			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	//			glStencilMask(0xff);
-	//			glStencilFunc(GL_ALWAYS, 1, 0xff);
-	//			glEnable(GL_DEPTH_TEST);
-	//		});
-	//}
-
-	//// Grid
-	//if (GetOptions().ShowGrid)
-	//{
-	//	s_Data.GridMaterial->Set("u_ViewProjection", viewProjection);
-
-	//	Renderer::SubmitQuad(s_Data.GridMaterial, glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(16.0f)));
-	//}
-
-	//// Bounding boxes
-	//if (GetOptions().ShowBoundingBoxes)
-	//{
-	//	Renderer2D::BeginScene(viewProjection);
-
-	//	for (auto& dc : s_Data.MeshDrawList)
-	//	{
-	//		Renderer::DrawAABB(dc.Mesh, dc.Transform);
-	//	}
-
-	//	Renderer2D::EndScene();
-	//}
-
-	Renderer::EndRenderPass();
+	if (transparency)
+	{
+		s_Data.TransparentMeshDrawList.push_back({ mesh, nullptr, transform });
+	}
+	else
+	{
+		s_Data.MeshDrawList.push_back({ mesh, overrideMaterial, transform });
+	}
 }
 
-void SceneRenderer::TransparencyPass()
+void SceneRenderer::SubmitSelectedMesh(Ref<Mesh> mesh, const glm::mat4& transform, bool transparency)
 {
-	Renderer::BeginRenderPass(s_Data.TransparencyPass);
-
-	auto viewProjection = s_Data.SceneData.SceneCamera.Camera.GetProjectionMatrix() * s_Data.SceneData.SceneCamera.ViewMatrix;
-	glm::vec3 cameraPosition = glm::inverse(s_Data.SceneData.SceneCamera.ViewMatrix)[3];
-
-	// Render meshes
-	for (auto& dc : s_Data.MeshDrawList)
+	if (transparency)
 	{
-		auto baseMaterial = dc.Mesh->GetMaterial();
-		auto shader = baseMaterial->GetShader();
-
-		baseMaterial->Set("u_ViewProjectionMatrix", viewProjection);
-
-		Renderer::SubmitMesh(dc.Mesh, dc.Transform);
+		s_Data.SelectedTransparentMeshDrawList.push_back({ mesh, nullptr, transform });
 	}
-
-	for (auto& dc : s_Data.SelectedMeshDrawList)
+	else
 	{
-		auto baseMaterial = dc.Mesh->GetMaterial();
-		auto shader = baseMaterial->GetShader();
-
-		baseMaterial->Set("u_ViewProjectionMatrix", viewProjection);
-
-		Renderer::SubmitMesh(dc.Mesh, dc.Transform);
+		s_Data.SelectedMeshDrawList.push_back({ mesh, nullptr, transform });
 	}
-
-	Renderer::EndRenderPass();
 }
 
 void SceneRenderer::GeometryPass()
@@ -386,7 +292,7 @@ void SceneRenderer::LightingPass()
 	// Bind colour attachments
 	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(0, 0); // Position
 	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(1, 1); // Normals
-	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(2, 2); // Albedo
+	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(2, 2); // Diffuse
 	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(3, 3); // Specular
 
 	s_Data.LightingShader->SetVec3("u_CameraPosition", cameraPosition);
@@ -431,7 +337,6 @@ void SceneRenderer::CompositePass()
 
 	s_Data.CompositeShader->Bind();
 	s_Data.CompositeShader->SetFloat("u_Exposure", s_Data.SceneData.SceneCamera.Camera.GetExposure());
-	s_Data.CompositeShader->SetInt("u_TextureSamples", s_Data.LightingPass->GetSpecification().TargetFramebuffer->GetSpecification().Samples);
 	s_Data.LightingPass->GetSpecification().TargetFramebuffer->BindColourAttachment();
 
 	// Check SceneRenderer options for showing buffers individually
@@ -445,7 +350,7 @@ void SceneRenderer::CompositePass()
 		s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(1, 0);
 	}
 
-	if (GetOptions().ShowAlbedo)
+	if (GetOptions().ShowDiffuse)
 	{
 		s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(2, 0);
 	}
@@ -465,7 +370,6 @@ void SceneRenderer::FlushDrawList()
 	LD_CORE_ASSERT(!s_Data.ActiveScene, "");
 
 	GeometryPass();
-	//EditorPass();
 	LightingPass();
 	CompositePass();
 

@@ -172,6 +172,11 @@ ShaderResourceDeclaration::Type ShaderResourceDeclaration::StringToType(const st
 		return Type::TEXTURE2D;
 	}
 
+	if (type == "samplerRect2D")
+	{
+		return Type::TEXTURE2D;
+	}
+
 	if (type == "samplerCube")
 	{
 		return Type::TEXTURECUBE;

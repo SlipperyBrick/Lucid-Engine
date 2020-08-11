@@ -180,9 +180,9 @@ void MaterialInstance::AllocateStorage()
 
 	if (m_Material->m_Shader->HasFSMaterialUniformBuffer())
 	{
-		const auto& psBuffer = m_Material->m_Shader->GetFSMaterialUniformBuffer();
-		m_FSUniformStorageBuffer.Allocate(psBuffer.GetSize());
-		memcpy(m_FSUniformStorageBuffer.Data, m_Material->m_FSUniformStorageBuffer.Data, psBuffer.GetSize());
+		const auto& fsBuffer = m_Material->m_Shader->GetFSMaterialUniformBuffer();
+		m_FSUniformStorageBuffer.Allocate(fsBuffer.GetSize());
+		memcpy(m_FSUniformStorageBuffer.Data, m_Material->m_FSUniformStorageBuffer.Data, fsBuffer.GetSize());
 	}
 }
 

@@ -11,9 +11,9 @@ class MaterialInstance;
 
 enum class MaterialFlag
 {
-	None = BIT(0),
-	DepthTest = BIT(1),
-	Blend = BIT(2)
+	None = 0,
+	DepthTest = 1,
+	Blend = 2,
 };
 
 class Material : public RefCounted

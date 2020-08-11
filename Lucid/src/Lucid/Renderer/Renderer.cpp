@@ -72,8 +72,7 @@ static void InitOpenGL()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	// Enable multisample and stencil test
-	glEnable(GL_MULTISAMPLE);
+	// Enable stencil test
 	glEnable(GL_STENCIL_TEST);
 
 	// Set and log renderer capabilities

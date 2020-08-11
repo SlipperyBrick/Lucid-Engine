@@ -111,6 +111,6 @@ void main()
 
 	o_Specular.r = m_Params.Specular;
 	o_Specular.g = m_Params.Gloss;
-	o_Specular.b = 0.0;
+	o_Specular.b = 1.0;
 	o_Specular.a = 1.0;
 }

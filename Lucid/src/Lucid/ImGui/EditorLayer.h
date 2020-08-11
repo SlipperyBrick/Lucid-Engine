@@ -99,8 +99,6 @@ private:
 	#pragma region Editor
 
 	Ref<Texture2D> m_DepthPeelingTex;
-	Ref<Texture2D> m_StochasticTransparencyTex;
-	Ref<Texture2D> m_CheckerboardTex;
 	Ref<Texture2D> m_TranslateTex;
 	Ref<Texture2D> m_RotateTex;
 	Ref<Texture2D> m_ScaleTex;
@@ -114,8 +112,6 @@ private:
 	Ref<Texture2D> m_NormalsTex;
 	Ref<Texture2D> m_AlbedoTex;
 	Ref<Texture2D> m_SpecularTex;
-	Ref<Texture2D> m_PointLightTex;
-	Ref<Texture2D> m_DirLightTex;
 
 	float m_GridScale = 16.025f;
 	float m_GridSize = 0.025f;

@@ -333,6 +333,11 @@ static bool IsTypeStringResource(const std::string& type)
 		return true;
 	}
 
+	if (type == "sampler2DRect")
+	{
+		return true;
+	}
+
 	if (type == "samplerCube")
 	{
 		return true;

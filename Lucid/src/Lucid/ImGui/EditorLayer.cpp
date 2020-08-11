@@ -248,8 +248,6 @@ void EditorLayer::OnAttach()
 
 	// Editor resources
 	m_DepthPeelingTex = Texture2D::Create("assets/textures/DepthPeeling.tga");
-	m_StochasticTransparencyTex = Texture2D::Create("assets/textures/StochasticTransparency.tga");
-	m_CheckerboardTex = Texture2D::Create("assets/textures/Checkerboard.tga");
 	m_BoundingBoxesTex = Texture2D::Create("assets/textures/BoundingBoxes.tga");
 	m_PointerTex = Texture2D::Create("assets/textures/Pointer.tga");
 	m_TranslateTex = Texture2D::Create("assets/textures/Translate.tga");
@@ -263,8 +261,6 @@ void EditorLayer::OnAttach()
 	m_NormalsTex = Texture2D::Create("assets/textures/Normals.tga");
 	m_AlbedoTex = Texture2D::Create("assets/textures/Albedo.tga");
 	m_SpecularTex = Texture2D::Create("assets/textures/Specular.tga");
-	m_PointLightTex = Texture2D::Create("assets/textures/PointLight.tga");
-	m_DirLightTex = Texture2D::Create("assets/textures/DirectionalLight.tga");
 
 	m_ActiveScene = Ref<Scene>::Create();
 
@@ -545,19 +541,19 @@ void EditorLayer::OnImGuiRender()
 	ImGui::SameLine();
 
 	// Show albedo
-	if (SceneRenderer::GetOptions().ShowAlbedo)
+	if (SceneRenderer::GetOptions().ShowDiffuse)
 	{
 		if (ImGui::ImageButton((ImTextureID)(m_AlbedoTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
 		{
-			SceneRenderer::GetOptions().ShowAlbedo = false;
+			SceneRenderer::GetOptions().ShowDiffuse = false;
 		}
 	}
 
-	if (!SceneRenderer::GetOptions().ShowAlbedo)
+	if (!SceneRenderer::GetOptions().ShowDiffuse)
 	{
 		if (ImGui::ImageButton((ImTextureID)(m_AlbedoTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.25f)))
 		{
-			SceneRenderer::GetOptions().ShowAlbedo = true;
+			SceneRenderer::GetOptions().ShowDiffuse = true;
 		}
 	}
 
@@ -583,25 +579,6 @@ void EditorLayer::OnImGuiRender()
 	ImGui::SameLine();
 
 	ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-
-	ImGui::SameLine();
-
-	// Show stochastic transparency
-	if (SceneRenderer::GetOptions().ShowStochastic)
-	{
-		if (ImGui::ImageButton((ImTextureID)(m_StochasticTransparencyTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
-		{
-			SceneRenderer::GetOptions().ShowStochastic = false;
-		}
-	}
-
-	if (!SceneRenderer::GetOptions().ShowStochastic)
-	{
-		if (ImGui::ImageButton((ImTextureID)(m_StochasticTransparencyTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.25f)))
-		{
-			SceneRenderer::GetOptions().ShowStochastic = true;
-		}
-	}
 
 	ImGui::SameLine();
 

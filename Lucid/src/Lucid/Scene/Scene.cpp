@@ -109,11 +109,11 @@ void Scene::OnUpdate(Timestep ts, const EditorCamera& editorCamera)
 			{
 				if (m_SelectedEntity == entity)
 				{
-					SceneRenderer::SubmitSelectedMesh(meshComponent, transformComponent);
+					SceneRenderer::SubmitSelectedMesh(meshComponent, transformComponent, meshComponent.Transparent);
 				}
 				else
 				{
-					SceneRenderer::SubmitMesh(meshComponent, transformComponent, nullptr);
+					SceneRenderer::SubmitMesh(meshComponent, transformComponent, nullptr, meshComponent.Transparent);
 				}
 			}
 		}

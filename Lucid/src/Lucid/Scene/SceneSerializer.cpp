@@ -231,8 +231,10 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity)
 		out << YAML::BeginMap;
 
 		// Mesh data
-		auto mesh = entity.GetComponent<MeshComponent>().MeshComp;
+		auto& mc = entity.GetComponent<MeshComponent>();
+		auto mesh = mc.MeshComp;
 		out << YAML::Key << "AssetPath" << YAML::Value << mesh->GetFilePath();
+		out << YAML::Key << "Transparent" << YAML::Value << mc.Transparent;
 
 		out << YAML::EndMap;
 	}
@@ -388,7 +390,9 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 
 				if (!deserializedEntity.HasComponent<MeshComponent>())
 				{
-					deserializedEntity.AddComponent<MeshComponent>(Ref<Mesh>::Create(meshPath));
+					auto& mc = deserializedEntity.AddComponent<MeshComponent>(Ref<Mesh>::Create(meshPath));
+
+					mc.Transparent = meshComponent["Transparent"] ? meshComponent["Transparent"].as<bool>() : false;
 				}
 
 				LD_CORE_INFO("  Mesh Asset Path: {0}", meshPath);

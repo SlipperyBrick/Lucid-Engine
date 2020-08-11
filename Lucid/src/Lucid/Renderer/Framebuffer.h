@@ -2,12 +2,50 @@
 
 #include <glm/glm.hpp>
 
-enum class FramebufferFormat
+enum class FramebufferTextureType
+{
+	COLOUR = 0,
+	DEPTH = 1
+};
+
+enum class FramebufferTextureFormat
 {
 	None = 0,
 	RGBA8 = 1,
 	RGBA16F = 2,
-	RED8 = 3
+	RG16F = 3,
+	RED8 = 4,
+	DEPTH24STENCIL8 = 5
+};
+
+enum class FramebufferTextureWrapping
+{
+	NONE = 0,
+	REPEAT = 1,
+	MIRROR_REPEAT = 2,
+	CLAMP_EDGE = 3,
+	CLAMP_BORDER = 4,
+	MIRROR_CLAMP_EDGE = 5
+};
+
+enum class FramebufferTextureFiltering
+{
+	NONE = 0,
+	NEAREST = 1,
+	LINEAR = 2
+};
+
+struct FramebufferTextureSpecification
+{
+	FramebufferTextureType TextureType = FramebufferTextureType::COLOUR;
+
+	FramebufferTextureFormat Format = FramebufferTextureFormat::RGBA8;
+
+	glm::vec2 Wrap{ FramebufferTextureWrapping::REPEAT, FramebufferTextureWrapping::REPEAT };
+	FramebufferTextureFiltering MinFilter = FramebufferTextureFiltering::NEAREST;
+	FramebufferTextureFiltering MagFilter = FramebufferTextureFiltering::LINEAR;
+
+	uint32_t Samples = 1;
 };
 
 struct FramebufferSpecification
@@ -17,16 +55,14 @@ struct FramebufferSpecification
 
 	glm::vec4 ClearColour;
 
-	// Multiple render targets
-	int BufferCount = 0;
-
-	// Render target texture format
-	FramebufferFormat Format;
-
-	// Multisampling
-	uint32_t Samples = 1;
+	std::unordered_map<uint32_t, FramebufferTextureSpecification> m_AttachmentSpecs;
 
 	bool ScreenBufferTarget = false;
+
+	void Attach(const FramebufferTextureSpecification& texture, uint32_t attachmentPoint)
+	{
+		m_AttachmentSpecs[attachmentPoint] = texture;
+	}
 };
 
 class Framebuffer : public RefCounted
@@ -34,6 +70,7 @@ class Framebuffer : public RefCounted
 
 public:
 
+	Framebuffer();
 	Framebuffer(const FramebufferSpecification& spec);
 	~Framebuffer();
 
@@ -42,25 +79,26 @@ public:
 
 	void Resize(uint32_t width, uint32_t height, bool forceRecreate = false);
 
-	void BindColourAttachment(uint32_t colourAttachmentIndex = 0, uint32_t textureUnit = 0) const;
-
-	void BindTexture(uint32_t slot = 0) const;
+	void BindColourAttachment(uint32_t textureAttachmentIndex = 0, uint32_t textureUnit = 0) const;
+	void BindDepthAttachment(uint32_t textureAttachmentIndex = 0, uint32_t textureUnit = 0) const;
 
 	RendererID GetRendererID() const { return m_RendererID; }
-	RendererID GetColourAttachmentRendererID(uint32_t attachment = 0) const { return m_ColourAttachments[attachment]; }
-	RendererID GetDepthAttachmentRendererID() const { return m_DepthAttachment; }
+	RendererID GetColourAttachmentRendererID(uint32_t attachment = 0) const { return m_ColourAttachments.at(attachment); }
+	RendererID GetDepthAttachmentRendererID(uint32_t attachment = 0) const { return m_DepthAttachments.at(attachment); }
 
 	const FramebufferSpecification& GetSpecification() const { return m_Specification; }
 
+	static Ref<Framebuffer> Create();
 	static Ref<Framebuffer> Create(const FramebufferSpecification& spec);
 
 private:
 
 	FramebufferSpecification m_Specification;
 
+	std::unordered_map<uint32_t, RendererID> m_ColourAttachments;
+	std::unordered_map<uint32_t, RendererID> m_DepthAttachments;
+
 	RendererID m_RendererID = 0;
-	std::vector<RendererID> m_ColourAttachments;
-	RendererID m_DepthAttachment = 0;
 };
 
 class FramebufferPool final

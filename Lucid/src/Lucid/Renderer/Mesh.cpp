@@ -202,15 +202,21 @@ Mesh::Mesh(const std::string& filename)
 			aiColor3D aiColour;
 			aiMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, aiColour);
 
-			float shininess;
 			float specular = 1.0f;
+			float shininess = 1.0f;
+			float glossiness = 1.0f;
 
 			if (aiMaterial->Get(AI_MATKEY_SHININESS, shininess) == AI_SUCCESS)
 			{
 				specular = 1.0f - glm::sqrt(shininess / 100.0f);
 			}
 
-			LD_MESH_LOG("    COLOR = {0}, {1}, {2}", aiColour.r, aiColour.g, aiColour.b);
+			if (aiMaterial->Get(AI_MATKEY_SHININESS_STRENGTH, glossiness) == AI_SUCCESS)
+			{
+				shininess = 1.0f - glm::sqrt(glossiness / 100.0f);
+			}
+
+			LD_MESH_LOG("    COLOUR = {0}, {1}, {2}", aiColour.r, aiColour.g, aiColour.b);
 			LD_MESH_LOG("    SPECULARITY = {0}", specular);
 
 			bool hasDiffuseMap = aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexPath) == AI_SUCCESS;
@@ -231,7 +237,7 @@ Mesh::Mesh(const std::string& filename)
 				if (texture->Loaded())
 				{
 					m_Textures[i] = texture;
-
+					
 					mi->Set("u_DiffuseTexture", m_Textures[i]);
 					mi->Set("u_DiffuseTexToggle", 1.0f);
 				}
@@ -348,9 +354,9 @@ Mesh::Mesh(const std::string& filename)
 			}
 			else
 			{
-				LD_MESH_LOG("    No Gloss map");
+				LD_MESH_LOG("    No gloss map");
 
-				mi->Set("u_Gloss", specular);
+				mi->Set("u_Gloss", glossiness);
 			}
 		}
 

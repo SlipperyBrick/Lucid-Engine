@@ -192,7 +192,6 @@
     <None Include="assets\shaders\Line.glsl" />
     <None Include="assets\shaders\Outline.glsl" />
     <None Include="assets\shaders\Quad.glsl" />
-    <None Include="assets\shaders\Scene.glsl" />
     <None Include="assets\shaders\Buffer.glsl" />
     <None Include="assets\shaders\Lighting.glsl" />
     <None Include="vendor\assimp\assimp.dll" />

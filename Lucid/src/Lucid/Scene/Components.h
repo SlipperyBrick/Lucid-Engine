@@ -48,6 +48,8 @@ struct MeshComponent
 {
 	Ref<Mesh> MeshComp;
 
+	bool Transparent = false;
+
 	MeshComponent() = default;
 
 	MeshComponent(const MeshComponent& other)

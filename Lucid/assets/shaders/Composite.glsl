@@ -26,22 +26,6 @@ uniform sampler2D u_Texture;
 
 uniform float u_Exposure;
 
-uniform int u_TextureSamples;
-
-vec4 MultiSampleTexture(sampler2DMS tex, ivec2 texCoord, int samples)
-{
-    vec4 result = vec4(0.0);
-
-    for (int i = 0; i < samples; i++)
-	{
-        result += texelFetch(tex, texCoord, i);
-	}
-
-    result /= float(samples);
-
-    return result;
-}
-
 void main()
 {
 	const float gamma = 2.2;
@@ -49,41 +33,17 @@ void main()
 
 	vec4 lightingPass;
 
-//	if (u_TextureSamples > 1)
-//	{
-//		// Remove second parameter if u_Texture is multisample
-//		ivec2 texSize = textureSize(u_Texture, 0);
-//		ivec2 texCoord = ivec2(v_TexCoord * texSize);
-//
-//		vec4 msColour = MultiSampleTexture(u_Texture, texCoord, u_TextureSamples);
-//
-//		vec3 colour = msColour.rgb * u_Exposure;
-//
-//		// Reinhard tonemapping operator
-//		float luminance = dot(colour, vec3(0.2126, 0.7152, 0.0722));
-//		float mappedLuminance = (luminance * (1.0 + luminance / (pureWhite * pureWhite))) / (1.0 + luminance);
-//
-//		// Scale colour by ratio of average luminances
-//		vec3 mappedColour = (mappedLuminance / luminance) * colour;
-//
-//		// Gamma correction to final output
-//		lightingPass = vec4(pow(mappedColour, vec3(1.0 / gamma)), 1.0);
-//	}
+	vec3 colour = texture(u_Texture, v_TexCoord).rgb * u_Exposure;
 
-	if(u_TextureSamples == 1)
-	{
-		vec3 colour = texture(u_Texture, v_TexCoord).rgb * u_Exposure;
+	// Reinhard tonemapping operator
+	float luminance = dot(colour, vec3(0.2126, 0.7152, 0.0722));
+	float mappedLuminance = (luminance * (1.0 + luminance / (pureWhite * pureWhite))) / (1.0 + luminance);
 
-		// Reinhard tonemapping operator
-		float luminance = dot(colour, vec3(0.2126, 0.7152, 0.0722));
-		float mappedLuminance = (luminance * (1.0 + luminance / (pureWhite * pureWhite))) / (1.0 + luminance);
+	// Scale colour by ratio of average luminances
+	vec3 mappedColour = (mappedLuminance / luminance) * colour;
 
-		// Scale colour by ratio of average luminances
-		vec3 mappedColour = (mappedLuminance / luminance) * colour;
-
-		// Gamma correction to final output
-		lightingPass = vec4(pow(mappedColour, vec3(1.0 / gamma)), 1.0);
-	}
+	// Gamma correction to final output
+	lightingPass = vec4(pow(mappedColour, vec3(1.0 / gamma)), 1.0);
 
 	o_Colour = lightingPass;
 }
