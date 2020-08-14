@@ -22,7 +22,13 @@ layout(location = 0) out vec4 o_Colour;
 
 in vec2 v_TexCoord;
 
-uniform sampler2D u_Texture;
+uniform sampler2D u_LightingTexture;
+
+uniform sampler2DRect u_depthTexture;
+uniform sampler2DRect u_frontTexture;
+uniform sampler2DRect u_backTexture;
+
+uniform sampler2D u_EditorTexture;
 
 uniform float u_Exposure;
 
@@ -33,7 +39,7 @@ void main()
 
 	vec4 lightingPass;
 
-	vec3 colour = texture(u_Texture, v_TexCoord).rgb * u_Exposure;
+	vec3 colour = texture(u_LightingTexture, v_TexCoord).rgb * u_Exposure;
 
 	// Reinhard tonemapping operator
 	float luminance = dot(colour, vec3(0.2126, 0.7152, 0.0722));
@@ -45,5 +51,14 @@ void main()
 	// Gamma correction to final output
 	lightingPass = vec4(pow(mappedColour, vec3(1.0 / gamma)), 1.0);
 
-	o_Colour = lightingPass;
+	// Frag coords for sampling front and back textures
+	vec2 fragCoord = gl_FragCoord.xy;
+
+	// Get the front and back blender colours
+	vec4 frontColour = texture(u_frontTexture, fragCoord);
+	vec3 backColour = texture(u_backTexture, fragCoord).rgb;
+
+	vec4 editorColour = texture(u_EditorTexture, v_TexCoord);
+
+	o_Colour = vec4(frontColour.rgb + backColour.rgb * frontColour.a + lightingPass.rgb, 1.0);
 }

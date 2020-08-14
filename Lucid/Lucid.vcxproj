@@ -66,6 +66,9 @@
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\glfw\lib;$(SolutionDir)Dependencies\assimp\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>assimp.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -87,7 +90,9 @@
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\glfw\lib;$(SolutionDir)Dependencies\assimp\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>assimp.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
+    <ProjectReference />
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
@@ -466,6 +471,10 @@
   <ItemGroup>
     <None Include="assets\shaders\Buffer.glsl" />
     <None Include="assets\shaders\Composite.glsl" />
+    <None Include="assets\shaders\DualDepthPeel.glsl" />
+    <None Include="assets\shaders\DualDepthPeelBlend.glsl" />
+    <None Include="assets\shaders\DualDepthPeelComposite.glsl" />
+    <None Include="assets\shaders\DualDepthPeelInit.glsl" />
     <None Include="assets\shaders\Editor.glsl" />
     <None Include="assets\shaders\Grid.glsl" />
     <None Include="assets\shaders\Lighting.glsl" />

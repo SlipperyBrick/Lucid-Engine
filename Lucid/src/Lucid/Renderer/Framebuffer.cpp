@@ -1,21 +1,48 @@
 #include "ldpch.h"
 
-#include <glad/glad.h>
-
 #include "Framebuffer.h"
 
 #include "Lucid/Renderer/Renderer.h"
 
-Ref<Framebuffer> Framebuffer::Create()
+static GLenum SetFramebufferTextureType(FramebufferTextureType type)
 {
-	Ref<Framebuffer> result = nullptr;
+	switch (type)
+	{
+		case FramebufferTextureType::TEXRECT:
+		{
+			return GL_TEXTURE_RECTANGLE;
+		}
+		case FramebufferTextureType::TEX2D:
+		{
+			return GL_TEXTURE_2D;
+		}
+	}
 
-	result = Ref<Framebuffer>::Create();
+	LD_CORE_ASSERT(false, "Unknown framebuffer texture format!");
 
-	FramebufferPool::GetGlobal()->Add(result);
-
-	return result;
+	return 0;
 }
+
+template <typename ... Args>
+void Framebuffer::DrawBuffers(Args ... args)
+{
+	std::vector<GLenum> attachments = { (GLenum)(args)... };
+
+	for (size_t i = 0; i < attachments.size(); i++)
+	{
+		attachments[i] = GL_COLOR_ATTACHMENT0 + attachments[i];
+	}
+
+	Renderer::Submit([attachments]()
+	{
+		glDrawBuffers(attachments.size(), attachments.data());
+	});
+}
+
+// Explict instantiation of variadic template function
+template void Framebuffer::DrawBuffers<int>(int);
+template void Framebuffer::DrawBuffers<int, int>(int, int);
+template void Framebuffer::DrawBuffers<int, int, int>(int, int, int);
 
 Ref<Framebuffer> Framebuffer::Create(const FramebufferSpecification& spec)
 {
@@ -46,10 +73,6 @@ std::weak_ptr<Framebuffer> FramebufferPool::AllocateBuffer()
 void FramebufferPool::Add(Ref<Framebuffer> framebuffer)
 {
 	m_Pool.push_back(framebuffer);
-}
-
-Framebuffer::Framebuffer()
-{
 }
 
 Framebuffer::Framebuffer(const FramebufferSpecification& spec)
@@ -110,8 +133,10 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 
 		for (auto& [attachmentPoint, textureSpec] : instance->m_Specification.m_AttachmentSpecs)
 		{
-			bool depth = textureSpec.TextureType == FramebufferTextureType::DEPTH;
+			bool depth = textureSpec.TextureUsage == FramebufferTextureUsage::DEPTH;
 			bool multisample = textureSpec.Samples > 1;
+
+			GLenum type = SetFramebufferTextureType(instance->GetSpecification().m_AttachmentSpecs.at(attachmentPoint).TextureType);
 
 			if (depth)
 			{
@@ -120,10 +145,10 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 				// Multisample depth texture
 				if (multisample)
 				{
-					glCreateTextures(GL_TEXTURE_2D_MULTISAMPLE, 1, &textureID);
-					glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textureID);
+					glCreateTextures(type, 1, &textureID);
+					glBindTexture(type, textureID);
 
-					glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, textureSpec.Samples, GL_DEPTH24_STENCIL8, instance->m_Specification.Width, instance->m_Specification.Height, GL_FALSE);
+					glTexStorage2DMultisample(type, textureSpec.Samples, GL_DEPTH24_STENCIL8, instance->m_Specification.Width, instance->m_Specification.Height, GL_FALSE);
 
 					glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, textureID, 0);
 				}
@@ -131,29 +156,29 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 				// Standard depth texture
 				else
 				{
-					glCreateTextures(GL_TEXTURE_2D, 1, &textureID);
-					glBindTexture(GL_TEXTURE_2D, textureID);
+					glCreateTextures(type, 1, &textureID);
+					glBindTexture(type, textureID);
 
-					glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, instance->m_Specification.Width, instance->m_Specification.Height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+					glTexImage2D(type, 0, GL_DEPTH24_STENCIL8, instance->m_Specification.Width, instance->m_Specification.Height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
 
 					// Set depth texture minification filtering
 					if (textureSpec.MinFilter == FramebufferTextureFiltering::LINEAR)
 					{
-						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+						glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 					}
 					else if (textureSpec.MinFilter == FramebufferTextureFiltering::NEAREST)
 					{
-						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+						glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 					}
 
 					// Set depth texture magnification filtering
 					if (textureSpec.MagFilter == FramebufferTextureFiltering::LINEAR)
 					{
-						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+						glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 					}
 					else if (textureSpec.MagFilter == FramebufferTextureFiltering::NEAREST)
 					{
-						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+						glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 					}
 
 					glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, textureID, 0);
@@ -166,65 +191,77 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 				// Multisample texture
 				if (multisample)
 				{
-					glCreateTextures(GL_TEXTURE_2D_MULTISAMPLE, 1, &textureID);
-					glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textureID);
+					glCreateTextures(type, 1, &textureID);
+					glBindTexture(type, textureID);
 
 					if (textureSpec.Format == FramebufferTextureFormat::RGBA16F)
 					{
-						glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, textureSpec.Samples, GL_RGBA16F, instance->m_Specification.Width, instance->m_Specification.Height, GL_FALSE);
+						glTexImage2DMultisample(type, textureSpec.Samples, GL_RGBA16F, instance->m_Specification.Width, instance->m_Specification.Height, GL_FALSE);
 					}
 					else if (textureSpec.Format == FramebufferTextureFormat::RGBA8)
 					{
-						glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, textureSpec.Samples, GL_RGBA8, instance->m_Specification.Width, instance->m_Specification.Height, GL_FALSE);
+						glTexStorage2DMultisample(type, textureSpec.Samples, GL_RGBA8, instance->m_Specification.Width, instance->m_Specification.Height, GL_FALSE);
 					}
 					else if (textureSpec.Format == FramebufferTextureFormat::RED8)
 					{
-						glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, textureSpec.Samples, GL_RED, instance->m_Specification.Width, instance->m_Specification.Height, GL_FALSE);
+						glTexStorage2DMultisample(type, textureSpec.Samples, GL_RED, instance->m_Specification.Width, instance->m_Specification.Height, GL_FALSE);
 					}
 				}
 
 				// Standard texture
 				else
 				{
-					glCreateTextures(GL_TEXTURE_2D, 1, &textureID);
-					glBindTexture(GL_TEXTURE_2D, textureID);
+					glCreateTextures(type, 1, &textureID);
+					glBindTexture(type, textureID);
 
 					// Set texture format
 					if (textureSpec.Format == FramebufferTextureFormat::RGBA16F)
 					{
-						glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, instance->m_Specification.Width, instance->m_Specification.Height, 0, GL_RGBA, GL_FLOAT, nullptr);
+						glTexImage2D(type, 0, GL_RGBA16F, instance->m_Specification.Width, instance->m_Specification.Height, 0, GL_RGBA, GL_FLOAT, nullptr);
 					}
 					else if (textureSpec.Format == FramebufferTextureFormat::RGBA8)
 					{
-						glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, instance->m_Specification.Width, instance->m_Specification.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+						glTexImage2D(type, 0, GL_RGBA, instance->m_Specification.Width, instance->m_Specification.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 					}
 					else if (textureSpec.Format == FramebufferTextureFormat::RED8)
 					{
-						glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, instance->m_Specification.Width, instance->m_Specification.Height, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
+						glTexImage2D(type, 0, GL_RED, instance->m_Specification.Width, instance->m_Specification.Height, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
 					}
 					else if (textureSpec.Format == FramebufferTextureFormat::RG16F)
 					{
-						glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, instance->m_Specification.Width, instance->m_Specification.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+						glTexImage2D(type, 0, GL_RG16F, instance->m_Specification.Width, instance->m_Specification.Height, 0, GL_RGBA, GL_FLOAT, nullptr);
+					}
+					else if (textureSpec.Format == FramebufferTextureFormat::RG16F_RECT)
+					{
+						glTexImage2D(type, 0, GL_RG32F, instance->m_Specification.Width, instance->m_Specification.Height, 0, GL_RGB, GL_FLOAT, nullptr);
+					}
+					else if (textureSpec.Format == FramebufferTextureFormat::RGB8F_RECT)
+					{
+						glTexImage2D(type, 0, GL_RGB, instance->m_Specification.Width, instance->m_Specification.Height, 0, GL_RGB, GL_FLOAT, nullptr);
+					}
+					else if (textureSpec.Format == FramebufferTextureFormat::RGBA8F_RECT)
+					{
+						glTexImage2D(type, 0, GL_RGBA, instance->m_Specification.Width, instance->m_Specification.Height, 0, GL_RGBA, GL_FLOAT, nullptr);
 					}
 
 					// Set texture minification filtering
 					if (textureSpec.MinFilter == FramebufferTextureFiltering::LINEAR)
 					{
-						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+						glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 					}
 					else if (textureSpec.MinFilter == FramebufferTextureFiltering::NEAREST)
 					{
-						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+						glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 					}
 
 					// Set texture magnification filtering
 					if (textureSpec.MagFilter == FramebufferTextureFiltering::LINEAR)
 					{
-						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+						glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 					}
 					else if (textureSpec.MagFilter == FramebufferTextureFiltering::NEAREST)
 					{
-						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+						glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 					}
 				}
 
@@ -248,6 +285,16 @@ void Framebuffer::Resize(uint32_t width, uint32_t height, bool forceRecreate)
 		LD_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	});
+}
+
+void Framebuffer::Clear(float r, float g, float b, float a)
+{
+	Renderer::Submit([=]()
+	{
+		glClearColor(r, g, b, a);
+
+		glClear(GL_COLOR_BUFFER_BIT);
 	});
 }
 

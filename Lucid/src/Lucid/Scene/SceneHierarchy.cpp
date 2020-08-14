@@ -592,6 +592,8 @@ void SceneHierarchy::DrawComponents(Entity entity)
 
 		if (ImGui::TreeNodeEx((void*)((uint32_t)entity | typeid(TransformComponent).hash_code()), ImGuiTreeNodeFlags_DefaultOpen, "Mesh"))
 		{
+			BeginPropertyGrid();
+
 			ImGui::Columns(3);
 			ImGui::SetColumnWidth(0, 100);
 			ImGui::SetColumnWidth(1, 300);
@@ -630,6 +632,8 @@ void SceneHierarchy::DrawComponents(Entity entity)
 
 			ImGui::Columns(1);
 			ImGui::TreePop();
+
+			EndPropertyGrid();
 		}
 
 		ImGui::Separator();

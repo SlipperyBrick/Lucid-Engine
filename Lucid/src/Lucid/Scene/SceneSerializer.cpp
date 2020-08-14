@@ -392,7 +392,7 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 				{
 					auto& mc = deserializedEntity.AddComponent<MeshComponent>(Ref<Mesh>::Create(meshPath));
 
-					mc.Transparent = meshComponent["Transparent"] ? meshComponent["Transparent"].as<bool>() : false;
+					mc.Transparent = meshComponent["Transparent"].as<bool>();
 				}
 
 				LD_CORE_INFO("  Mesh Asset Path: {0}", meshPath);

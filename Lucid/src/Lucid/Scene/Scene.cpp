@@ -104,7 +104,7 @@ void Scene::OnUpdate(Timestep ts, const EditorCamera& editorCamera)
 		for (auto entity : group)
 		{
 			const auto& [transformComponent, meshComponent] = group.get<TransformComponent, MeshComponent>(entity);
-
+			
 			if (meshComponent.MeshComp)
 			{
 				if (m_SelectedEntity == entity)

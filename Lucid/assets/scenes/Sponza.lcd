@@ -1,29 +1,45 @@
 Scene: Scene Name
 Directional Light:
   Direction: [0, 0, -1]
-  Brightness: 0.5
+  Brightness: 0.00999999978
   Diffuse: [1, 1, 1]
-  Ambient: [0.100000001, 0.100000001, 0.100000001]
+  Ambient: [0.00392156886, 0.00392156886, 0.00392156886]
   Specular: [1, 1, 1]
 Entities:
-  - Entity: 2508818778
+  - Entity: 1813482296
     TagComponent:
-      Tag: Sphere 03
+      Tag: Empty Entity
     TransformComponent:
-      Position: [0, 0, 0]
+      Position: [-1.1159209, 0.649147153, -0.817080259]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    LightComponent:
+      Brightness: 1
+      Diffuse: [0.513513505, 0.939213753, 1]
+      Specular: [1, 1, 1]
+      Quadratic: 1
+  - Entity: 969168919
+    TagComponent:
+      Tag: Empty Entity
+    TransformComponent:
+      Position: [3.63400006, 0.649147153, 0.698463142]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    LightComponent:
+      Brightness: 1
+      Diffuse: [1, 0.706975758, 0.34362936]
+      Specular: [1, 1, 1]
+      Quadratic: 1
+  - Entity: 3587948670
+    TagComponent:
+      Tag: Sponza
+    TransformComponent:
+      Position: [0, -1.5, 0]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponent:
-      AssetPath: D:\Dropbox\Documents\3D\projects\sponza\sphere.obj
-  - Entity: 384042869
-    TagComponent:
-      Tag: Sphere 02
-    TransformComponent:
-      Position: [-2.5, 0, 0]
-      Rotation: [1, 0, 0, 0]
-      Scale: [1, 1, 1]
-    MeshComponent:
-      AssetPath: D:\Dropbox\Documents\3D\projects\sponza\sphere.obj
+      AssetPath: assets\models\sponza\sponza.obj
+      Transparent: false
   - Entity: 2022443951
     TagComponent:
       Tag: Sphere 01
@@ -32,13 +48,25 @@ Entities:
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponent:
-      AssetPath: D:\Dropbox\Documents\3D\projects\sponza\sphere.obj
-  - Entity: 3587948670
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: false
+  - Entity: 384042869
     TagComponent:
-      Tag: Sponza
+      Tag: Sphere 02
     TransformComponent:
-      Position: [0, -1.64999998, 0]
+      Position: [-2.5, 0, 0]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponent:
-      AssetPath: D:\Dropbox\Documents\3D\projects\sponza\sponza.obj
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: false
+  - Entity: 2508818778
+    TagComponent:
+      Tag: Sphere 03
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: true

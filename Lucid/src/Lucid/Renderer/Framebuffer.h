@@ -1,8 +1,16 @@
 #pragma once
 
+#include <glad/glad.h>
+
 #include <glm/glm.hpp>
 
 enum class FramebufferTextureType
+{
+	TEX2D = 0,
+	TEXRECT = 1
+};
+
+enum class FramebufferTextureUsage
 {
 	COLOUR = 0,
 	DEPTH = 1
@@ -10,12 +18,16 @@ enum class FramebufferTextureType
 
 enum class FramebufferTextureFormat
 {
-	None = 0,
+	NONE = 0,
 	RGBA8 = 1,
 	RGBA16F = 2,
 	RG16F = 3,
 	RED8 = 4,
-	DEPTH24STENCIL8 = 5
+	DEPTH24STENCIL8 = 5,
+
+	RG16F_RECT = 6,
+	RGB8F_RECT = 7,
+	RGBA8F_RECT = 8
 };
 
 enum class FramebufferTextureWrapping
@@ -37,7 +49,8 @@ enum class FramebufferTextureFiltering
 
 struct FramebufferTextureSpecification
 {
-	FramebufferTextureType TextureType = FramebufferTextureType::COLOUR;
+	FramebufferTextureType TextureType = FramebufferTextureType::TEX2D;
+	FramebufferTextureUsage TextureUsage = FramebufferTextureUsage::COLOUR;
 
 	FramebufferTextureFormat Format = FramebufferTextureFormat::RGBA8;
 
@@ -55,6 +68,7 @@ struct FramebufferSpecification
 
 	glm::vec4 ClearColour;
 
+	// Attachment point + texture Spec
 	std::unordered_map<uint32_t, FramebufferTextureSpecification> m_AttachmentSpecs;
 
 	bool ScreenBufferTarget = false;
@@ -70,7 +84,6 @@ class Framebuffer : public RefCounted
 
 public:
 
-	Framebuffer();
 	Framebuffer(const FramebufferSpecification& spec);
 	~Framebuffer();
 
@@ -78,6 +91,8 @@ public:
 	void Unbind() const;
 
 	void Resize(uint32_t width, uint32_t height, bool forceRecreate = false);
+
+	void Clear(float r, float g, float b, float a);
 
 	void BindColourAttachment(uint32_t textureAttachmentIndex = 0, uint32_t textureUnit = 0) const;
 	void BindDepthAttachment(uint32_t textureAttachmentIndex = 0, uint32_t textureUnit = 0) const;
@@ -88,13 +103,16 @@ public:
 
 	const FramebufferSpecification& GetSpecification() const { return m_Specification; }
 
-	static Ref<Framebuffer> Create();
 	static Ref<Framebuffer> Create(const FramebufferSpecification& spec);
+
+	template<typename ...Args>
+	void DrawBuffers(Args ...args);
 
 private:
 
 	FramebufferSpecification m_Specification;
 
+	// Attachment point + texture ID
 	std::unordered_map<uint32_t, RendererID> m_ColourAttachments;
 	std::unordered_map<uint32_t, RendererID> m_DepthAttachments;
 

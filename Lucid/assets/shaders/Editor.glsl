@@ -27,6 +27,5 @@ in vec2 v_TexCoord;
 
 void main()
 {
-	//colour = vec4(texture(u_Texture, v_TexCoord).rgb, 1.0);
-	colour = vec4(1.0, 0.0, 0.0, 1.0);
+	colour = vec4(texture(u_Texture, v_TexCoord).rgb, 1.0);
 }

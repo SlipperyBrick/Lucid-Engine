@@ -28,7 +28,7 @@ struct PointLight
 
 struct LightEnvironment
 {
-	PointLight PointLights[4];
+	PointLight PointLights[1000];
 };
 
 class Entity;
