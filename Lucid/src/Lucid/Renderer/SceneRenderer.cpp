@@ -68,6 +68,7 @@ struct SceneRendererData
 
 static SceneRendererData s_Data;
 
+// Initialises scene renderer by setting up all required framebuffers and framebuffer textures and render passes
 void SceneRenderer::Init()
 {
 	#pragma region Geometry Pass
@@ -150,12 +151,6 @@ void SceneRenderer::Init()
 	transparencyFramebufferSpec.Width = 1280;
 	transparencyFramebufferSpec.Height = 720;
 
-	// Depth texture
-	FramebufferTextureSpecification depthTexture;
-	depthTexture.TextureUsage = FramebufferTextureUsage::DEPTH;
-	depthTexture.TextureType = FramebufferTextureType::TEX2D;
-	depthTexture.Format = FramebufferTextureFormat::DEPTH24STENCIL8;
-
 	// Fragment depth texture
 	FramebufferTextureSpecification fragDepthTexture;
 	fragDepthTexture.TextureUsage = FramebufferTextureUsage::COLOUR;
@@ -187,7 +182,6 @@ void SceneRenderer::Init()
 	transparencyFramebufferSpec.Attach(backTexture, 2);
 	transparencyFramebufferSpec.Attach(backTexture, 5);
 	transparencyFramebufferSpec.Attach(colourBlendTexture, 6);
-	transparencyFramebufferSpec.Attach(depthTexture, 7);
 
 	transparencyRenderPassSpec.TargetFramebuffer = Framebuffer::Create(transparencyFramebufferSpec);
 	s_Data.TransparencyPass = RenderPass::Create(transparencyRenderPassSpec);
@@ -215,11 +209,9 @@ void SceneRenderer::Init()
 	
 	s_Data.DualDepthPeelBlendShader = Shader::Create("assets/shaders/DualDepthPeelBlend.glsl");
 	s_Data.DualDepthPeelBlend = MaterialInstance::Create(Material::Create(s_Data.DualDepthPeelBlendShader));
-	s_Data.DualDepthPeelBlend->SetFlag(MaterialFlag::DepthTest, true);
 
 	s_Data.DualDepthPeelCompositeShader = Shader::Create("assets/shaders/DualDepthPeelComposite.glsl");
 	s_Data.DualDepthPeelComposite = MaterialInstance::Create(Material::Create(s_Data.DualDepthPeelCompositeShader));
-	s_Data.DualDepthPeelComposite->SetFlag(MaterialFlag::DepthTest, true);
 
 	#pragma endregion
 
@@ -288,6 +280,7 @@ void SceneRenderer::Init()
 	// Grid
 	auto gridShader = Shader::Create("assets/shaders/Grid.glsl");
 	s_Data.GridMaterial = MaterialInstance::Create(Material::Create(gridShader));
+	s_Data.GridMaterial->SetFlag(MaterialFlag::DepthTest, true);
 
 	float gridScale = 16.025f;
 	float gridSize = 0.025f;
@@ -301,6 +294,7 @@ void SceneRenderer::Init()
 	s_Data.OutlineMaterial->SetFlag(MaterialFlag::DepthTest, false);
 }
 
+// Calls Framebuffer::Resize for resizing all framebuffers when the viewport changes size
 void SceneRenderer::SetViewportSize(uint32_t width, uint32_t height)
 {
 	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->Resize(width, height);
@@ -314,6 +308,7 @@ void SceneRenderer::SetViewportSize(uint32_t width, uint32_t height)
 	s_Data.ViewportSize = { width, height };
 }
 
+// Sets the active scene, scene camera and scenes light environment
 void SceneRenderer::BeginScene(const Scene* scene, const SceneRendererCamera& camera)
 {
 	LD_CORE_ASSERT(!s_Data.ActiveScene, "");
@@ -334,6 +329,7 @@ void SceneRenderer::EndScene()
 	FlushDrawList();
 }
 
+// Submits a mesh to its corresponding draw list
 void SceneRenderer::SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform, Ref<MaterialInstance> overrideMaterial, bool transparency)
 {
 	// Culling, sorting, can be done here
@@ -348,6 +344,7 @@ void SceneRenderer::SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform, Ref<M
 	}
 }
 
+// Submits a selected mesh to its corresponding draw list
 void SceneRenderer::SubmitSelectedMesh(Ref<Mesh> mesh, const glm::mat4& transform, bool transparency)
 {
 	if (transparency)
@@ -360,6 +357,7 @@ void SceneRenderer::SubmitSelectedMesh(Ref<Mesh> mesh, const glm::mat4& transfor
 	}
 }
 
+// Geometry pass to create g-buffer
 void SceneRenderer::GeometryPass()
 {
 	Renderer::BeginRenderPass(s_Data.GeometryPass);
@@ -367,7 +365,7 @@ void SceneRenderer::GeometryPass()
 	auto viewProjection = s_Data.SceneData.SceneCamera.Camera.GetProjectionMatrix() * s_Data.SceneData.SceneCamera.ViewMatrix;
 	glm::vec3 cameraPosition = glm::inverse(s_Data.SceneData.SceneCamera.ViewMatrix)[3];
 
-	// Render meshes
+	// Render non-selected meshes
 	for (auto& dc : s_Data.MeshDrawList)
 	{
 		auto baseMaterial = dc.Mesh->GetMaterial();
@@ -378,6 +376,7 @@ void SceneRenderer::GeometryPass()
 		Renderer::SubmitMesh(dc.Mesh, dc.Transform);
 	}
 
+	// Render only selected meshes
 	for (auto& dc : s_Data.SelectedMeshDrawList)
 	{
 		auto baseMaterial = dc.Mesh->GetMaterial();
@@ -391,6 +390,7 @@ void SceneRenderer::GeometryPass()
 	Renderer::EndRenderPass();
 }
 
+// Lighting pass that utilises g-buffer for performing per-pixel lighting
 void SceneRenderer::LightingPass()
 {
 	Renderer::BeginRenderPass(s_Data.LightingPass);
@@ -399,13 +399,13 @@ void SceneRenderer::LightingPass()
 
 	s_Data.LightingShader->Bind();
 
+	s_Data.LightingShader->SetVec3("u_CameraPosition", cameraPosition);
+
 	// Bind colour attachments
 	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(0, 0); // Position
 	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(1, 1); // Normals
 	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(2, 2); // Diffuse
 	s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(3, 3); // Specular
-
-	s_Data.LightingShader->SetVec3("u_CameraPosition", cameraPosition);
 
 	// Directional light
 	s_Data.LightingShader->SetFloat("r_DirectionalLight.Brightness", s_Data.SceneData.DirLight.Brightness);
@@ -418,7 +418,7 @@ void SceneRenderer::LightingPass()
 	int it = 0;
 
 	// Iterate over all point lights
-	for (it; it < 1000; it++)
+	for (it; it < 100; it++)
 	{
 		auto& pointLight = s_Data.SceneData.LightEnv.PointLights[it];
 
@@ -459,13 +459,13 @@ void SceneRenderer::TransparencyPass()
 		glEnable(GL_BLEND);
 	});
 
-	// Render targets 1 and 2 store the front and back colors
+	// Render targets 1 and 2 store the front and back colours
 	// Clear both textures to black and use max blending to filter the written colour
-	// At most, one front colour and one back colour can be written every pass
+	// At most, one front colour and one back colour can be written each pass
 	s_Data.TransparencyPass->GetSpecification().TargetFramebuffer->DrawBuffers(1, 2);
 	s_Data.TransparencyPass->GetSpecification().TargetFramebuffer->Clear(0.0f, 0.0f, 0.0f, 0.0f);
 
-	// Render target 0 stores the minimum and maximum depth (it is our depth texture)
+	// Render target 0 stores the minimum and maximum depth
 	s_Data.TransparencyPass->GetSpecification().TargetFramebuffer->DrawBuffers(0);
 
 	// Clear with negative max depth
@@ -477,7 +477,7 @@ void SceneRenderer::TransparencyPass()
 		glBlendEquation(GL_MAX);
 	});
 
-	// Render transparent meshes with DepthPeelingInit
+	// Render non-selected transparent meshes with DepthPeelingInit
 	for (auto& dc : s_Data.TransparentMeshDrawList)
 	{
 		auto material = s_Data.DualDepthPeelInit;
@@ -487,7 +487,7 @@ void SceneRenderer::TransparencyPass()
 		Renderer::SubmitMesh(dc.Mesh, dc.Transform, material);
 	}
 
-	// Render transparent meshes with DepthPeelingInit
+	// Render only selected transparent meshes with DepthPeelingInit
 	for (auto& dc : s_Data.SelectedTransparentMeshDrawList)
 	{
 		auto material = s_Data.DualDepthPeelInit;
@@ -497,10 +497,10 @@ void SceneRenderer::TransparencyPass()
 		Renderer::SubmitMesh(dc.Mesh, dc.Transform, material);
 	}
 
-	// Bind our back texture
+	// Bind our back colour texture
 	s_Data.TransparencyPass->GetSpecification().TargetFramebuffer->DrawBuffers(6);
 
-	// Clear colour buffer
+	// Clear  back colour buffer
 	s_Data.TransparencyPass->GetSpecification().TargetFramebuffer->Clear(0.0f, 0.0f, 0.0f, 0.0f);
 
 	// Depth peeling layers
@@ -512,7 +512,7 @@ void SceneRenderer::TransparencyPass()
 	int frontAttachments[2] = { 1, 4 };
 	int backAttachments[2] = { 2, 5 };
 
-	for (int i = 1; i < 8; i++)
+	for (int i = 1; i < s_Data.Options.LayerPeels; i++)
 	{
 		// Always provide us the modulo of the current layer and 2 (currentAttachment will always be 0 or 1)
 		currentAttachment = i % 2;
@@ -526,7 +526,7 @@ void SceneRenderer::TransparencyPass()
 		// Alternate between our two front texture attachments
 		s_Data.TransparencyPass->GetSpecification().TargetFramebuffer->DrawBuffers(depthAttachment + 1, depthAttachment + 2);
 
-		// Clear colour buffer
+		// Clear front colour buffer
 		s_Data.TransparencyPass->GetSpecification().TargetFramebuffer->Clear(0.0f, 0.0f, 0.0f, 0.0f);
 
 		// Alternate between our two depth textures
@@ -535,7 +535,7 @@ void SceneRenderer::TransparencyPass()
 		// Clear with negative max depth
 		s_Data.TransparencyPass->GetSpecification().TargetFramebuffer->Clear(-MAX_DEPTH, -MAX_DEPTH, 0.0f, 0.0f);
 
-		// Alternate between our two depth textures (he says he renders to 3 buffers, not too sure what is going on here)
+		// Draw to depth and front, back colour buffers
 		s_Data.TransparencyPass->GetSpecification().TargetFramebuffer->DrawBuffers(depthAttachment, depthAttachment + 1, depthAttachment + 2);
 
 		// Enable max blending
@@ -547,7 +547,7 @@ void SceneRenderer::TransparencyPass()
 		// Bind our depth texture to texture unit 0 (alternate between both depth attachments)
 		s_Data.TransparencyPass->GetSpecification().TargetFramebuffer->BindColourAttachment(depthAttachments[previousAttachment], 0);
 
-		// Bind our front texture to texture unit 1 (alternate between our first front texture and first depth texture)
+		// Bind our front texture to texture unit 1 (alternate between our first and second front textures)
 		s_Data.TransparencyPass->GetSpecification().TargetFramebuffer->BindColourAttachment(frontAttachments[previousAttachment], 1);
 
 		Renderer::Submit([]()
@@ -556,7 +556,7 @@ void SceneRenderer::TransparencyPass()
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		});
 
-		// Render transparent meshes with DepthPeeling
+		// Render non-selected transparent meshes with DepthPeeling
 		for (auto& dc : s_Data.TransparentMeshDrawList)
 		{
 			auto material = s_Data.DualDepthPeel;
@@ -567,7 +567,7 @@ void SceneRenderer::TransparencyPass()
 			Renderer::SubmitMesh(dc.Mesh, dc.Transform, material);
 		}
 
-		// Render transparent meshes with DepthPeeling
+		// Render only selected transparent meshes with DepthPeeling
 		for (auto& dc : s_Data.SelectedTransparentMeshDrawList)
 		{
 			auto material = s_Data.DualDepthPeel;
@@ -578,7 +578,7 @@ void SceneRenderer::TransparencyPass()
 			Renderer::SubmitMesh(dc.Mesh, dc.Transform, material);
 		}
 
-		// Full-screen pass to alpha-blend the back texture (in his example he sets attachment point 6 for drawing to, we don't have a buffer there though do we?)
+		// Full-screen pass to alpha-blend the back texture (this is written to our intermediate blender texture)
 		s_Data.TransparencyPass->GetSpecification().TargetFramebuffer->DrawBuffers(6);
 
 		// Enable over blending
@@ -607,6 +607,7 @@ void SceneRenderer::TransparencyPass()
 	// Bind our depth attachment to texture unit 0 (alternate between our first and last depth texture)
 	s_Data.TransparencyPass->GetSpecification().TargetFramebuffer->BindColourAttachment(depthAttachments[currentAttachment], 0);
 
+	// Bind our front attachments to texture unit 1
 	s_Data.TransparencyPass->GetSpecification().TargetFramebuffer->BindColourAttachment(frontAttachments[currentAttachment], 1);
 
 	// Bind our colour blend texture to texture unit 2
@@ -614,7 +615,6 @@ void SceneRenderer::TransparencyPass()
 
 	// Render final results to full-screen quad
 	Renderer::SubmitFullscreenQuad(s_Data.DualDepthPeelComposite);
-
 	Renderer::EndRenderPass();
 }
 
@@ -622,11 +622,20 @@ void SceneRenderer::CompositePass()
 {
 	Renderer::BeginRenderPass(s_Data.CompositePass);
 
+	// Disable blending
+	Renderer::Submit([]()
+	{
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
+	});
+
 	s_Data.CompositeShader->Bind();
 	s_Data.CompositeShader->SetFloat("u_Exposure", s_Data.SceneData.SceneCamera.Camera.GetExposure());
+
+	// Bind our light pass texture
 	s_Data.LightingPass->GetSpecification().TargetFramebuffer->BindColourAttachment();
 
-	// Check SceneRenderer options for showing buffers individually
+	// Check SceneRenderer options for showing g-buffer textures individually
 	if (GetOptions().ShowPosition)
 	{
 		s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(0, 0);
@@ -647,11 +656,10 @@ void SceneRenderer::CompositePass()
 		s_Data.GeometryPass->GetSpecification().TargetFramebuffer->BindColourAttachment(3, 0);
 	}
 
+	// Bind our front, back and colour blender textures from depth-peeled pass
 	s_Data.TransparencyPass->GetSpecification().TargetFramebuffer->BindColourAttachment(0, 1);
 	s_Data.TransparencyPass->GetSpecification().TargetFramebuffer->BindColourAttachment(1, 2);
 	s_Data.TransparencyPass->GetSpecification().TargetFramebuffer->BindColourAttachment(6, 3);
-
-	s_Data.EditorPass->GetSpecification().TargetFramebuffer->BindColourAttachment(0, 4);
 
 	Renderer::SubmitFullscreenQuad(nullptr);
 
@@ -688,6 +696,7 @@ void SceneRenderer::EditorPass()
 	Renderer::EndRenderPass();
 }
 
+// Executes each render pass in order and flushes both mesh draw lists (transparent and non-transparent)
 void SceneRenderer::FlushDrawList()
 {
 	LD_CORE_ASSERT(!s_Data.ActiveScene, "");
@@ -703,13 +712,6 @@ void SceneRenderer::FlushDrawList()
 	s_Data.TransparentMeshDrawList.clear();
 	s_Data.SelectedTransparentMeshDrawList.clear();
 	s_Data.SceneData = {};
-}
-
-Ref<Texture2D> SceneRenderer::GetFinalColourBuffer()
-{
-	LD_CORE_ASSERT(false, "Not implemented");
-
-	return nullptr;
 }
 
 Ref<RenderPass> SceneRenderer::GetFinalRenderPass()

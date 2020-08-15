@@ -15,8 +15,8 @@ using RendererID = uint32_t;
 
 #define BIT(x) (1 << x)
 
+// Definition for binding callback events (for event listener)
 #define LD_BIND_EVENT_FN(fn) std::bind(&##fn, this, std::placeholders::_1)
-//#define BIND_EVENT_FN(fn) std::bind(&Application::##fn, this, std::placeholders::_1)
 
 #include "Lucid/Core/Assert.h"
 

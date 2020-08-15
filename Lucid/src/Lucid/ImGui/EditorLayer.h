@@ -58,6 +58,7 @@ public:
 	bool Property(const std::string& name, glm::vec4& value, PropertyFlag flags);
 	bool Property(const std::string& name, glm::vec4& value, float min = -1.0f, float max = 1.0f, PropertyFlag flags = PropertyFlag::None);
 	bool Property(const Ref<Texture2D>& texture, float& value, float min = 1.0f, float max = 10.0f, float sliderWidth = 100.0, PropertyFlag flags = PropertyFlag::None);
+	bool Property(const Ref<Texture2D>& texture, int& value, int min, int max, float sliderWidth, PropertyFlag flags = PropertyFlag::None);
 
 	void ShowBoundingBoxes(bool show);
 

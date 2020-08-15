@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 
+// Invasive reference counting system, handles reference counting of all objects created with <Ref>, this is to manage scope of objects that are required during the render command queue
 class RefCounted
 {
 

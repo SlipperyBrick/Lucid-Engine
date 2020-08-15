@@ -24,11 +24,12 @@ in vec2 v_TexCoord;
 
 uniform sampler2D u_LightingTexture;
 
+// Depth-peeling textures
 uniform sampler2DRect u_depthTexture;
 uniform sampler2DRect u_frontTexture;
 uniform sampler2DRect u_backTexture;
 
-uniform sampler2D u_EditorTexture;
+uniform sampler2D u_lightingDepth;
 
 uniform float u_Exposure;
 
@@ -54,11 +55,9 @@ void main()
 	// Frag coords for sampling front and back textures
 	vec2 fragCoord = gl_FragCoord.xy;
 
-	// Get the front and back blender colours
+	// Get the front and back colours
 	vec4 frontColour = texture(u_frontTexture, fragCoord);
 	vec3 backColour = texture(u_backTexture, fragCoord).rgb;
-
-	vec4 editorColour = texture(u_EditorTexture, v_TexCoord);
 
 	o_Colour = vec4(frontColour.rgb + backColour.rgb * frontColour.a + lightingPass.rgb, 1.0);
 }

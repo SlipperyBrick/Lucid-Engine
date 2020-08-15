@@ -1,5 +1,5 @@
 # Blender MTL File: 'sponza.blend'
-# Material Count: 7
+# Material Count: 8
 
 newmtl sponza_arch
 Ns 0.000000
@@ -10,7 +10,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 0.000000
 d 1.000000
 illum 2
-map_Bump -bm 0.500000 textures\\sponza_arch_n.tga
+map_Bump textures\\sponza_arch_n.tga
 map_Kd textures\\sponza_arch_d.tga
 map_Ks textures\\sponza_arch_s.tga
 map_Ns textures\\sponza_arch_g.tga
@@ -24,7 +24,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 0.000000
 d 1.000000
 illum 2
-map_Bump -bm 0.500000 textures\\sponza_bricks_n.tga
+map_Bump textures\\sponza_bricks_n.tga
 map_Kd textures\\sponza_bricks_d.tga
 map_Ks textures\\sponza_bricks_s.tga
 map_Ns textures\\sponza_bricks_g.tga
@@ -38,7 +38,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 0.000000
 d 1.000000
 illum 2
-map_Bump -bm 0.500000 textures\\sponza_ceiling_n.tga
+map_Bump textures\\sponza_ceiling_n.tga
 map_Kd textures\\sponza_ceiling_d.tga
 map_Ks textures\\sponza_ceiling_s.tga
 map_Ns textures\\sponza_ceiling_g.tga
@@ -52,7 +52,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 0.000000
 d 1.000000
 illum 2
-map_Bump -bm 0.500000 textures\\sponza_column_a_n.tga
+map_Bump textures\\sponza_column_a_n.tga
 map_Kd textures\\sponza_column_a_d.tga
 map_Ks textures\\sponza_column_a_s.tga
 map_Ns textures\\sponza_column_a_g.tga
@@ -66,7 +66,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 0.050000
 d 1.000000
 illum 2
-map_Bump -bm 0.500000 textures\\sponza_column_b_n.tga
+map_Bump textures\\sponza_column_b_n.tga
 map_Kd textures\\sponza_column_b_d.tga
 map_Ks textures\\sponza_column_b_s.tga
 map_Ns textures\\sponza_column_b_g.tga
@@ -80,10 +80,24 @@ Ke 0.000000 0.000000 0.000000
 Ni 0.000000
 d 1.000000
 illum 2
-map_Bump -bm 0.500000 textures\\sponza_column_c_n.tga
+map_Bump textures\\sponza_column_c_n.tga
 map_Kd textures\\sponza_column_c_d.tga
 map_Ks textures\\sponza_column_c_s.tga
 map_Ns textures\\sponza_column_c_g.tga
+
+newmtl sponza_details
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 0.000000
+d 1.000000
+illum 2
+map_Bump textures\\sponza_details_n.tga
+map_Kd textures\\sponza_details_d.tga
+map_Ks textures\\sponza_details_s.tga
+map_Ns textures\\sponza_details_g.tga
 
 newmtl sponza_floor_a
 Ns 0.000000
@@ -94,7 +108,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 0.000000
 d 1.000000
 illum 2
-map_Bump -bm 0.500000 textures\\sponza_floor_n.tga
+map_Bump textures\\sponza_floor_n.tga
 map_Kd textures\\sponza_floor_d.tga
 map_Ks textures\\sponza_floor_s.tga
 map_Ns textures\\sponza_floor_g.tga

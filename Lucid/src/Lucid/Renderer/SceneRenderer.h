@@ -15,6 +15,8 @@ struct SceneRendererOptions
 	bool ShowGrid = true;
 	bool ShowBoundingBoxes = false;
 	bool SetCameraMode = false;
+
+	int LayerPeels = 4;
 };
 
 struct SceneRendererCamera
@@ -23,6 +25,7 @@ struct SceneRendererCamera
 	glm::mat4 ViewMatrix;
 };
 
+// Interface between renderer and scene, manages all state that is required to render a given scene
 class SceneRenderer
 {
 
@@ -39,7 +42,6 @@ public:
 	static void SubmitSelectedMesh(Ref<Mesh> mesh, const glm::mat4& transform = glm::mat4(1.0f), bool transparency = false);
 
 	static Ref<RenderPass> GetFinalRenderPass();
-	static Ref<Texture2D> GetFinalColourBuffer();
 
 	static uint32_t GetFinalColourBufferRendererID();
 

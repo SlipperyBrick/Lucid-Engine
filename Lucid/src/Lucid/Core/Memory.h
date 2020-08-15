@@ -2,7 +2,7 @@
 
 #include "ldpch.h"
 
-// Struct that handles allocation, initalisation and writing/copying of memory
+// Struct that handles allocation, initalisation and writing/copying of memory (mainly used for allocating memory of function pointers to render command queue)
 struct Memory
 {
 	byte* Data;

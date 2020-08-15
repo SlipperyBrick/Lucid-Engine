@@ -28,7 +28,7 @@ struct PointLight
 
 struct LightEnvironment
 {
-	PointLight PointLights[1000];
+	PointLight PointLights[100];
 };
 
 class Entity;
@@ -80,6 +80,10 @@ public:
 	static Ref<Scene> GetScene(LucidUUID uuid);
 
 	void SetSelectedEntity(entt::entity entity) { m_SelectedEntity = entity; }
+
+public:
+
+	int m_LayerPeels = 4;
 
 private:
 

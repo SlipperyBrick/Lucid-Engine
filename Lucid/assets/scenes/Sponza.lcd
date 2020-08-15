@@ -1,36 +1,102 @@
 Scene: Scene Name
 Directional Light:
-  Direction: [0, 0, -1]
+  Direction: [-1, -1, -1]
   Brightness: 0.00999999978
   Diffuse: [1, 1, 1]
   Ambient: [0.00392156886, 0.00392156886, 0.00392156886]
   Specular: [1, 1, 1]
 Entities:
-  - Entity: 1813482296
+  - Entity: 7611296
     TagComponent:
-      Tag: Empty Entity
+      Tag: Sphere 03
     TransformComponent:
-      Position: [-1.1159209, 0.649147153, -0.817080259]
+      Position: [2.5, -0.699999988, 0]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
-    LightComponent:
-      Brightness: 1
-      Diffuse: [0.513513505, 0.939213753, 1]
-      Specular: [1, 1, 1]
-      Quadratic: 1
-  - Entity: 969168919
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: true
+  - Entity: 4225380447
     TagComponent:
-      Tag: Empty Entity
+      Tag: Sphere 02
     TransformComponent:
-      Position: [3.63400006, 0.649147153, 0.698463142]
+      Position: [0, -0.699999988, 0]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
-    LightComponent:
-      Brightness: 1
-      Diffuse: [1, 0.706975758, 0.34362936]
-      Specular: [1, 1, 1]
-      Quadratic: 1
-  - Entity: 3587948670
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: true
+  - Entity: 1145238128
+    TagComponent:
+      Tag: Sphere 01
+    TransformComponent:
+      Position: [-2.5, -0.699926734, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: true
+  - Entity: 7725889
+    TagComponent:
+      Tag: Sphere 14
+    TransformComponent:
+      Position: [-2.5, 0.699999988, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: true
+  - Entity: 3630285400
+    TagComponent:
+      Tag: Sphere 11
+    TransformComponent:
+      Position: [-2.5, 2, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: true
+  - Entity: 2837604377
+    TagComponent:
+      Tag: Sphere 08
+    TransformComponent:
+      Position: [2.5, 0.699999988, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: true
+  - Entity: 2521428759
+    TagComponent:
+      Tag: Sphere 12
+    TransformComponent:
+      Position: [0.00292590261, 0.699999988, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: true
+  - Entity: 1848680318
+    TagComponent:
+      Tag: Sphere 09
+    TransformComponent:
+      Position: [0, 2, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: true
+  - Entity: 4111107283
+    TagComponent:
+      Tag: Sphere 13
+    TransformComponent:
+      Position: [2.5, 2, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: true
+  - Entity: 582599947
     TagComponent:
       Tag: Sponza
     TransformComponent:
@@ -38,23 +104,103 @@ Entities:
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponent:
-      AssetPath: assets\models\sponza\sponza.obj
+      AssetPath: D:\GitHub\Lucid\Lucid\assets\models\sponza\sponza.obj
       Transparent: false
-  - Entity: 2022443951
+  - Entity: 3144360710
     TagComponent:
       Tag: Sphere 01
     TransformComponent:
-      Position: [2.5, 0, 0]
+      Position: [-3.75, -0.699926734, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: true
+  - Entity: 1977020498
+    TagComponent:
+      Tag: Sphere 02
+    TransformComponent:
+      Position: [-1.25, -0.699999988, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: true
+  - Entity: 3701154777
+    TagComponent:
+      Tag: Sphere 03
+    TransformComponent:
+      Position: [1.25, -0.699999988, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: true
+  - Entity: 3800364790
+    TagComponent:
+      Tag: Sphere 04
+    TransformComponent:
+      Position: [2.5, -0.699999988, 2.0999999]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponent:
       AssetPath: assets\models\sphere\sphere.obj
       Transparent: false
-  - Entity: 384042869
+  - Entity: 1092038607
     TagComponent:
-      Tag: Sphere 02
+      Tag: Sphere 05
     TransformComponent:
-      Position: [-2.5, 0, 0]
+      Position: [0, -0.699999988, 2.0999999]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: false
+  - Entity: 3810880863
+    TagComponent:
+      Tag: Sphere 06
+    TransformComponent:
+      Position: [-2.5, -0.699926734, 2.0999999]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: false
+  - Entity: 3383784951
+    TagComponent:
+      Tag: Sphere 07
+    TransformComponent:
+      Position: [2.5, -0.699999988, -2.0999999]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: false
+  - Entity: 1370949
+    TagComponent:
+      Tag: Sphere 08
+    TransformComponent:
+      Position: [1.25, 0.699999988, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: true
+  - Entity: 1189139255
+    TagComponent:
+      Tag: Sphere 09
+    TransformComponent:
+      Position: [-1.25, 2, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: true
+  - Entity: 3874222463
+    TagComponent:
+      Tag: Sphere 10
+    TransformComponent:
+      Position: [0, -0.699999988, -2.0999999]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponent:
@@ -62,11 +208,75 @@ Entities:
       Transparent: false
   - Entity: 2508818778
     TagComponent:
-      Tag: Sphere 03
+      Tag: Sphere 11
     TransformComponent:
-      Position: [0, 0, 0]
+      Position: [-3.74950266, 2, 0]
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponent:
       AssetPath: assets\models\sphere\sphere.obj
       Transparent: true
+  - Entity: 384042869
+    TagComponent:
+      Tag: Sphere 12
+    TransformComponent:
+      Position: [-1.25, 0.699999988, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: true
+  - Entity: 2022443951
+    TagComponent:
+      Tag: Sphere 13
+    TransformComponent:
+      Position: [1.25, 2, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: true
+  - Entity: 1639510076
+    TagComponent:
+      Tag: Sphere 14
+    TransformComponent:
+      Position: [-3.75, 0.699999988, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: true
+  - Entity: 2352914520
+    TagComponent:
+      Tag: Sphere 15
+    TransformComponent:
+      Position: [-2.5, -0.699926734, -2.0999999]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      AssetPath: assets\models\sphere\sphere.obj
+      Transparent: false
+  - Entity: 348567886
+    TagComponent:
+      Tag: Light 02
+    TransformComponent:
+      Position: [-3.5, 0.75, -0.5]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    LightComponent:
+      Brightness: 1
+      Diffuse: [0.752895772, 0.939893603, 1]
+      Specular: [1, 1, 1]
+      Quadratic: 1
+  - Entity: 1934250811
+    TagComponent:
+      Tag: Light 01
+    TransformComponent:
+      Position: [3.5, 0.75, 0.5]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    LightComponent:
+      Brightness: 1
+      Diffuse: [1, 0.873108685, 0.752895772]
+      Specular: [1, 1, 1]
+      Quadratic: 1

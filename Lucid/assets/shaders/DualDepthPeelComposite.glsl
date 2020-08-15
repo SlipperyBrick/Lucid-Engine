@@ -11,9 +11,9 @@ void main()
 #type fragment
 #version 430
 
-uniform sampler2DRect depthBlenderTex;	//depth blending output
-uniform sampler2DRect frontBlenderTex;	//front blending output
-uniform sampler2DRect backBlenderTex;	//back blending output
+uniform sampler2DRect depthBlenderTex;
+uniform sampler2DRect frontBlenderTex;
+uniform sampler2DRect backBlenderTex;
 
 layout(location = 0) out vec4 vFragColor;
 
@@ -22,16 +22,10 @@ void main()
 	// Get the front and back blender colours
 	vec2 fragCoord = gl_FragCoord.xy;
 
-	vec4 frontColor = texture(frontBlenderTex, fragCoord);
-	vec3 backColor = texture(backBlenderTex, fragCoord).rgb; 
+	vec4 frontColour = texture(frontBlenderTex, fragCoord);
+	vec3 backColour = texture(backBlenderTex, fragCoord).rgb; 
 
 	// Composite the front and back blending results
-	vFragColor.rgb = frontColor.rgb + backColor * frontColor.a;
+	vFragColor.rgb = frontColour.rgb + backColour * frontColour.a;
 	vFragColor.a = 1.0;
-
-	// Front blender
-	//vFragColor.rgb = frontColor + vec3(alphaMultiplier);
-	
-	// Back blender
-	//vFragColor.rgb = backColor;
 }

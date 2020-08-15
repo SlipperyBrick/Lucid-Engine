@@ -75,7 +75,7 @@ uniform vec3 u_Diffuse;
 uniform float u_Specular;
 uniform float u_Gloss;
 
-// ImGui texture toggles
+// ImGui texture toggles (no longer available in user-interface)
 uniform float u_DiffuseTexToggle;
 uniform float u_NormalTexToggle;
 uniform float u_SpecularTexToggle;
@@ -100,15 +100,19 @@ void main()
 		m_Params.Normal = normalize(vs_Input.Normal);
 	}
 
+	// Output positions
 	o_Position.rgb = vs_Input.FragPos;
 	o_Position.a = 1.0;
 
+	// Output normals
 	o_Normal.rgb = normalize(m_Params.Normal);
 	o_Normal.a = 1.0;
 
+	// Output albedo
 	o_Albedo.rgb = m_Params.Diffuse;
 	o_Albedo.a = 1.0;
 
+	// Output specular/gloss
 	o_Specular.r = m_Params.Specular;
 	o_Specular.g = m_Params.Gloss;
 	o_Specular.b = 1.0;

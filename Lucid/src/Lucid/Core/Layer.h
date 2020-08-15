@@ -5,6 +5,7 @@
 #include "Lucid/Core/Events/Event.h"
 #include "Lucid/Core/Timestep.h"
 
+// Interface for creation of layer abstraction
 class Layer
 {
 

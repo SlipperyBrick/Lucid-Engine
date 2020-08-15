@@ -5,6 +5,7 @@
 #include "Lucid/Core/Timestep.h"
 #include "Lucid/Core/Events/MouseEvent.h"
 
+// Editor camera that calculates camera angles, camera speed
 class EditorCamera : public Camera
 {
 
@@ -38,8 +39,8 @@ public:
 	float GetPitch() const { return m_Pitch; }
 	float GetYaw() const { return m_Yaw; }
 
-	float GetSpeed() const { return m_Speed; }
-	float& GetSpeed() { return m_Speed; }
+	int GetSpeed() const { return m_Speed; }
+	int& GetSpeed() { return m_Speed; }
 
 private:
 
@@ -73,7 +74,8 @@ private:
 	float m_Distance;
 	float m_Pitch;
 	float m_Yaw;
-	float m_Speed;
+
+	int m_Speed;
 
 	uint32_t m_ViewportWidth = 1280;
 	uint32_t m_ViewportHeight = 720;

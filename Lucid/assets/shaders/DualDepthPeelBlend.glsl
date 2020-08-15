@@ -21,7 +21,7 @@ void main()
 	// Return the intermediate blending result
 	vFragColor = texture(tempTexture, gl_FragCoord.xy); 
 
-	// If the alpha is 0 then we discard the fragment
+	// If the alpha is 0 then discard the fragment
 	if(vFragColor.a == 0)
 	{
 		discard;

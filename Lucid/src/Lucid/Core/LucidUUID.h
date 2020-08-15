@@ -4,6 +4,7 @@
 
 #include "Lucid/Core/Base.h"
 
+// Provides a universally unique identidifer (mainly used to provide UUID's for entities)
 class LucidUUID
 {
 

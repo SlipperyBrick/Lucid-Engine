@@ -103,6 +103,7 @@ void EditorCamera::OnUpdate(Timestep ts)
 
 	m_InitialMousePosition = mouse;
 
+	// Check if ALT key is pressed
 	if (window.IsKeyPressed(LD_KEY_LEFT_ALT))
 	{
 		m_Orbit = true;
@@ -121,7 +122,7 @@ void EditorCamera::OnUpdate(Timestep ts)
 		}
 	}
 
-	// Need to check if mouse position is within the viewport
+	// Check if RMB is pressed and ALT key isn't pressed
 	if (window.IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT) && !window.IsKeyPressed(LD_KEY_LEFT_ALT))
 	{
 		m_Orbit = false;

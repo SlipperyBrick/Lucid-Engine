@@ -183,6 +183,39 @@ bool EditorLayer::Property(const Ref<Texture2D>& texture, float& value, float mi
 	return changed;
 }
 
+bool EditorLayer::Property(const Ref<Texture2D>& texture, int& value, int min, int max, float sliderWidth, PropertyFlag flags)
+{
+	// Offset the x position
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX() - (-8));
+
+	// Offset the y position
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (ImGui::GetTextLineHeight() - texture->GetHeight() / 2));
+	ImGui::Image((ImTextureID)(texture->GetRendererID()), ImVec2(texture->GetWidth(), texture->GetHeight()), ImVec2(0, 0), ImVec2(1, 1));
+
+	ImGui::SameLine();
+
+	// Offset the x position
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 4);
+	ImGui::PushItemWidth(sliderWidth);
+
+	std::string id = "##" + texture->GetPath();
+	bool changed = false;
+
+	if (flags == PropertyFlag::SliderProperty)
+	{
+		changed = ImGui::SliderInt(id.c_str(), &value, min, max);
+	}
+	else
+	{
+		changed = ImGui::DragInt(id.c_str(), &value, 1.0f, min, max);
+	}
+
+	ImGui::PopItemWidth();
+	ImGui::NextColumn();
+
+	return changed;
+}
+
 #pragma endregion
 
 EditorLayer::EditorLayer()
@@ -576,37 +609,36 @@ void EditorLayer::OnImGuiRender()
 		}
 	}
 
-	ImGui::SameLine();
+	float xc = ImGui::GetCursorPosX();
+	float yc = ImGui::GetCursorPosY();
 
-	ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-
-	ImGui::SameLine();
-
-	// Show depth-peeling
-	if (SceneRenderer::GetOptions().ShowDepthPeeling)
-	{
-		if (ImGui::ImageButton((ImTextureID)(m_DepthPeelingTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
-		{
-			SceneRenderer::GetOptions().ShowDepthPeeling = false;
-		}
-	}
-
-	if (!SceneRenderer::GetOptions().ShowDepthPeeling)
-	{
-		if (ImGui::ImageButton((ImTextureID)(m_DepthPeelingTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.25f)))
-		{
-			SceneRenderer::GetOptions().ShowDepthPeeling = true;
-		}
-	}
+	LD_CORE_WARN("{0}, {1}", xc, yc);
 
 	ImGui::SameLine();
 
 	ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 
 	ImGui::SameLine();
+
+	// Layer peels
+	Property(m_DepthPeelingTex, SceneRenderer::GetOptions().LayerPeels, 4, 25, 100.0f, PropertyFlag::SliderProperty);
+
+	ImGui::SameLine();
+
+	float x = ImGui::GetCursorPosX();
+
+	ImGui::SetCursorPos(ImVec2{ x + 10, 0 });
+
+	ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+
+	ImGui::SameLine();
+
+	x = ImGui::GetCursorPosX();
+
+	ImGui::SetCursorPos(ImVec2{ x, 0 });
 
 	// Camera speed
-	Property(m_CameraSpeedTex, m_EditorCamera.GetSpeed(), 1.0f, 10.0f, 100.0f, PropertyFlag::SliderProperty);
+	Property(m_CameraSpeedTex, m_EditorCamera.GetSpeed(), 1, 10, 100.0f, PropertyFlag::SliderProperty);
 
 	ImGui::End();
 

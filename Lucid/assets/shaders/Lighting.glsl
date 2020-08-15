@@ -45,7 +45,7 @@ in vec2 v_TexCoord;
 // Light inputs
 uniform DirectionalLight r_DirectionalLight;
 
-uniform PointLight r_PointLights[4];
+uniform PointLight r_PointLights[100];
 uniform int r_PointLightCount;
 
 // Colour attachment inputs

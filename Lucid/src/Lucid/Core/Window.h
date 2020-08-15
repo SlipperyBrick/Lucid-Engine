@@ -18,6 +18,7 @@ struct WindowProps
 		: Title(title), Width(width), Height(height) {}
 };
 
+// Window creation, on update and other useful utility methods such as window position, size
 class Window : public RefCounted
 {
 

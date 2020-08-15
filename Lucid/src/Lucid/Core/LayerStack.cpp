@@ -14,17 +14,20 @@ LayerStack::~LayerStack()
 	}
 }
 
+// Pushes a layer into the layer stack
 void LayerStack::PushLayer(Layer* layer)
 {
 	m_Layers.emplace(m_Layers.begin() + m_LayerInsertIndex, layer);
 	m_LayerInsertIndex++;
 }
 
+// Pushes an overlay into the layer stack
 void LayerStack::PushOverlay(Layer* overlay)
 {
 	m_Layers.emplace_back(overlay);
 }
 
+// Pops a layer from the layer stack
 void LayerStack::PopLayer(Layer* layer)
 {
 	auto it = std::find(m_Layers.begin(), m_Layers.end(), layer);
@@ -37,6 +40,7 @@ void LayerStack::PopLayer(Layer* layer)
 
 }
 
+// Pops and overlay from the layer stack
 void LayerStack::PopOverlay(Layer* overlay)
 {
 	auto it = std::find(m_Layers.begin(), m_Layers.end(), overlay);

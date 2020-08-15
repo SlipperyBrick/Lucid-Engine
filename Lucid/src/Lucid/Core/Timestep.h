@@ -1,6 +1,6 @@
 #pragma once
 
-// Manages the timestep of the application
+// Timestep calculate
 class Timestep
 {
 

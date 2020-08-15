@@ -2,6 +2,7 @@
 
 #include "Lucid/Core/Log.h"
 
+// Assert definitions for debugging purposes
 #define LD_ASSERT_NO_MESSAGE(condition) { if(!(condition)) { LD_CORE_ERROR("Assertion Failed"); __debugbreak(); } }
 #define LD_ASSERT_MESSAGE(condition, ...) { if(!(condition)) { LD_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
 

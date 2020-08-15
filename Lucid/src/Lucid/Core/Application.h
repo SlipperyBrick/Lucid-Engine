@@ -11,7 +11,6 @@
 
 #include "Lucid/Renderer/Camera.h"
 
-// Struct consisting of application properties such as app title and window width and height
 struct ApplicationProps
 {
 	std::string Name;
@@ -19,6 +18,7 @@ struct ApplicationProps
 	uint32_t WindowHeight;
 };
 
+// Handles applications layer stack, on update and event data and the run loop
 class Application
 {
 
