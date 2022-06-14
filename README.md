@@ -1,23 +1,15 @@
 ![Lucid](/Branding/logo-black.png?raw=true "Lucid")
 
-Hey guys,
+Lucid Engine is the result of my BSc Computing (Games Development) undergraduate degree major project. With a large passion for 3D graphics I decided to persue the idea of a rendering engine that offered a simple front-end editor to construct 3D scenes.
 
-After building the solution please navigate to the following folder directory:
+Whilst Lucid Engine has outgrown my undergraduate degree and continues to see development, my ambition is to make a rendering engine with an editor layer that supports a robust rendering system that allows extension to implement a variety of interesting rendering techniques that provide gorgeous visuals.
 
-Lucid > vendor > assimp
+During my undergraduate degree I decided fairly early on that I wanted to design and implement my own rendering engine, with the goal of learning as much as possible in terms of application design, computer graphics and all topics that encapsulate rendering and 3D graphics.
 
-You will find the assimp.dll file here. You will need to copy and paste this into the following directory:
+![Poster](https://i.imgur.com/NQRhofs.png)
 
-bin > Debug > Lucid
+With project ideas available to choose for an end of year major project I decided to focus on the topic of deferred rendering. The primary goal was to implement a solution for solving transparency in a deferred rendering system. Many techniques exist that solve this issue, but after further research and development of my project I settled on implementing dual-depth peeling and documenting the performance of this algorithm with a custom-made rendering engine and modern computing hardware.
 
-There is also a Release configuration I created for the project. This runs the project with optimizations. Feel free to select this configuration for use within Visual Studio if you wish for the application to run slightly quicker than it would in Debug mode.
+[!Screenshot](https://i.imgur.com/FE3GAo0.png)
 
-If you run into linker errors that are complaining about a library called YAML, simply select Rebuild All from the Build menu in Visual Studio. This is a known issue with the project, due to time constraints I couldn't investigate it further to provide a fix
-
-I have also had to zip the entire project directory to adhere to the file size limit Moodle imposes. You'll have to unzip this to gain access to the source code files.
-
-NOTE: If you do build in Release mode please follow the above step of copying the assimp.dll into the Release folder directory.
-
-Any other unexpected issues you may have building or running the project please email me.
-
-Enjoy Lucid Engine :D
+I intend on continuing development of Lucid Engine with further improvements to the lighting model it currently uses. Physically-based approaches offer incredible realism and will be my next focus. Other backend improvements to the renderer is also on the roadmap with big interests in exploring the implementation of other graphics API's such as DirectX or Vulkan.
