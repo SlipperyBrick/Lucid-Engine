@@ -195,7 +195,6 @@
     <None Include="assets\shaders\Buffer.glsl" />
     <None Include="assets\shaders\Lighting.glsl" />
     <None Include="vendor\assimp\assimp.dll" />
-    <None Include="assets\shaders\Editor.glsl" />
     <None Include="assets\shaders\DualDepthPeelInit.glsl" />
     <None Include="assets\shaders\DualDepthPeel.glsl" />
     <None Include="assets\shaders\DualDepthPeelBlend.glsl" />

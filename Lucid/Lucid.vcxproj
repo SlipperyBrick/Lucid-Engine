@@ -21,11 +21,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -69,6 +69,12 @@
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
+    <PreBuildEvent>
+      <Command>copy /Y "$(ProjectDir)vendor\assimp\assimp.dll" "$(SolutionDir)bin\$(Configuration)\$(ProjectName)"</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Copies the "assimp.dll" to the build directory of the project</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -475,7 +481,6 @@
     <None Include="assets\shaders\DualDepthPeelBlend.glsl" />
     <None Include="assets\shaders\DualDepthPeelComposite.glsl" />
     <None Include="assets\shaders\DualDepthPeelInit.glsl" />
-    <None Include="assets\shaders\Editor.glsl" />
     <None Include="assets\shaders\Grid.glsl" />
     <None Include="assets\shaders\Lighting.glsl" />
     <None Include="assets\shaders\Line.glsl" />

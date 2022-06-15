@@ -1,0 +1,30 @@
+Scene: Scene Name
+Directional Light:
+  Direction: [0, 0, -1]
+  Brightness: 0.5
+  Diffuse: [1, 1, 1]
+  Ambient: [0.100000001, 0.100000001, 0.100000001]
+  Specular: [1, 1, 1]
+Entities:
+  - Entity: 3382872990
+    TagComponent:
+      Tag: Flintlock Pistol
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [10, 10, 10]
+    MeshComponent:
+      AssetPath: D:\GitHub\Lucid-Engine\Lucid\assets\models\flintlock\pistol.obj
+      Transparent: false
+  - Entity: 707078689
+    TagComponent:
+      Tag: Point Light
+    TransformComponent:
+      Position: [-1.5, 0, -1.5]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    LightComponent:
+      Brightness: 10
+      Diffuse: [1, 1, 1]
+      Specular: [1, 1, 1]
+      Quadratic: 1

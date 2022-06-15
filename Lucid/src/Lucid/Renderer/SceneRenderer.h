@@ -55,5 +55,4 @@ private:
 	static void LightingPass();
 	static void TransparencyPass();
 	static void CompositePass();
-	static void EditorPass();
 };

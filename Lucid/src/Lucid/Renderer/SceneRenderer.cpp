@@ -30,13 +30,11 @@ struct SceneRendererData
 	Ref<Shader> DualDepthPeelBlendShader;
 	Ref<Shader> DualDepthPeelCompositeShader;
 	Ref<Shader> CompositeShader;
-	Ref<Shader> EditorShader;
 
 	Ref<RenderPass> GeometryPass;
 	Ref<RenderPass> LightingPass;
 	Ref<RenderPass> TransparencyPass;
 	Ref<RenderPass> CompositePass;
-	Ref<RenderPass> EditorPass;
 
 	Ref<Framebuffer> TransparencyComposite;
 
@@ -249,34 +247,6 @@ void SceneRenderer::Init()
 
 	#pragma endregion
 
-	#pragma region Editor Pass
-
-	// Editor pass
-	RenderPassSpecification editorRenderPass;
-	FramebufferSpecification editorFramebufferSpec;
-	editorFramebufferSpec.Width = 1280;
-	editorFramebufferSpec.Height = 720;
-
-	// Editor texture
-	FramebufferTextureSpecification editorTexture;
-	editorTexture.TextureUsage = FramebufferTextureUsage::COLOUR;
-	editorTexture.Format = FramebufferTextureFormat::RGBA16F;
-
-	// Depth texture
-	FramebufferTextureSpecification editorDepthTexture;
-	editorDepthTexture.TextureUsage = FramebufferTextureUsage::DEPTH;
-	editorDepthTexture.Format = FramebufferTextureFormat::DEPTH24STENCIL8;
-
-	editorFramebufferSpec.Attach(editorTexture, 0);
-	editorFramebufferSpec.Attach(editorDepthTexture, 1);
-
-	editorRenderPass.TargetFramebuffer = Framebuffer::Create(editorFramebufferSpec);
-	s_Data.EditorPass = RenderPass::Create(editorRenderPass);
-
-	s_Data.EditorShader = Shader::Create("assets/shaders/Editor.glsl");
-
-	#pragma endregion
-
 	// Grid
 	auto gridShader = Shader::Create("assets/shaders/Grid.glsl");
 	s_Data.GridMaterial = MaterialInstance::Create(Material::Create(gridShader));
@@ -301,7 +271,6 @@ void SceneRenderer::SetViewportSize(uint32_t width, uint32_t height)
 	s_Data.LightingPass->GetSpecification().TargetFramebuffer->Resize(width, height);
 	s_Data.TransparencyPass->GetSpecification().TargetFramebuffer->Resize(width, height);
 	s_Data.CompositePass->GetSpecification().TargetFramebuffer->Resize(width, height);
-	s_Data.EditorPass->GetSpecification().TargetFramebuffer->Resize(width, height);
 
 	s_Data.TransparencyComposite->Resize(width, height);
 
@@ -385,6 +354,27 @@ void SceneRenderer::GeometryPass()
 		baseMaterial->Set("u_ViewProjectionMatrix", viewProjection);
 
 		Renderer::SubmitMesh(dc.Mesh, dc.Transform);
+	}
+
+	// Grid
+	if (GetOptions().ShowGrid)
+	{
+		s_Data.GridMaterial->Set("u_ViewProjection", viewProjection);
+
+		Renderer::SubmitQuad(s_Data.GridMaterial, glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(16.0f)));
+	}
+
+	// Bounding boxes
+	if (GetOptions().ShowBoundingBoxes)
+	{
+		Renderer2D::BeginScene(viewProjection);
+
+		for (auto& dc : s_Data.SelectedMeshDrawList)
+		{
+			Renderer::DrawAABB(dc.Mesh, dc.Transform);
+		}
+
+		Renderer2D::EndScene();
 	}
 
 	Renderer::EndRenderPass();
@@ -622,13 +612,6 @@ void SceneRenderer::CompositePass()
 {
 	Renderer::BeginRenderPass(s_Data.CompositePass);
 
-	// Disable blending
-	Renderer::Submit([]()
-	{
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_BLEND);
-	});
-
 	s_Data.CompositeShader->Bind();
 	s_Data.CompositeShader->SetFloat("u_Exposure", s_Data.SceneData.SceneCamera.Camera.GetExposure());
 
@@ -666,42 +649,11 @@ void SceneRenderer::CompositePass()
 	Renderer::EndRenderPass();
 }
 
-void SceneRenderer::EditorPass()
-{
-	Renderer::BeginRenderPass(s_Data.EditorPass);
-
-	auto viewProjection = s_Data.SceneData.SceneCamera.Camera.GetProjectionMatrix() * s_Data.SceneData.SceneCamera.ViewMatrix;
-
-	// Grid
-	if (GetOptions().ShowGrid)
-	{
-		s_Data.GridMaterial->Set("u_ViewProjection", viewProjection);
-
-		Renderer::SubmitQuad(s_Data.GridMaterial, glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(16.0f)));
-	}
-
-	// Bounding boxes
-	if (GetOptions().ShowBoundingBoxes)
-	{
-		Renderer2D::BeginScene(viewProjection);
-
-		for (auto& dc : s_Data.MeshDrawList)
-		{
-			Renderer::DrawAABB(dc.Mesh, dc.Transform);
-		}
-
-		Renderer2D::EndScene();
-	}
-
-	Renderer::EndRenderPass();
-}
-
 // Executes each render pass in order and flushes both mesh draw lists (transparent and non-transparent)
 void SceneRenderer::FlushDrawList()
 {
 	LD_CORE_ASSERT(!s_Data.ActiveScene, "");
 
-	EditorPass();
 	GeometryPass();
 	LightingPass();
 	TransparencyPass();
